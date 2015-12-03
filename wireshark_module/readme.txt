@@ -1,0 +1,1 @@
+Everything connected with wireshark module should be placed in this directory.
