@@ -3,46 +3,31 @@ project(RING)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-##################################
-# Download and install GoogleTest
+# Download and unpack gtest at configure time
+configure_file(gtest-CMakeLists.txt gtest-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/gtest-download )
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/gtest-download )
 
-include(ExternalProject)
-ExternalProject_Add(gtest
-        URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
-        # Comment above line, and uncomment line below to use subversion.
-        # SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk/
-        # Uncomment line below to freeze a revision (here the one for 1.7.0)
-        # SVN_REVISION -r700
+# Add gtest directly to our build
+add_subdirectory(${CMAKE_BINARY_DIR}/gtest-src
+        ${CMAKE_BINARY_DIR}/gtest-build
+        EXCLUDE_FROM_ALL )
 
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
-        INSTALL_COMMAND ""
-        )
-ExternalProject_Get_Property(gtest source_dir binary_dir)
-
-################
-# Define a test
-add_executable(client_basic_test client_tests/clientBasicTest.cpp)
-
-######################################
-# Configure the test to use GoogleTest
-#
-# If used often, could be made a macro.
-
-add_dependencies(client_basic_test gtest)
-include_directories(${source_dir}/include)
-target_link_libraries(client_basic_test ${binary_dir}/libgtest.a)
-target_link_libraries(client_basic_test ${binary_dir}/libgtest_main.a)
-
-##################################
-# Just make the test runnable with
-#   $ make test
-
-enable_testing()
-add_test(NAME    client_basic_test
-        COMMAND client_basic_test)
+# Add the gtest include directory, since gtest
+# doesn't add that dependency to its gtest target
+target_include_directories(gtest INTERFACE
+        "${CMAKE_BINARY_DIR}/gtest-src/include" )
 
 
 set(CLIENT_SOURCE_FILES client/main.cpp client/model/Model.cpp)
 set(SERVER_SOURCE_FILES server/main.cpp)
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES})
+
+
+# Tests configuration
+add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp client/model/Model.cpp)
+target_link_libraries(CLIENT_BASIC_TESTS gtest_main)
+add_test(NAME clientBasicTest COMMAND clientBasicTest)
