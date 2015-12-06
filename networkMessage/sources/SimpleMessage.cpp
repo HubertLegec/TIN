@@ -2,15 +2,15 @@
 // Created by hubert on 05.12.15.
 //
 
-#include "SimpleMessage.h"
+#include "../headers/SimpleMessage.h"
 
-
-SimpleMessage::SimpleMessage() : type(MessageType::UNDEFINED), senderID(-1) {
-    size = sizeof(type) + sizeof(senderID) + sizeof(size);
-}
 
 SimpleMessage::SimpleMessage(MessageType type, long senderID) : type(type), senderID(senderID) {
     this->size = sizeof(type) + sizeof(senderID) + sizeof(size);
+}
+
+SimpleMessage::SimpleMessage(char *data) {
+    //TODO
 }
 
 int SimpleMessage::getMessageSize() const {

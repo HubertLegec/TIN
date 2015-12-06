@@ -6,7 +6,6 @@
 #define RING_GETMESSAGE_H
 
 #include "SimpleMessage.h"
-#include "GetMessageType.h"
 
 
 class GetMessage : public SimpleMessage {
@@ -17,6 +16,7 @@ private:
     GetMessageType requestType;
 public:
     GetMessage(long senderID, GetMessageType request);
+    GetMessage(char* data);
 
     GetMessageType getRequestType() const;
     void setRequestType(GetMessageType requestType);

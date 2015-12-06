@@ -31,3 +31,14 @@ add_executable(RING_SERVER ${SERVER_SOURCE_FILES})
 add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp client/model/Model.cpp)
 target_link_libraries(CLIENT_BASIC_TESTS gtest_main)
 add_test(NAME clientBasicTest COMMAND clientBasicTest)
+
+add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesBasicTests.cpp
+        networkMessage/sources/SimpleMessage.cpp
+        networkMessage/sources/CategoryListMessage.cpp
+        networkMessage/sources/GetMessage.cpp
+        networkMessage/sources/ServerInfoMessage.cpp
+        networkMessage/sources/CategoryManagementMessage.cpp
+        networkMessage/sources/NeighboursInfoMessage.cpp
+        networkMessage/sources/RingMessage.cpp)
+target_link_libraries(NETWORK_MESSAGES_TESTS gtest_main)
+add_test(NAME networkMessageBasicTest COMMAND networkMessageBasicTest)

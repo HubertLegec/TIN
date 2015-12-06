@@ -5,13 +5,13 @@
 #ifndef RING_SIMPLEMESSAGE_H
 #define RING_SIMPLEMESSAGE_H
 
-#include "MessageType.h"
+#include "MessageTypes.h"
 
 /*
  * Simple message class
  * All others network message classes should inherit from this class
  */
-virtual class SimpleMessage {
+class SimpleMessage {
 private:
     /*
      * All the message types should be defined in MessageType enum
@@ -29,8 +29,8 @@ private:
 protected:
     int size;
 public:
-    SimpleMessage();
-    SimpleMessage(MessageType type, int senderID);
+    SimpleMessage(MessageType type, long senderID);
+    SimpleMessage(char* data);
 
     void setType(MessageType type);
     MessageType getMessageType() const;
