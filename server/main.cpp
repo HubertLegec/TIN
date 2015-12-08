@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
     cout << "Server app!" << endl;
-    shared_ptr<User> radek(new User(1111, "11.11.11.11", "radek"));
+    shared_ptr<User> radek(new User(0, 1111, "11.11.11.11", "radek"));
 
     Model model;
     model.addCategory(radek, "tiny");

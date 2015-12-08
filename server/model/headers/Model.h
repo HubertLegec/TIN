@@ -1,5 +1,5 @@
-#ifndef RING_MODELL_H
-#define RING_MODELL_H
+#ifndef RING_MODEL_H
+#define RING_MODEL_H
 
 #include <unordered_map>
 #include "Category.h"
@@ -15,7 +15,7 @@ public:
 
     const shared_ptr<User> getCategoryOwner(string category_name) const;
 
-    const vector<shared_ptr<User>> &getCategoryMembers(string category_name) const;
+    const shared_ptr<User> getCategoryMembers(string category_name) const;
 
     void addCategory(shared_ptr<User> owner, string category_name);
 
@@ -23,4 +23,4 @@ public:
 };
 
 
-#endif //RING_MODELL_H
+#endif //RING_MODEL_H

@@ -22,7 +22,7 @@ target_include_directories(gtest INTERFACE
 
 
 set(CLIENT_SOURCE_FILES client/main.cpp client/model/Model.cpp)
-set(SERVER_SOURCE_FILES server/main.cpp server/model/sources/Category.cpp server/model/sources/Model.cpp server/model/sources/User.cpp)
+set(SERVER_SOURCE_FILES server/main.cpp server/model/sources/Category.cpp server/model/sources/Model.cpp server/model/sources/User.cpp server/controller/sources/Controller.cpp)
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES})
 
