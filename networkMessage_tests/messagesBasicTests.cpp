@@ -4,6 +4,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include "gtest/gtest.h"
 #include "../networkMessage/headers/CategoryListMessage.h"
 #include "../networkMessage/headers/GetMessage.h"
@@ -11,6 +12,28 @@
 #include "../networkMessage/headers/CategoryManagementMessage.h"
 #include "../networkMessage/headers/NeighboursInfoMessage.h"
 #include "../networkMessage/headers/RingMessage.h"
+
+TEST(SimpleMessage, serialization_test){
+    SimpleMessage msg(MessageType::GET, 0);
+
+    std::stringstream ss; // any stream can be used
+
+    {
+        cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
+
+        oarchive(msg); // Write the data to the archive
+    }
+
+    SimpleMessage testMsg;
+    {
+        cereal::BinaryInputArchive iarchive(ss); // Create an input archive
+        iarchive(testMsg); // Read the data from the archive
+    }
+
+    ASSERT_EQ(msg.getMessageSize(), testMsg.getMessageSize());
+    ASSERT_EQ(msg.getMessageType(), testMsg.getMessageType());
+    ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
+}
 
 TEST(CategoryListMessage, creating_test){
     std::vector<std::string> names = {"First", "Second", "Third"};

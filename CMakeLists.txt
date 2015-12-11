@@ -39,6 +39,7 @@ add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesBasicTests.cp
         networkMessage/sources/ServerInfoMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
-        networkMessage/sources/RingMessage.cpp)
+        networkMessage/sources/RingMessage.cpp
+        cereal/archives/binary.hpp)
 target_link_libraries(NETWORK_MESSAGES_TESTS gtest_main)
 add_test(NAME networkMessageBasicTest COMMAND networkMessageBasicTest)
