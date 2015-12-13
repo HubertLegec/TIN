@@ -32,7 +32,7 @@ add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp client/model/
 target_link_libraries(CLIENT_BASIC_TESTS gtest_main)
 add_test(NAME clientBasicTest COMMAND clientBasicTest)
 
-add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesBasicTests.cpp
+add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesTests.cpp
         networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/GetMessage.cpp
@@ -43,3 +43,15 @@ add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesBasicTests.cp
         cereal/archives/binary.hpp)
 target_link_libraries(NETWORK_MESSAGES_TESTS gtest_main)
 add_test(NAME networkMessageBasicTest COMMAND networkMessageBasicTest)
+
+add_executable(MESSAGES_SERIALIZATION_TESTS networkMessage_tests/messagesSerializationTests.cpp
+        networkMessage/sources/SimpleMessage.cpp
+        networkMessage/sources/CategoryListMessage.cpp
+        networkMessage/sources/GetMessage.cpp
+        networkMessage/sources/ServerInfoMessage.cpp
+        networkMessage/sources/CategoryManagementMessage.cpp
+        networkMessage/sources/NeighboursInfoMessage.cpp
+        networkMessage/sources/RingMessage.cpp
+        cereal/archives/binary.hpp)
+target_link_libraries(MESSAGES_SERIALIZATION_TESTS  gtest_main)
+add_test(NAME networkMessageSerializationTest COMMAND networkMessageSerializationTest)

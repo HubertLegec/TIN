@@ -5,32 +5,47 @@
 #include <cstring>
 #include "../headers/CategoryManagementMessage.h"
 
-CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const std::string& categoryName, const std::string& userName)
+CategoryManagementMessage::CategoryManagementMessage() { }
+
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID , const std::string& userName)
                                                     : SimpleMessage(type, senderID) {
-    this->userNameSize = userName.size();
-    this->userName = new char[userNameSize+1];
-    strcpy(this->userName, userName.c_str());
-    this->categoryNameSize = categoryName.size();
-    this->categoryName = new char[categoryNameSize+1];
-    strcpy(this->categoryName, categoryName.c_str());
+    this->categoryID = categoryID;
+    this->userID = -1;
+    this->userName = userName;
 
-    this->size = SimpleMessage::getMessageSize() + 2*sizeof(int) + (userNameSize + categoryNameSize + 2);
+    this->size = SimpleMessage::getMessageSize() + 4*sizeof(long) + userName.size();
 }
 
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID, long userID)
+                                                    : SimpleMessage(type, senderID){
+    this->categoryID = categoryID;
+    this->userID = userID;
 
-CategoryManagementMessage::CategoryManagementMessage(char *data) : SimpleMessage(data) {
-    //TODO
+    this->size = SimpleMessage::getMessageSize() + 4*sizeof(long);
 }
 
-CategoryManagementMessage::~CategoryManagementMessage() {
-    delete[] userName;
-    delete[] categoryName;
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName,
+                                                     const std::string &userName) : SimpleMessage(type, senderID) {
+    this->categoryID = -1;
+    this->userID = -1;
+    this->userName = userName;
+    this->categoryName = categoryName;
+
+    this->size = SimpleMessage::getMessageSize() + 4*sizeof(long) + userName.size() + categoryName.size();
 }
 
 std::string CategoryManagementMessage::getUserName() const {
-    return std::string(userName);
+    return userName;
 }
 
 std::string CategoryManagementMessage::getCategoryName() const {
-    return std::string(categoryName);
+    return categoryName;
+}
+
+long CategoryManagementMessage::getCategoryID() const {
+    return categoryID;
+}
+
+long CategoryManagementMessage::getUserID() const {
+    return userID;
 }

@@ -5,44 +5,24 @@
 #include <cstring>
 #include "../headers/CategoryListMessage.h"
 
-CategoryListMessage::CategoryListMessage(long senderID, const std::vector<std::string>& list)
-                                        : SimpleMessage(MessageType::CATEGORY_LIST, senderID), listSize(list.size()){
+CategoryListMessage::CategoryListMessage() : SimpleMessage() { }
 
-    this->size = SimpleMessage::getMessageSize() + sizeof(listSize) + sizeof(maxNameSize);
+CategoryListMessage::CategoryListMessage(long senderID, const std::map<long, std::string>& categories)
+                                        : SimpleMessage(MessageType::CATEGORY_LIST, senderID), categories(categories) {
 
-    if(list.size() > 0){
-        maxNameSize = 0;
-        for(std::string name : list){
-            maxNameSize = name.size() > maxNameSize ? name.size() : maxNameSize;
-        }
-        catList = new char*[listSize];
-        for(int i = 0; i < listSize; i++){
-            catList[i] = new char[maxNameSize+1];
-            strcpy(catList[i], list.at(i).c_str());
-            this->size += (maxNameSize+1);
-        }
-    } else {
-        this->maxNameSize = 0;
-        this->catList = nullptr;
+    this->size = SimpleMessage::getMessageSize() + sizeof(long) + categories.size()*sizeof(long);
+    for(std::pair<long, std::string> p : categories){
+        size += p.second.size();
     }
 }
 
-CategoryListMessage::CategoryListMessage(char *data) : SimpleMessage(data) {
-    //TODO
+std::map<long, std::string> CategoryListMessage::getCategories() const {
+    return categories;
 }
 
-std::vector<std::string> CategoryListMessage::getCategoryList() const {
-    std::vector<std::string> result;
-    for(int i = 0; i < listSize; i++){
-        result.push_back(catList[i]);
-    }
-
-    return result;
+void CategoryListMessage::addCategory(long categoryID, std::string categoryName) {
+    categories.insert(std::pair<long, std::string>(categoryID, categoryName));
+    size += (sizeof(long) + categoryName.size());
 }
 
-CategoryListMessage::~CategoryListMessage() {
-    for(int i = 0; i < listSize; i++){
-        delete[] catList[i];
-    }
-    delete[] catList;
-}
+

@@ -12,11 +12,11 @@ SimpleMessage::SimpleMessage(MessageType type, long senderID) : type(type), send
     this->size = sizeof(type) + sizeof(senderID) + sizeof(size);
 }
 
-SimpleMessage::SimpleMessage(char* data) {
-    SimpleMessage* tmp = (SimpleMessage*)data;
-    this->type = tmp->type;
-    this->senderID - tmp->senderID;
-    this->size = tmp->size;
+SimpleMessage& SimpleMessage::operator=(const SimpleMessage &other) {
+    this->size = other.size;
+    this->senderID = other.senderID;
+    this->type = other.type;
+    return *this;
 }
 
 int SimpleMessage::getMessageSize() const {

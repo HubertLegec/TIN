@@ -14,29 +14,27 @@
  * All others network message classes should inherit from this class
  */
 class SimpleMessage {
-private:
+protected:
     /*
      * All the message types should be defined in MessageType enum
      */
     MessageType type;
-protected:
-    /* message size in bytes
-     * it should be automatically calculated when we set message content
-     */
-    int size;
-private:
     /*
      * message sender id
      * server id should be set to 0
      * others' id should be given by server
      */
     long senderID;
+    /* message size in bytes
+     * it should be automatically calculated when we set message content
+     */
+    int size;
 
     friend class cereal::access;
 public:
     SimpleMessage();
     SimpleMessage(MessageType type, long senderID);
-    SimpleMessage(char* data);
+    SimpleMessage& operator=(const SimpleMessage& other);
 
     void setType(MessageType type);
     MessageType getMessageType() const;
@@ -45,7 +43,7 @@ public:
     int getMessageSize() const;
     template<class Archive>
     void serialize(Archive & archive){
-        archive(this->type, this->senderID, this->size);
+        archive(this->type, this->size, this->senderID);
     }
 };
 

@@ -4,14 +4,11 @@
 
 #include "../headers/GetMessage.h"
 
+GetMessage::GetMessage() { }
 
 GetMessage::GetMessage(long senderID, GetMessageType request) : SimpleMessage(MessageType::GET, senderID),
                                                                 requestType(request) {
     this->size = SimpleMessage::getMessageSize() + sizeof(requestType);
-}
-
-GetMessage::GetMessage(char *data) : SimpleMessage(data) {
-    //TODO
 }
 
 void GetMessage::setRequestType(GetMessageType requestType) {

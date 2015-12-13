@@ -5,22 +5,18 @@
 #include <cstring>
 #include "../headers/ServerInfoMessage.h"
 
+
+ServerInfoMessage::ServerInfoMessage() : SimpleMessage() {
+
+}
+
 ServerInfoMessage::ServerInfoMessage(long senderID, ServerInfoMessageType infoType, const std::string& info)
-                                    : SimpleMessage(MessageType::SERVER_INFO, senderID), infoType(infoType){
-    this->infoSize = info.size();
-        this->info = new char[infoSize + 1];
-        strcpy(this->info, info.c_str());
-
+                                    : SimpleMessage(MessageType::SERVER_INFO, senderID), infoType(infoType), info(info){
     this->extraInfo = -1;
-    this->size = SimpleMessage::getMessageSize() + sizeof(infoSize) + sizeof(extraInfo) + infoSize+1;
-}
-
-ServerInfoMessage::ServerInfoMessage(char *data) : SimpleMessage(data) {
-    //TODO
-}
-
-ServerInfoMessage::~ServerInfoMessage() {
-    delete[] info;
+    std::cout << "SM size: " << SimpleMessage::getMessageSize() << std::endl;
+    std::cout << "info size: " << info.size() << std::endl;
+    this->size = SimpleMessage::getMessageSize() + sizeof(infoType) +2*sizeof(extraInfo) + info.size();
+    std::cout << "result size: " << this->size << std::endl;
 }
 
 ServerInfoMessageType ServerInfoMessage::getInfoType() const {
@@ -32,13 +28,7 @@ std::string ServerInfoMessage::getInfo() const {
 }
 
 void ServerInfoMessage::setInfo(const std::string info) {
-    if(this->info != nullptr){
-        delete[] this->info;
-    }
-
-    this->infoSize = info.size();
-        this->info = new char[infoSize + 1];
-        strcpy(this->info, info.c_str());
+    this->info = info;
 }
 
 void ServerInfoMessage::setExtraInfo(long extraInfo) {

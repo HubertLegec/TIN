@@ -7,19 +7,32 @@
 
 #include <string>
 #include "SimpleMessage.h"
+#include "../../cereal/archives/binary.hpp"
+#include "../../cereal/types/string.hpp"
 
 class NeighboursInfoMessage : public SimpleMessage {
 private:
-    int lNeighbourNameSize;
-    char* lNeighbourName;
-    int rNeighbourNameSize;
-    char* rNeighbourName;
+    std::string lNeighbourName;
+    std::string lNeighbourIP;
+    int lNeighbourPort;
+    std::string rNeighbourName;
+    std::string rNeighbourIP;
+    int rNeighbourPort;
 public:
-    NeighboursInfoMessage(const std::string& lNeighbourName, const std::string& rNeighbourName);
-    NeighboursInfoMessage(char* data);
-    ~NeighboursInfoMessage();
+    NeighboursInfoMessage();
+    NeighboursInfoMessage(const std::string& lNeighName, const std::string& lNeighIP, int lNeighPort,
+                          const std::string& rNeighName, const std::string& rNeighIP, int rNeighPort);
     std::string getLeftNeighbourName() const;
+    std::string getLeftNeighbourIP() const;
+    int getLeftNeighbourPort() const;
     std::string getRightNeighbourName() const;
+    std::string getRightNeighbourIP() const;
+    int getRightNeighbourPort() const;
+    template<class Archive>
+    void serialize(Archive & archive){
+        archive(this->type, this->size, this->senderID, this->lNeighbourName, this->lNeighbourIP, this->lNeighbourPort,
+                this->rNeighbourName, this->rNeighbourIP, this->rNeighbourPort);
+    }
 };
 
 

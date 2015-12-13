@@ -6,6 +6,7 @@
 #define RING_GETMESSAGE_H
 
 #include "SimpleMessage.h"
+#include "../../cereal/archives/binary.hpp"
 
 
 class GetMessage : public SimpleMessage {
@@ -15,11 +16,15 @@ private:
      */
     GetMessageType requestType;
 public:
+    GetMessage();
     GetMessage(long senderID, GetMessageType request);
-    GetMessage(char* data);
 
     GetMessageType getRequestType() const;
     void setRequestType(GetMessageType requestType);
+    template<class Archive>
+    void serialize(Archive & archive){
+        archive(this->type, this->size, this->senderID, this->requestType);
+    }
 };
 
 
