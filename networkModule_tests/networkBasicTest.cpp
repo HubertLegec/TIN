@@ -3,7 +3,7 @@
 //
 #include <string>
 #include "gtest/gtest.h"
-#include "../networkModule/headers/Queue.h"
+#include "Queue.hpp"
 
 TEST(Queue, creating_test) {
     Queue<int> *queue = new Queue<int>();

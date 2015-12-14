@@ -3,7 +3,7 @@
 //
 
 #include "gtest/gtest.h"
-#include "../client/model/Model.h"
+#include "Model.h"
 
 TEST(ModelTest, model_get_test){
     Model m;

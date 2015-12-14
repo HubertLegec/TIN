@@ -1,12 +1,15 @@
 #include <iostream>
 
-#include "model/Model.h"
+#include "model/headers/Model.h"
+#include "controller/headers/Controller.h"
 
 using namespace std;
 
 int main() {
-    Model m;
     cout << "Client app!" << endl;
-    cout << m.getX() << endl;
+    Model model;
+    Controller controller(model);
+    View view(controller);
+    controller.setView(view);
     return 0;
 }
