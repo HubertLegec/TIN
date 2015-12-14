@@ -55,3 +55,7 @@ add_executable(MESSAGES_SERIALIZATION_TESTS networkMessage_tests/messagesSeriali
         cereal/archives/binary.hpp)
 target_link_libraries(MESSAGES_SERIALIZATION_TESTS  gtest_main)
 add_test(NAME networkMessageSerializationTest COMMAND networkMessageSerializationTest)
+
+add_executable(NETWORK_BASIC_TESTS networkModule_tests/networkBasicTest.cpp)
+target_link_libraries(NETWORK_BASIC_TESTS  gtest_main)
+add_test(NAME networkBasicTest COMMAND networkBasicTest)
