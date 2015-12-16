@@ -25,4 +25,9 @@ void CategoryListMessage::addCategory(long categoryID, std::string categoryName)
     size += (sizeof(long) + categoryName.size());
 }
 
+std::string CategoryListMessage::toString() {
+    //TODO
+    return "CategoryListMessage";
+}
+
 

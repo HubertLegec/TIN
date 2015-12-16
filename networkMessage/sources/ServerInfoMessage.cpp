@@ -38,3 +38,8 @@ void ServerInfoMessage::setExtraInfo(long extraInfo) {
 long ServerInfoMessage::getExtraInfo() const {
     return extraInfo;
 }
+
+std::string ServerInfoMessage::toString() {
+    //TODO
+    return "ServerInfoMessage";
+}

@@ -33,6 +33,7 @@ public:
     std::string getUserName() const;
     long getCategoryID() const;
     long getUserID() const;
+    std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->categoryID, this->userID, this->categoryName, this->userName);

@@ -28,6 +28,7 @@ public:
     std::string getRightNeighbourName() const;
     std::string getRightNeighbourIP() const;
     int getRightNeighbourPort() const;
+    std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->lNeighbourName, this->lNeighbourIP, this->lNeighbourPort,

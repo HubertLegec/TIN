@@ -49,3 +49,8 @@ long CategoryManagementMessage::getCategoryID() const {
 long CategoryManagementMessage::getUserID() const {
     return userID;
 }
+
+std::string CategoryManagementMessage::toString() {
+    //TODO
+    return "CategoryListMessage";
+}

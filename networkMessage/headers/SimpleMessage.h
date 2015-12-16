@@ -41,6 +41,7 @@ public:
     void setSenderID(long id);
     long getSenderID() const;
     int getMessageSize() const;
+    virtual std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID);

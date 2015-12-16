@@ -25,8 +25,25 @@ target_include_directories(gtest INTERFACE
 
 
 #----------------------------------------- client ----------------------------------------------------------------------
+set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
+        clientEvents/sources/ChooseMenuOptionEvent.cpp
+        clientEvents/sources/ConfirmMessageEvent.cpp
+        clientEvents/sources/NetworkEvent.cpp)
+set(CLIENT_STRATEGY_SOURCES client/strategy/sources/BasicEventStrategy.cpp
+        client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
+        client/strategy/sources/ConfirmMessageEventStrategy.cpp
+        client/strategy/sources/NetworkEventStragegy.cpp)
+set(CLIENT_MODEL_SOURCES client/model/sources/Model.cpp)
+set(CLIENT_VIEW_SOURCES client/view/sources/View.cpp)
+set(CLIENT_CONTROLLER_SOURCES client/controller/sources/Controller.cpp)
 
-set(CLIENT_SOURCE_FILES client/main.cpp client/model/sources/Model.cpp)
+set(CLIENT_SOURCE_FILES client/main.cpp
+        ${CLIENT_EVENT_SOURCES}
+        ${CLIENT_STRATEGY_SOURCES}
+        ${CLIENT_MODEL_SOURCES}
+        ${CLIENT_VIEW_SOURCES}
+        ${CLIENT_CONTROLLER_SOURCES}
+        networkMessage/sources/SimpleMessage.cpp)
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 
 

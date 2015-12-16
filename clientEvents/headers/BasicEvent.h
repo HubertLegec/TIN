@@ -5,10 +5,11 @@
 #ifndef RING_BASICEVENT_H
 #define RING_BASICEVENT_H
 
+#include <string>
 
 class BasicEvent {
 public:
-    virtual toString()=0;
+    virtual std::string toString();
 
 };
 

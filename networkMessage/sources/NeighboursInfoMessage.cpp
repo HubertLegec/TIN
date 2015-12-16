@@ -43,3 +43,8 @@ std::string NeighboursInfoMessage::getRightNeighbourIP() const {
 int NeighboursInfoMessage::getRightNeighbourPort() const {
     return rNeighbourPort;
 }
+
+std::string NeighboursInfoMessage::toString() {
+    //TODO
+    return "NeighbourInfoMessage";
+}

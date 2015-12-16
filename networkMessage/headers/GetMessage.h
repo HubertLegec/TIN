@@ -21,6 +21,7 @@ public:
 
     GetMessageType getRequestType() const;
     void setRequestType(GetMessageType requestType);
+    std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->requestType);

@@ -2,4 +2,8 @@
 // Created by hubert on 15.12.15.
 //
 
-#include "../View.h"
+#include "../headers/View.h"
+
+View::View(Controller *controller) : controller(controller){
+
+}

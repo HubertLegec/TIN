@@ -6,6 +6,7 @@
 #define RING_NETWORKEVENT_H
 
 #include "../../networkMessage/headers/SimpleMessage.h"
+#include "BasicEvent.h"
 
 
 class NetworkEvent : public BasicEvent {
@@ -16,7 +17,7 @@ public:
     NetworkEvent(SimpleMessage message);
 
     SimpleMessage getMessage() const;
-
+    std::string toString();
 };
 
 

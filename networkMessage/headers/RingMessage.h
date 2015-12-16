@@ -27,6 +27,7 @@ public:
     void addConfirmation(const std::string& name);
     void addConfirmations(const std::vector<std::string>& nameList);
     std::string getMsgText() const;
+    std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->messageText, this->confirmations);

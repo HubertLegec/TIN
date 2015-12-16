@@ -52,4 +52,8 @@ std::string RingMessage::getMsgText() const {
     return messageText;
 }
 
+std::string RingMessage::toString() {
+    //TODO
+    return "RingMessage";
+}
 

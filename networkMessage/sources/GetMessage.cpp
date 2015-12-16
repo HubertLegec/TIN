@@ -19,3 +19,7 @@ GetMessageType GetMessage::getRequestType() const {
     return requestType;
 }
 
+std::string GetMessage::toString() {
+    //TODO
+    return "GetMessage";
+}

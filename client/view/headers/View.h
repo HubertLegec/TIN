@@ -6,13 +6,14 @@
 #define RING_VIEW_H
 
 #include "../../controller/headers/Controller.h"
+class Controller;
 
 class View {
 private:
-    Controller controller;
+    Controller* controller;
 
 public:
-    View(Controller controller);
+    View(Controller* controller);
 };
 
 

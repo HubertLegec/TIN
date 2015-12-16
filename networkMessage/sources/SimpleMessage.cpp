@@ -4,7 +4,6 @@
 
 #include <sstream>
 #include "../headers/SimpleMessage.h"
-#include "../../cereal/access.hpp"
 
 SimpleMessage::SimpleMessage() { }
 
@@ -37,4 +36,9 @@ void SimpleMessage::setSenderID(long id) {
 
 void SimpleMessage::setType(MessageType type) {
     this->type = type;
+}
+
+std::string SimpleMessage::toString() {
+    //TODO
+    return "SimpleMessage";
 }
