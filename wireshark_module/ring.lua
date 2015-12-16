@@ -10,38 +10,71 @@
 	6. Find "RING" protocol.
 	7. Click apply.
 --]]
-local debug = true
+local debug = false
 
 --Enumerations used to identify messages.
-local messageTypeNames = {}
-messageTypeNames[0] = "UNDEFINED"
-messageTypeNames[1] = "GET"
-messageTypeNames[2] = "CREATE_CATEGORY"
-messageTypeNames[3] = "DESTROY_CATEGORY"
-messageTypeNames[4] = "CATEGORY_LIST"
-messageTypeNames[5] = "JOIN_CATEGORY"
-messageTypeNames[6] = "LEFT_CATEGORY"
-messageTypeNames[7] = "SIGN_UP_CATEGORY"
-messageTypeNames[8] = "SIGN_OUT_CATEGORY"
-messageTypeNames[9] = "RING_MESSAGE"
-messageTypeNames[10]=  "NEIGHBOURS_SET"
-messageTypeNames[11]=  "SERVER_INFO"
+local message_type_names = {
+[0] = "UNDEFINED",
+[1] = "GET",
+[2] = "CREATE_CATEGORY",
+[3] = "DESTROY_CATEGORY",
+[4] = "CATEGORY_LIST",
+[5] = "JOIN_CATEGORY",
+[6] = "LEFT_CATEGORY",
+[7] = "SIGN_UP_CATEGORY",
+[8] = "SIGN_OUT_CATEGORY",
+[9] = "RING_MESSAGE",
+[10]=  "NEIGHBOURS_SET",
+[11]=  "SERVER_INFO"
+}
 
+local get_message_type_names = {
+[1] = "CAT_LIST",
+[2] = "NEIGHBOURS"
+}
+
+local server_info_message_type_names = {
+[0] = "OK",
+[1] = "FAIL",
+[2] = "PERMISSION_DENIED"
+}
 
 
 --Creating a Proto object.
 local ring_proto = Proto("ring", "#RING application protocol.")
 
 --Simple message hdr.
-local hdr_fields =
+local ring_fields =
 {
-    msg_type   		= ProtoField.int32 ("ring.type", "Type", base.DEC),
-    msg_len   		= ProtoField.int32("ring.length", "Length", base.DEC),
-    msg_sender_id  	= ProtoField.int64 ("ring.senderID", "Sender ID", base.DEC),
+    	msg_type   		= ProtoField.int32 ("ring.type", "Type", base.DEC),
+    	msg_len   		= ProtoField.int32("ring.length", "Length", base.DEC),
+    	msg_sender_id  		= ProtoField.int64 ("ring.sender_id", "Sender ID", base.DEC),
+    
+    	get_message_request_type = ProtoField.int32("ring.getMessage.requestType", "Request type", base.DEC),
 
+	category_management_message_category_id = ProtoField.int64 ("ring.category_management_message.category_id", "Category ID", base.DEC),
+	category_management_message_category_name = ProtoField.new("Category name", "ing.category_management_message.category_name", ftypes.STRING),
+	category_management_message_user_id = ProtoField.int64 ("ring.category_management_message.user_id", "User ID", base.DEC),
+	category_management_message_user_name = ProtoField.new("User name", "ring.category_management_message.user_name", ftypes.STRING),
+
+	category_list_message_categories = ProtoField.new("Categories","ring.category_list_message.categories", ftypes.BYTES),
+
+	ring_message_text = ProtoField.new("Message text", "ring.ring_message.text", ftypes.STRING),
+	ring_message_confirmations = ProtoField.new("Confirmations", "ring.ring_message.confirmations", ftypes.BYTES),
+
+	neighbour_set_l_neighbour_name = ProtoField.new("Left neighbour name", "ring.neighbour_set.l_neighbour_name", ftypes.STRING),
+	neighbour_set_l_neighbour_ip = ProtoField.new("Left neighbour ip", "ring.neighbour_set.l_neighbour_ip", ftypes.STRING),
+	neighbour_set_l_neighbour_port = ProtoField.int32 ("ring.neighbour_set.l_neighbour_port", "Left neighbour port", base.DEC),
+	neighbour_set_r_neighbour_name = ProtoField.new("Right neighbour name", "ring.neighbour_set.r_neighbour_name", ftypes.STRING),
+	neighbour_set_r_neighbour_ip =  ProtoField.new("Right neighbour ip", "ring.neighbour_set.r_neighbour_ip", ftypes.STRING),
+	neighbour_set_r_neighbour_port = ProtoField.int32 ("ring.neighbour_set.r_neighbour_port", "Right neighbour port", base.DEC),
+
+	server_info_type = ProtoField.int32 ("ring.server_info.type", "Info type", base.DEC),
+	server_info_extra_info = ProtoField.int64 ("ring.server_info.extra_info", "Extra info", base.DEC),
+	server_info = ProtoField.new("Info", "ring.server_info.info", ftypes.STRING),
 }
 
-ring_proto.fields = hdr_fields
+ring_proto.fields = ring_fields
 
 local simple_header_length = 12
 
@@ -91,38 +124,136 @@ end
 
 dissectRING = function (tvbuf, pktinfo, root, offset)
 
-    if debug == true then print("dissectRING called.") end
+    	if debug == true then print("dissectRING called.") end
 
-    local length_val, length_tvbr = checkLength(tvbuf, offset)
+    	local length_val, length_tvbr = checkLength(tvbuf, offset)
 
-    if length_val <= 0 then
-        return length_val
-    end
+    	if length_val <= 0 then
+        	return length_val
+    	end
 
-    -- Whole message is in the buffer - Dissection
+    	-- Whole message is in the buffer - Dissection
 
-    -- set the protocol column to show our protocol name
+    	-- set the protocol column to show our protocol name
 
-   pktinfo.cols.protocol:set("RING")
+   	pktinfo.cols.protocol:set("RING")
     
-    -- We start by adding our protocol to the dissection display tree.
-    local tree = root:add(ring_proto, tvbuf:range(offset, length_val))
+    	-- We start by adding our protocol to the dissection display tree.
+    	local tree = root:add(ring_proto, tvbuf:range(offset, length_val))
 
-    -- dissect type
-    tree:add_le(hdr_fields.msg_type, tvbuf:range(offset, 4))
-    local msg_type  = tvbuf:range(offset, 4):le_int()
-
-    -- set the info column to show our protocol type
-    if messageTypeNames[msg_type] ~= nil then
-	        pktinfo.cols.info:set(messageTypeNames[msg_type])
-    end
+   	 -- dissect type
+	local msg_type  = tvbuf:range(offset, 4):le_int()
+    	tree:add_le(ring_fields.msg_type, tvbuf:range(offset, 4)):append_text(", meaning: " .. message_type_names[msg_type])
 
 
-    -- dissect the length field
-    tree:add_le(hdr_fields.msg_len, length_tvbr)
+    	-- set the info column to show our protocol type
+    	if string.find(tostring(pktinfo.cols.info), "^messages:") == nil then
+            pktinfo.cols.info:set("messages:")
+	end
 
-    -- dissect id
-    tree:add_le(hdr_fields.msg_sender_id, tvbuf:range(offset + 8, 8))
+        pktinfo.cols.info:append(" " .. message_type_names[msg_type] .. ",")
+  
+    	-- dissect the length field
+    	tree:add_le(ring_fields.msg_len, length_tvbr)
+	
+    	-- dissect id
+    	tree:add_le(ring_fields.msg_sender_id, tvbuf:range(offset + 8, 8))
+
+	local inner_offset = offset + 16;
+
+	if msg_type == 1 then
+		
+		local request_type = tvbuf:range(inner_offset, 4):le_int()
+		tree:add_le(ring_fields.get_message_request_type, tvbuf:range(inner_offset, 4)):append_text(", meaning: " .. get_message_type_names[request_type])
+
+	elseif msg_type == 2 or msg_type == 3 or msg_type == 5 or msg_type == 6 or msg_type == 7 or msg_type == 8 then
+		
+		tree:add_le(ring_fields.category_management_message_category_id, tvbuf:range(inner_offset, 8))
+		inner_offset = inner_offset + 8
+
+		tree:add_le(ring_fields.category_management_message_user_id, tvbuf:range(inner_offset, 8))
+		inner_offset = inner_offset + 8
+
+		local category_name = getString(tvbuf, inner_offset);	inner_offset = inner_offset + 8
+		tree:add(ring_fields.category_management_message_category_name, tvbuf:range(inner_offset, category_name:len()), category_name)
+		inner_offset = inner_offset  + category_name:len()
+
+		local user_name = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.category_management_message_user_name, tvbuf:range(inner_offset, user_name:len()), user_name)
+
+	elseif msg_type == 4 then
+
+		local map_size = tvbuf:range(inner_offset, 8):le_int64():tonumber(); inner_offset = inner_offset + 8
+		local start_offset = inner_offset
+		local map_contents = {}
+
+		while map_size > 0 do
+
+			local key = tostring( tvbuf:range(inner_offset, 8):le_int64() ); inner_offset = inner_offset + 8
+			local value = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8 + value:len()
+			
+			table.insert(map_contents, key .. "->" .. value)
+			map_size = map_size-1	
+		end
+
+		local map_representation = table.concat(map_contents, "\n") 
+
+		tree:add(ring_fields.category_list_message_categories, tvbuf:range(start_offset, inner_offset-start_offset)):append_text("\n[readable_representation] \n" .. map_representation)
+
+	elseif msg_type == 9 then
+		
+		local message_text = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.ring_message_text, tvbuf:range(inner_offset, message_text:len()), message_text); inner_offset = inner_offset + message_text:len()
+
+		local vector_size = tvbuf:range(inner_offset, 8):le_int64():tonumber(); inner_offset = inner_offset + 8
+		local start_offset = inner_offset
+		local vector_contents = {}
+
+		while vector_size > 0 do
+
+			local confirmation = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8 + confirmation:len()
+			
+			table.insert(vector_contents, confirmation)
+			vector_size = vector_size-1	
+		end
+
+		local vector_representation = table.concat(vector_contents, ", ") 
+		tree:add(ring_fields.ring_message_confirmations, tvbuf:range(start_offset, inner_offset-start_offset)):append_text("\n	readable representation:" .. vector_representation)
+
+	elseif msg_type == 10 then
+		
+		local l_neighbour_name = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.neighbour_set_l_neighbour_name, tvbuf:range(inner_offset, l_neighbour_name:len()), l_neighbour_name)
+		inner_offset = inner_offset  + l_neighbour_name:len()
+
+		local l_neighbour_ip = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.neighbour_set_l_neighbour_ip, tvbuf:range(inner_offset, l_neighbour_ip:len()), l_neighbour_ip)
+		inner_offset = inner_offset  + l_neighbour_ip:len()
+
+		tree:add_le(ring_fields.neighbour_set_l_neighbour_port, tvbuf:range(inner_offset,4)); inner_offset = inner_offset + 4
+
+		local r_neighbour_name = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.neighbour_set_r_neighbour_name, tvbuf:range(inner_offset, r_neighbour_name:len()), r_neighbour_name)
+		inner_offset = inner_offset  + r_neighbour_name:len()
+
+		local r_neighbour_ip = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.neighbour_set_r_neighbour_ip, tvbuf:range(inner_offset, r_neighbour_ip:len()), r_neighbour_ip)
+		inner_offset = inner_offset  + r_neighbour_ip:len()
+
+		tree:add_le(ring_fields.neighbour_set_r_neighbour_port, tvbuf:range(inner_offset,4)); inner_offset = inner_offset + 4
+
+	elseif msg_type == 11 then
+
+		local info_type =  tvbuf:range(inner_offset,4):le_int()
+		tree:add_le(ring_fields.server_info_type, tvbuf:range(inner_offset,4)):append_text(", meaning: " .. server_info_message_type_names[info_type])
+	        inner_offset = inner_offset + 4
+
+		tree:add_le(ring_fields.server_info_extra_info, tvbuf:range(inner_offset,8)); inner_offset = inner_offset + 8
+		
+		local server_info = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.server_info, tvbuf:range(inner_offset, server_info:len()), server_info)
+		inner_offset = inner_offset  + server_info:len()
+	end
 
     return length_val
 end
@@ -165,4 +296,20 @@ checkLength = function (tvbuf, offset)
 end
 
 --Registering protocol
-DissectorTable.get("tcp.port"):add(2137, ring_proto)
+DissectorTable.get("tcp.port"):add(8888, ring_proto)
+
+
+getString = function (tvbuf, offset)
+
+    	local string_length  = tvbuf:range(offset, 8):le_int64()
+	offset = offset + 8 
+
+	local string_value   = tvbuf:range(offset, string_length:tonumber()):string()
+	offset = offset + string_length
+
+	return string_value
+end 
+
+
+
+
