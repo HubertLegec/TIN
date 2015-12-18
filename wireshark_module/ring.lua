@@ -43,7 +43,7 @@ local server_info_message_type_names = {
 --Creating a Proto object.
 local ring_proto = Proto("ring", "#RING application protocol.")
 
---Simple message hdr.
+--Fields that can be part of RING message.
 local ring_fields =
 {
     	msg_type   		= ProtoField.int32 ("ring.type", "Type", base.DEC),
@@ -76,6 +76,7 @@ local ring_fields =
 
 ring_proto.fields = ring_fields
 
+--Minimal length of message in the buffer to figure out, what is the actual length of message.
 local simple_header_length = 12
 
 function ring_proto.init()
@@ -128,14 +129,13 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 
     	local length_val, length_tvbr = checkLength(tvbuf, offset)
 
+	--If length is not greater than zero, it means that we cannot dissect message, because of error of lack of full message content.
     	if length_val <= 0 then
         	return length_val
     	end
 
-    	-- Whole message is in the buffer - Dissection
 
     	-- set the protocol column to show our protocol name
-
    	pktinfo.cols.protocol:set("RING")
     
     	-- We start by adding our protocol to the dissection display tree.
@@ -161,6 +161,7 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 
 	local inner_offset = offset + 16;
 
+	-- Handling diffrent message types.
 	if msg_type == 1 then
 		
 		local request_type = tvbuf:range(inner_offset, 4):le_int()
@@ -298,7 +299,7 @@ end
 --Registering protocol
 DissectorTable.get("tcp.port"):add(8888, ring_proto)
 
-
+--Function that helps in parsing strings from buffer contents.
 getString = function (tvbuf, offset)
 
     	local string_length  = tvbuf:range(offset, 8):le_int64()
