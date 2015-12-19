@@ -15,8 +15,8 @@
 
 class Model {
 private:
-    static const std::string SERVER_DEFAULT_IP = "localhost";
-    static const int SERVER_DEFAULT_PORT = "8888";
+    static constexpr const char* SERVER_DEFAULT_IP = "localhost";
+    static const int SERVER_DEFAULT_PORT = 8888;
 
     long userID;
     std::string userName;
@@ -46,11 +46,11 @@ public:
     void setUserId(long userId);
     long getUserId() const;
     void addMessageToCategory(long categoryId, std::string message);
-    std::vector<std::string> getCategoryMessages(long categoryId) const;
+    std::vector<std::string> getCategoryMessages(long categoryId);
     void updateLeftNeighbour(long categoryId, const ConnectionInfo& info);
     void updateRightNeighbour(long categoryId, const ConnectionInfo& info);
-    ConnectionInfo getLeftNeighbour(long categoryId) const;
-    ConnectionInfo getRightNeighbour(long categoryId) const;
+    ConnectionInfo getLeftNeighbour(long categoryId);
+    ConnectionInfo getRightNeighbour(long categoryId);
     void addMyCategory(long id, std::string name);
     void addJoinedCategory(long id, std::string name);
     void removeCategoryAndData(long id);
@@ -61,7 +61,7 @@ public:
     void addMessageToInbox(RingMessage message);
     std::vector<RingMessage> getInboxMessages() const;
     void markMessageAsRead(long messageIndex);
-    void addNotification(std::string notification);
+    void addNotification(const std::string& notification);
     std::vector<std::string> getNotifications();
     void clearNotificationList();
 };

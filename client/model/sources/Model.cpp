@@ -20,28 +20,28 @@ void Model::addMyCategory(long id, std::string name) {
     categories[id] = CategoryInfo(name, true);
 }
 
-std::vector<std::string> Model::getCategoryMessages(long categoryId) const {
-    return categories[categoryId].getMessages();
+std::vector<std::string> Model::getCategoryMessages(long categoryId) {
+    return categories.at(categoryId).getMessages();
 }
 
 std::string Model::getCategoryName(long id) const {
-    return categories[id].getName();
+    return categories.at(id).getName();
 }
 
 long Model::getCategoryId(std::string name) const {
-    return categoryNameIdMapping[name];
+    return categoryNameIdMapping.at(name);
 }
 
-ConnectionInfo Model::getLeftNeighbour(long categoryId) const {
-    return categories[categoryId].getLeftNeighbour();
+ConnectionInfo Model::getLeftNeighbour(long categoryId) {
+    return categories.at(categoryId).getLeftNeighbour();
 }
 
 void Model::updateLeftNeighbour(long categoryId, const ConnectionInfo& info) {
-    categories[categoryId].updateLeftNeighbour(info);
+    categories.at(categoryId).updateLeftNeighbour(info);
 }
 
-ConnectionInfo Model::getRightNeighbour(long categoryId) const {
-    return categories[categoryId].getRightNeighbour();
+ConnectionInfo Model::getRightNeighbour(long categoryId) {
+    return categories.at(categoryId).getRightNeighbour();
 }
 
 void Model::updateRightNeighbour(long categoryId, const ConnectionInfo &info) {
@@ -98,11 +98,11 @@ std::vector<std::pair<long, std::string>> Model::getJoinedCategories() const {
 }
 
 bool Model::isCategoryActive(long categoryId) const {
-    return categories[categoryId].isActive();
+    return categories.at(categoryId).isActive();
 }
 
 void Model::setCategoryActive(long categoryId, bool active) {
-    categories[categoryId].setActive(active);
+    categories.at(categoryId).setActive(active);
 }
 
 void Model::addMessageToInbox(RingMessage message) {
@@ -119,3 +119,6 @@ void Model::markMessageAsRead(long messageIndex) {
     categories[msg.getCategoryId()].addMessage(msg.getMsgText());
 }
 
+void Model::addNotification(const std::string& notification) {
+    notifications.push_back(notification);
+}

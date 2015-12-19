@@ -6,7 +6,7 @@
 
 ConnectionInfo::ConnectionInfo() { }
 
-ConnectionInfo::ConnectionInfo(std::string ip, int port, std::string name) : ip(ip), port(port), name(bame){ }
+ConnectionInfo::ConnectionInfo(std::string ip, int port, std::string name) : ip(ip), port(port), name(name){ }
 
 ConnectionInfo::ConnectionInfo(const ConnectionInfo &other) {
     this->ip = other.ip;

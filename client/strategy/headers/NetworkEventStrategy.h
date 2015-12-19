@@ -19,16 +19,7 @@ private:
     void processCategoryList(SimpleMessage message);
     void processNeighbourSet(SimpleMessage message);
     void processRingMessage(SimpleMessage message);
-
-    void serveServerInfoCategoryCreated(const ServerInfoMessage& msg);
-    void serveServerInfoCategoryRemoved(const ServerInfoMessage& msg);
-    void serveServerInfoUserAdded(const ServerInfoMessage& msg);
-    void serveServerInfoCategoryJoined(const ServerInfoMessage& msg);
-    void serveServerInfoCategoryLeft(const ServerInfoMessage& msg);
-    void serveServerInfoCategoryActivated(const ServerInfoMessage& msg);
-    void serveServerInfoCategoryDeactivated(const ServerInfoMessage& msg);
-    void serveServerInfoFail(const ServerInfoMessage& msg);
 };
 
 
-#endif //RING_NETWORKEVENTSTRAGEGY_H
+#endif //RING_NETWORKEVENTSTRATEGY_H

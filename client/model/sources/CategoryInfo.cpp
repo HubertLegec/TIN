@@ -40,8 +40,8 @@ void CategoryInfo::setActive(bool active) {
     this->active = active;
 }
 
-void CategoryInfo::addMessage(std::string Message) {
-    messages.push_back(messages);
+void CategoryInfo::addMessage(const std::string& message) {
+    messages.push_back(message);
 }
 
 std::vector<std::string> CategoryInfo::getMessages() const {

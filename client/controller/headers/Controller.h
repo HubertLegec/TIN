@@ -28,7 +28,8 @@ private:
 
     bool running = true;
     pthread_t controllerThread;
-    void* controllerWork(void* param);
+    void* controllerWork();
+    static void* threadStartHelper(void* param);
 public:
     Controller(Model* model);
     void setView(View* view);

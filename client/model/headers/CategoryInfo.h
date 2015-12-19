@@ -28,7 +28,7 @@ public:
     bool isOwner() const;
     void setActive(bool active);
     bool isActive() const;
-    void addMessage(std::string Message);
+    void addMessage(const std::string& message);
     std::vector<std::string> getMessages() const;
     std::string getName() const;
 };

@@ -3,6 +3,7 @@
 //
 
 #include <typeinfo>
+#include <pthread.h>
 #include "../headers/Controller.h"
 
 #include "../../../clientEvents/headers/NetworkEvent.h"
@@ -38,16 +39,21 @@ Queue<BasicEvent>* Controller::getEventsToServe() {
     return &eventsToServe;
 }
 
-void Controller::start() {
-    pthread_create(&controllerThread, NULL, controllerWork, NULL);
+void* Controller::threadStartHelper(void *param) {
+    Controller* c = (Controller*)param;
+    c->controllerWork();
 }
 
-void* Controller::controllerWork(void *param) {
+void* Controller::controllerWork() {
     while(running){
         BasicEvent event = eventsToServe.pop();
         BasicEventStrategy strategy = strategyMap[typeid(event).name()];
         strategy.serveEvent(event);
     }
+}
+
+void Controller::start() {
+    pthread_create(&controllerThread, NULL, threadStartHelper, (void*)this);
 }
 
 void Controller::exit() {

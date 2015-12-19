@@ -3,13 +3,13 @@
 //
 
 #include <sstream>
+#include "../../model/headers/Model.h"
+#include "../../view/headers/View.h"
 #include "../headers/NetworkEventStrategy.h"
 #include "../../../clientEvents/headers/NetworkEvent.h"
 #include "../../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../../../networkMessage/headers/NeighboursInfoMessage.h"
-#include "../../../networkMessage/headers/RingMessage.h"
-#include "../../../clientEvents/headers/ShowInfoEvent.h"
 
 NetworkEventStrategy::NetworkEventStrategy() : BasicEventStrategy(){ }
 
@@ -39,28 +39,43 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage message) {
     ServerInfoMessage& msg = dynamic_cast<ServerInfoMessage&>(message);
     switch (msg.getInfoType()){
         case ServerInfoMessageType::CATEGORY_CREATED :
-            serveServerInfoCategoryCreated(msg);
+            controller->getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
+            controller->getModel()->addNotification("New category created!");
             break;
+
         case ServerInfoMessageType::CATEGORY_REMOVED :
-            serveServerInfoCategoryRemoved(msg);
+            controller->getModel()->removeCategoryAndData(msg.getExtraInfo());
+            controller->getModel()->addNotification("One of your category removed!");
             break;
+
         case ServerInfoMessageType::USER_ADDED :
-            serveServerInfoUserAdded(msg);
+            controller->getModel()->setUserName(msg.getInfo());
+            controller->getModel()->setUserId(msg.getExtraInfo());
+            controller->getModel()->addNotification("User account created!");
             break;
+
         case ServerInfoMessageType::CATEGORY_JOINED :
-            serveServerInfoCategoryJoined(msg);
+            controller->getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
+            controller->getModel()->addNotification("You have successfully joined the category!");
             break;
+
         case ServerInfoMessageType::CATEGORY_LEFT :
-            serveServerInfoCategoryLeft(msg);
+            controller->getModel()->removeCategoryAndData(msg.getExtraInfo());
+            controller->getModel()->addNotification("You have successfully left the category!");
             break;
+
         case ServerInfoMessageType::CATEGORY_ACTIVATED :
-            serveServerInfoCategoryActivated(msg);
+            controller->getModel()->setCategoryActive(msg.getExtraInfo(), true);
+            controller->getModel()->addNotification("Category is active again!");
             break;
+
         case ServerInfoMessageType::CATEGORY_DEACTIVATED :
-            serveServerInfoCategoryDeactivated(msg);
+            controller->getModel()->setCategoryActive(msg.getExtraInfo(), false);
+            controller->getModel()->addNotification("Category deactivated!");
             break;
+
         case ServerInfoMessageType::FAIL :
-            serveServerInfoFail(msg);
+            controller->getModel()->addNotification(msg.getInfo());
             break;
     }
 }
@@ -80,79 +95,12 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage message) {
     ss << "Neighbours updated: \n";
     ss << "Left neighbour: " << msg.getLeftNeighbourName() << std::endl;
     ss << "Right neighbour: " << msg.getRightNeighbourName() << std::endl;
-    controller->getEventsToServe()->push(ShowInfoEvent(ss.str()));
+    controller->getModel()->addNotification(ss.str());
 }
 
 void NetworkEventStrategy::processRingMessage(SimpleMessage message) {
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
     controller->getModel()->addMessageToInbox(msg);
 
-    controller->getEventsToServe()->push(ShowInfoEvent("You have a new message!\nCheck your inbox."));
-}
-
-
-
-void NetworkEventStrategy::serveServerInfoUserAdded(const ServerInfoMessage &msg) {
-    std::string userName = msg.getInfo();
-    long userId = msg.getExtraInfo();
-
-    controller->getModel()->setUserName(userName);
-    controller->getModel()->setUserId(userId);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("User account created!"));
-}
-
-void NetworkEventStrategy::serveServerInfoCategoryCreated(const ServerInfoMessage &msg) {
-    std::string categoryName = msg.getInfo();
-    long categoryId = msg.getExtraInfo();
-
-    controller->getModel()->addMyCategory(categoryId, categoryName);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("New category created!"));
-}
-
-void NetworkEventStrategy::serveServerInfoCategoryRemoved(const ServerInfoMessage &msg) {
-    long categoryId = msg.getExtraInfo();
-
-    controller->getModel()->removeCategoryAndData(categoryId);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("One of your category removed!"));
-}
-
-void NetworkEventStrategy::serveServerInfoCategoryJoined(const ServerInfoMessage &msg) {
-    long categoryId = msg.getExtraInfo();
-    std::string name = msg.getInfo();
-
-    controller->getModel()->addJoinedCategory(categoryId, name);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("You have successfully joined the category!"));
-}
-
-void NetworkEventStrategy::serveServerInfoCategoryLeft(const ServerInfoMessage &msg) {
-    long categoryId = msg.getExtraInfo();
-
-    controller->getModel()->removeCategoryAndData(categoryId);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("You have successfully left the category!"));
-}
-
-void NetworkEventStrategy::serveServerInfoCategoryActivated(const ServerInfoMessage &msg) {
-    long categoryId = msg.getExtraInfo();
-
-    controller->getModel()->setCategoryActive(categoryId, true);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("Category is active again!"));
-}
-
-void NetworkEventStrategy::serveServerInfoCategoryDeactivated(const ServerInfoMessage &msg) {
-    long categoryId = msg.getExtraInfo();
-
-    controller->getModel()->setCategoryActive(categoryId, false);
-
-    controller->getEventsToServe()->push(ShowInfoEvent("Category deactivated!"));
-}
-
-void NetworkEventStrategy::serveServerInfoFail(const ServerInfoMessage &msg) {
-    std::string info = msg.getInfo();
-    controller->getEventsToServe()->push(ShowInfoEvent(info));
+    controller->getModel()->addNotification("You have a new message!\nCheck your inbox.");
 }
