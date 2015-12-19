@@ -37,3 +37,21 @@ View* Controller::getView() {
 Queue<BasicEvent>* Controller::getEventsToServe() {
     return &eventsToServe;
 }
+
+void Controller::start() {
+    pthread_create(&controllerThread, NULL, controllerWork, NULL);
+}
+
+void* Controller::controllerWork(void *param) {
+    while(running){
+        BasicEvent event = eventsToServe.pop();
+        BasicEventStrategy strategy = strategyMap[typeid(event).name()];
+        strategy.serveEvent(event);
+    }
+}
+
+void Controller::exit() {
+    //TODO
+    //close connections
+    running = false;
+}

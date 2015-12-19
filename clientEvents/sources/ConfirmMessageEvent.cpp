@@ -6,6 +6,18 @@
 
 ConfirmMessageEvent::ConfirmMessageEvent() : BasicEvent() { }
 
+ConfirmMessageEvent::ConfirmMessageEvent(long messageIndex) {
+    this->messageIndex = messageIndex;
+}
+
+long ConfirmMessageEvent::getMessageIndex() const {
+    return messageIndex;
+}
+
+void ConfirmMessageEvent::setMessageIndex(long messageIndex) {
+    this->messageIndex = messageIndex;
+}
+
 std::string ConfirmMessageEvent::toString() {
     //TODO
     return "ConfirmMessageEvent";

@@ -27,6 +27,8 @@ private:
 
     std::vector<RingMessage> inbox;
 
+    std::vector<std::string> notifications;
+
     /**
      * key - category id
      * value - category data
@@ -59,6 +61,9 @@ public:
     void addMessageToInbox(RingMessage message);
     std::vector<RingMessage> getInboxMessages() const;
     void markMessageAsRead(long messageIndex);
+    void addNotification(std::string notification);
+    std::vector<std::string> getNotifications();
+    void clearNotificationList();
 };
 
 

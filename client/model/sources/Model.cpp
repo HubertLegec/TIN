@@ -118,3 +118,4 @@ void Model::markMessageAsRead(long messageIndex) {
     inbox.erase(inbox.begin() + messageIndex);
     categories[msg.getCategoryId()].addMessage(msg.getMsgText());
 }
+

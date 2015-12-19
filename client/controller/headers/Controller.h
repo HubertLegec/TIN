@@ -4,6 +4,7 @@
 #ifndef RING_CONTROLLER_H
 #define RING_CONTROLLER_H
 
+#include <pthread.h>
 #include <map>
 #include <string>
 #include "../../model/headers/Model.h"
@@ -25,10 +26,15 @@ private:
     Queue<BasicEvent> eventsToServe;
     std::map<std::string, BasicEventStrategy> strategyMap;
 
+    bool running = true;
+    pthread_t controllerThread;
+    void* controllerWork(void* param);
 public:
     Controller(Model* model);
     void setView(View* view);
     void initStrategyMap();
+    void start();
+    void exit();
     Model* getModel();
     View* getView();
     Queue<BasicEvent>* getEventsToServe();

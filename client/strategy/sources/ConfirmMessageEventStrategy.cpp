@@ -11,5 +11,11 @@ ConfirmMessageEventStrategy::ConfirmMessageEventStrategy(Controller* controller)
 
 void ConfirmMessageEventStrategy::serveEvent(BasicEvent event) {
     ConfirmMessageEvent& confirmMessageEvent = dynamic_cast<ConfirmMessageEvent&>(event);
+    long msgIndex = confirmMessageEvent.getMessageIndex();
+    RingMessage m = controller->getModel()->getInboxMessages()[msgIndex];
+    controller->getModel()->markMessageAsRead(msgIndex);
+    ConnectionInfo sendInfo = controller->getModel()->getLeftNeighbour(m.getCategoryId());
+
     //TODO
+    //insert message to output queue
 }
