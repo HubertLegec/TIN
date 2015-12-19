@@ -96,3 +96,25 @@ std::vector<std::pair<long, std::string>> Model::getJoinedCategories() const {
     }
     return result;
 }
+
+bool Model::isCategoryActive(long categoryId) const {
+    return categories[categoryId].isActive();
+}
+
+void Model::setCategoryActive(long categoryId, bool active) {
+    categories[categoryId].setActive(active);
+}
+
+void Model::addMessageToInbox(RingMessage message) {
+    inbox.push_back(message);
+}
+
+std::vector<RingMessage> Model::getInboxMessages() const {
+    return inbox;
+}
+
+void Model::markMessageAsRead(long messageIndex) {
+    RingMessage msg = inbox[messageIndex];
+    inbox.erase(inbox.begin() + messageIndex);
+    categories[msg.getCategoryId()].addMessage(msg.getMsgText());
+}

@@ -9,7 +9,7 @@ ConfirmMessageEventStrategy::ConfirmMessageEventStrategy() : BasicEventStrategy(
 
 ConfirmMessageEventStrategy::ConfirmMessageEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void ConfirmMessageEventStrategy::serveMessage(BasicEvent event) {
+void ConfirmMessageEventStrategy::serveEvent(BasicEvent event) {
     ConfirmMessageEvent& confirmMessageEvent = dynamic_cast<ConfirmMessageEvent&>(event);
     //TODO
 }

@@ -14,7 +14,7 @@ class ChooseMenuOptionEventStrategy : public BasicEventStrategy {
 public:
     ChooseMenuOptionEventStrategy();
     ChooseMenuOptionEventStrategy(Controller* controller);
-    void serveMessage(BasicEvent event);
+    void serveEvent(BasicEvent event);
 };
 
 

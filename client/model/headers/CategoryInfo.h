@@ -15,6 +15,7 @@ private:
     ConnectionInfo leftNeighbour;
     ConnectionInfo rightNeighbour;
     std::vector<std::string> messages;
+    bool active;
     bool owner;
 public:
     CategoryInfo();
@@ -25,6 +26,8 @@ public:
     ConnectionInfo getLeftNeighbour() const;
     void setOwner(bool owner);
     bool isOwner() const;
+    void setActive(bool active);
+    bool isActive() const;
     void addMessage(std::string Message);
     std::vector<std::string> getMessages() const;
     std::string getName() const;

@@ -5,6 +5,8 @@
 #ifndef RING_VIEW_H
 #define RING_VIEW_H
 
+#include <string>
+#include <map>
 #include "../../controller/headers/Controller.h"
 class Controller;
 
@@ -14,6 +16,7 @@ private:
 
 public:
     View(Controller* controller);
+    void showCategoryList(std::map<long, std::string> categories);
 };
 
 

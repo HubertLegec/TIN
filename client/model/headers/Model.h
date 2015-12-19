@@ -11,6 +11,7 @@
 #include <vector>
 #include "ConnectionInfo.h"
 #include "CategoryInfo.h"
+#include "../../../networkMessage/headers/RingMessage.h"
 
 class Model {
 private:
@@ -23,6 +24,8 @@ private:
     ConnectionInfo serverInfo;
 
     std::map<std::string, long> categoryNameIdMapping;
+
+    std::vector<RingMessage> inbox;
 
     /**
      * key - category id
@@ -51,6 +54,11 @@ public:
     void removeCategoryAndData(long id);
     std::vector<std::pair<long, std::string>> getMyCategories() const;
     std::vector<std::pair<long, std::string>> getJoinedCategories() const;
+    bool isCategoryActive(long categoryId) const;
+    void setCategoryActive(long categoryId, bool active);
+    void addMessageToInbox(RingMessage message);
+    std::vector<RingMessage> getInboxMessages() const;
+    void markMessageAsRead(long messageIndex);
 };
 
 

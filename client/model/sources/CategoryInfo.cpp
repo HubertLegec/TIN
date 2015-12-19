@@ -32,6 +32,14 @@ void CategoryInfo::setOwner(bool owner) {
     this->owner = owner;
 }
 
+bool CategoryInfo::isActive() const {
+    return active;
+}
+
+void CategoryInfo::setActive(bool active) {
+    this->active = active;
+}
+
 void CategoryInfo::addMessage(std::string Message) {
     messages.push_back(messages);
 }

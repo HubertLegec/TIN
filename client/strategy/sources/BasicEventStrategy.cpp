@@ -14,6 +14,6 @@ void BasicEventStrategy::setController(Controller* controller) {
     this->controller = controller;
 }
 
-void BasicEventStrategy::serveMessage(BasicEvent event) {
+void BasicEventStrategy::serveEvent(BasicEvent event) {
     //child classes should implement this method
 }

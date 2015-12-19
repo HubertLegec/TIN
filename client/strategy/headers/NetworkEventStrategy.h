@@ -12,7 +12,7 @@ class NetworkEventStrategy : public BasicEventStrategy {
 public:
     NetworkEventStrategy();
     NetworkEventStrategy(Controller* controller);
-    void serveMessage(BasicEvent event);
+    void serveEvent(BasicEvent event);
 
 private:
     void processServerInfo(SimpleMessage message);
@@ -23,6 +23,10 @@ private:
     void serveServerInfoCategoryCreated(const ServerInfoMessage& msg);
     void serveServerInfoCategoryRemoved(const ServerInfoMessage& msg);
     void serveServerInfoUserAdded(const ServerInfoMessage& msg);
+    void serveServerInfoCategoryJoined(const ServerInfoMessage& msg);
+    void serveServerInfoCategoryLeft(const ServerInfoMessage& msg);
+    void serveServerInfoCategoryActivated(const ServerInfoMessage& msg);
+    void serveServerInfoCategoryDeactivated(const ServerInfoMessage& msg);
     void serveServerInfoFail(const ServerInfoMessage& msg);
 };
 

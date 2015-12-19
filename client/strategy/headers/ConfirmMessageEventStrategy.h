@@ -13,7 +13,7 @@ class ConfirmMessageEventStrategy : public BasicEventStrategy {
 public:
     ConfirmMessageEventStrategy();
     ConfirmMessageEventStrategy(Controller* controller);
-    void serveMessage(BasicEvent event);
+    void serveEvent(BasicEvent event);
 };
 
 

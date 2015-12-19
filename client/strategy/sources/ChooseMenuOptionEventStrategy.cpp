@@ -9,7 +9,7 @@ ChooseMenuOptionEventStrategy::ChooseMenuOptionEventStrategy() : BasicEventStrat
 
 ChooseMenuOptionEventStrategy::ChooseMenuOptionEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void ChooseMenuOptionEventStrategy::serveMessage(BasicEvent event) {
+void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent event) {
     ChooseMenuOptionEvent& chooseMenuOptionEvent = dynamic_cast<ChooseMenuOptionEvent&>(event);
     //TODO
 }

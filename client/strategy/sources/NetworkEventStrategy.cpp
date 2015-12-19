@@ -15,7 +15,7 @@ NetworkEventStrategy::NetworkEventStrategy() : BasicEventStrategy(){ }
 
 NetworkEventStrategy::NetworkEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void NetworkEventStrategy::serveMessage(BasicEvent event) {
+void NetworkEventStrategy::serveEvent(BasicEvent event) {
     NetworkEvent& netEvent = dynamic_cast<NetworkEvent&>(event);
     SimpleMessage msg = netEvent.getMessage();
 
@@ -47,6 +47,18 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage message) {
         case ServerInfoMessageType::USER_ADDED :
             serveServerInfoUserAdded(msg);
             break;
+        case ServerInfoMessageType::CATEGORY_JOINED :
+            serveServerInfoCategoryJoined(msg);
+            break;
+        case ServerInfoMessageType::CATEGORY_LEFT :
+            serveServerInfoCategoryLeft(msg);
+            break;
+        case ServerInfoMessageType::CATEGORY_ACTIVATED :
+            serveServerInfoCategoryActivated(msg);
+            break;
+        case ServerInfoMessageType::CATEGORY_DEACTIVATED :
+            serveServerInfoCategoryDeactivated(msg);
+            break;
         case ServerInfoMessageType::FAIL :
             serveServerInfoFail(msg);
             break;
@@ -55,7 +67,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage message) {
 
 void NetworkEventStrategy::processCategoryList(SimpleMessage message) {
     CategoryListMessage& msg = dynamic_cast<CategoryListMessage&>(message);
-    //TODO
+    controller->getView()->showCategoryList(msg.getCategories());
 }
 
 void NetworkEventStrategy::processNeighbourSet(SimpleMessage message) {
@@ -73,7 +85,9 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage message) {
 
 void NetworkEventStrategy::processRingMessage(SimpleMessage message) {
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
-    //TODO
+    controller->getModel()->addMessageToInbox(msg);
+
+    controller->getEventsToServe()->push(ShowInfoEvent("You have a new message!\nCheck your inbox."));
 }
 
 
@@ -103,6 +117,39 @@ void NetworkEventStrategy::serveServerInfoCategoryRemoved(const ServerInfoMessag
     controller->getModel()->removeCategoryAndData(categoryId);
 
     controller->getEventsToServe()->push(ShowInfoEvent("One of your category removed!"));
+}
+
+void NetworkEventStrategy::serveServerInfoCategoryJoined(const ServerInfoMessage &msg) {
+    long categoryId = msg.getExtraInfo();
+    std::string name = msg.getInfo();
+
+    controller->getModel()->addJoinedCategory(categoryId, name);
+
+    controller->getEventsToServe()->push(ShowInfoEvent("You have successfully joined the category!"));
+}
+
+void NetworkEventStrategy::serveServerInfoCategoryLeft(const ServerInfoMessage &msg) {
+    long categoryId = msg.getExtraInfo();
+
+    controller->getModel()->removeCategoryAndData(categoryId);
+
+    controller->getEventsToServe()->push(ShowInfoEvent("You have successfully left the category!"));
+}
+
+void NetworkEventStrategy::serveServerInfoCategoryActivated(const ServerInfoMessage &msg) {
+    long categoryId = msg.getExtraInfo();
+
+    controller->getModel()->setCategoryActive(categoryId, true);
+
+    controller->getEventsToServe()->push(ShowInfoEvent("Category is active again!"));
+}
+
+void NetworkEventStrategy::serveServerInfoCategoryDeactivated(const ServerInfoMessage &msg) {
+    long categoryId = msg.getExtraInfo();
+
+    controller->getModel()->setCategoryActive(categoryId, false);
+
+    controller->getEventsToServe()->push(ShowInfoEvent("Category deactivated!"));
 }
 
 void NetworkEventStrategy::serveServerInfoFail(const ServerInfoMessage &msg) {
