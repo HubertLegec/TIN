@@ -32,7 +32,7 @@ set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
 set(CLIENT_STRATEGY_SOURCES client/strategy/sources/BasicEventStrategy.cpp
         client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
         client/strategy/sources/ConfirmMessageEventStrategy.cpp
-        client/strategy/sources/NetworkEventStragegy.cpp)
+        client/strategy/sources/NetworkEventStrategy.cpp)
 set(CLIENT_MODEL_SOURCES client/model/sources/Model.cpp)
 set(CLIENT_VIEW_SOURCES client/view/sources/View.cpp)
 set(CLIENT_CONTROLLER_SOURCES client/controller/sources/Controller.cpp)

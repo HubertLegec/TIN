@@ -12,6 +12,7 @@
 
 class NeighboursInfoMessage : public SimpleMessage {
 private:
+    long categoryId;
     std::string lNeighbourName;
     std::string lNeighbourIP;
     int lNeighbourPort;
@@ -20,7 +21,7 @@ private:
     int rNeighbourPort;
 public:
     NeighboursInfoMessage();
-    NeighboursInfoMessage(const std::string& lNeighName, const std::string& lNeighIP, int lNeighPort,
+    NeighboursInfoMessage(long categoryId, const std::string& lNeighName, const std::string& lNeighIP, int lNeighPort,
                           const std::string& rNeighName, const std::string& rNeighIP, int rNeighPort);
     std::string getLeftNeighbourName() const;
     std::string getLeftNeighbourIP() const;
@@ -28,10 +29,11 @@ public:
     std::string getRightNeighbourName() const;
     std::string getRightNeighbourIP() const;
     int getRightNeighbourPort() const;
+    long getCategoryId() const;
     std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
-        archive(this->type, this->size, this->senderID, this->lNeighbourName, this->lNeighbourIP, this->lNeighbourPort,
+        archive(this->type, this->size, this->senderID, this->categoryId, this->lNeighbourName, this->lNeighbourIP, this->lNeighbourPort,
                 this->rNeighbourName, this->rNeighbourIP, this->rNeighbourPort);
     }
 };

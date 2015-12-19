@@ -15,22 +15,24 @@
 
 class RingMessage : public SimpleMessage {
 private:
+    long categoryId;
     std::string messageText;
     std::vector<std::string> confirmations;
 public:
     RingMessage();
-    RingMessage(long senderID, const std::string& text);
-    RingMessage(long senderID, const std::string& text, const std::vector<std::string>& confirmations);
+    RingMessage(long senderID, long categoryId, const std::string& text);
+    RingMessage(long senderID, long categoryId, const std::string& text, const std::vector<std::string>& confirmations);
     RingMessage(const RingMessage& other);
     RingMessage& operator=(const RingMessage& other);
     std::vector<std::string> getConfirmationsList() const;
     void addConfirmation(const std::string& name);
     void addConfirmations(const std::vector<std::string>& nameList);
     std::string getMsgText() const;
+    long getCategoryId() const;
     std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
-        archive(this->type, this->size, this->senderID, this->messageText, this->confirmations);
+        archive(this->type, this->size, this->senderID, this->categoryId, this->messageText, this->confirmations);
     }
 };
 

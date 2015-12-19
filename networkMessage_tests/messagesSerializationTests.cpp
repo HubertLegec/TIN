@@ -59,7 +59,7 @@ TEST(ServerInfoMessage, serialization_test){
 }
 
 TEST(NeighboursInfoMessage, serialization_test) {
-    NeighboursInfoMessage msg("Mathew", "10.9.5.3", 1234, "John", "11.3.5.1", 3456);
+    NeighboursInfoMessage msg(3, "Mathew", "10.9.5.3", 1234, "John", "11.3.5.1", 3456);
 
     std::stringstream ss; // any stream can be used
 
@@ -82,6 +82,7 @@ TEST(NeighboursInfoMessage, serialization_test) {
     ASSERT_EQ(msg.getMessageSize(), testMsg.getMessageSize());
     ASSERT_EQ(msg.getMessageType(), testMsg.getMessageType());
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
+    EXPECT_EQ(msg.getCategoryId(), testMsg.getCategoryId());
     EXPECT_EQ(msg.getLeftNeighbourPort(), testMsg.getLeftNeighbourPort());
     EXPECT_EQ(msg.getRightNeighbourPort(), testMsg.getRightNeighbourPort());
     EXPECT_TRUE(msg.getLeftNeighbourName() == testMsg.getLeftNeighbourName());
@@ -189,7 +190,7 @@ TEST(CategoryManagementMessage, serialization_test){
 }
 
 TEST(RingMessage, serialization_test){
-    RingMessage msg(1, "Message text");
+    RingMessage msg(1, 5, "Message text");
     msg.addConfirmation("Ann");
 
     std::stringstream ss; // any stream can be used
@@ -209,6 +210,7 @@ TEST(RingMessage, serialization_test){
     ASSERT_EQ(msg.getMessageType(), testMsg.getMessageType());
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
     EXPECT_TRUE(msg.getMsgText() == testMsg.getMsgText());
+    EXPECT_EQ(msg.getCategoryId(), testMsg.getCategoryId());
     EXPECT_EQ(msg.getConfirmationsList().size(), testMsg.getConfirmationsList().size());
     EXPECT_TRUE(msg.getConfirmationsList()[0] == testMsg.getConfirmationsList()[0]);
 }

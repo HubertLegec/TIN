@@ -30,6 +30,9 @@ enum GetMessageType{
 enum ServerInfoMessageType{
     OK = 0,
     FAIL = 1,
-    PERMISSION_DENIED = 2
+    PERMISSION_DENIED = 2,
+    USER_ADDED = 3,
+    CATEGORY_CREATED = 4,
+    CATEGORY_REMOVED = 5,
 };
 #endif //RING_MESSAGETYPE_H

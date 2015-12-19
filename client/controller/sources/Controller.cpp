@@ -8,7 +8,7 @@
 #include "../../../clientEvents/headers/NetworkEvent.h"
 #include "../../../clientEvents/headers/ConfirmMessageEvent.h"
 #include "../../../clientEvents/headers/ChooseMenuOptionEvent.h"
-#include "../../strategy/headers/NetworkEventStragegy.h"
+#include "../../strategy/headers/NetworkEventStrategy.h"
 #include "../../strategy/headers/ConfirmMessageEventStrategy.h"
 #include "../../strategy/headers/ChooseMenuOptionEventStrategy.h"
 
@@ -21,7 +21,19 @@ void Controller::setView(View* view) {
 }
 
 void Controller::initStrategyMap() {
-    strategyMap[typeid(NetworkEvent).name()] = NetworkEventStragegy(this);
+    strategyMap[typeid(NetworkEvent).name()] = NetworkEventStrategy(this);
     strategyMap[typeid(ConfirmMessageEvent).name()] = ConfirmMessageEventStrategy(this);
     strategyMap[typeid(ChooseMenuOptionEvent).name()] = ChooseMenuOptionEventStrategy(this);
+}
+
+Model* Controller::getModel() {
+    return model;
+}
+
+View* Controller::getView() {
+    return view;
+}
+
+Queue<BasicEvent>* Controller::getEventsToServe() {
+    return &eventsToServe;
 }

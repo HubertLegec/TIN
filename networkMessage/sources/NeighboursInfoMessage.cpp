@@ -6,9 +6,10 @@
 
 NeighboursInfoMessage::NeighboursInfoMessage() : SimpleMessage(){ }
 
-NeighboursInfoMessage::NeighboursInfoMessage(const std::string& lNeighName, const std::string& lNeighIP, int lNeighPort,
+NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const std::string& lNeighName, const std::string& lNeighIP, int lNeighPort,
                                              const std::string& rNeighName, const std::string& rNeighIP, int rNeighPort)
                                             : SimpleMessage(MessageType::NEIGHBOURS_SET, 0){
+    this->categoryId = categoryId;
     this->lNeighbourName = lNeighName;
     this->lNeighbourIP = lNeighIP;
     this->lNeighbourPort = lNeighPort;
@@ -16,7 +17,7 @@ NeighboursInfoMessage::NeighboursInfoMessage(const std::string& lNeighName, cons
     this->rNeighbourIP = rNeighIP;
     this->rNeighbourPort = rNeighPort;
 
-    this->size = SimpleMessage::getMessageSize() + 2*sizeof(int) + 4*sizeof(long)
+    this->size = SimpleMessage::getMessageSize() + 2*sizeof(int) + 5*sizeof(long)
                  + lNeighName.size() + rNeighName.size() + lNeighIP.size() + rNeighIP.size();
 }
 
@@ -42,6 +43,10 @@ std::string NeighboursInfoMessage::getRightNeighbourIP() const {
 
 int NeighboursInfoMessage::getRightNeighbourPort() const {
     return rNeighbourPort;
+}
+
+long NeighboursInfoMessage::getCategoryId() const {
+    return categoryId;
 }
 
 std::string NeighboursInfoMessage::toString() {

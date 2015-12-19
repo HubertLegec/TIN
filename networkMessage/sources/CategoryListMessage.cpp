@@ -12,7 +12,7 @@ CategoryListMessage::CategoryListMessage(long senderID, const std::map<long, std
 
     this->size = SimpleMessage::getMessageSize() + sizeof(long) + categories.size()*sizeof(long);
     for(std::pair<long, std::string> p : categories){
-        size += sizeof(long) + p.second.size();
+        size += (sizeof(long) + p.second.size());
     }
 }
 

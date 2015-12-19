@@ -7,15 +7,18 @@
 
 RingMessage::RingMessage() : SimpleMessage() { }
 
-RingMessage::RingMessage(long senderID, const std::string &text) : SimpleMessage(MessageType::RING_MESSAGE, senderID) {
+RingMessage::RingMessage(long senderID, long categoryId, const std::string &text) : SimpleMessage(MessageType::RING_MESSAGE, senderID) {
     this->messageText = text;
+    this->categoryId = categoryId;
 
-    this->size = SimpleMessage::getMessageSize() + 2*sizeof(long) + text.size();
+    this->size = SimpleMessage::getMessageSize() + 3*sizeof(long) + text.size();
 }
 
-RingMessage::RingMessage(long senderID, const std::string &text, const std::vector<std::string> &confirmations)
+RingMessage::RingMessage(long senderID, long categoryId, const std::string &text, const std::vector<std::string> &confirmations)
                         : SimpleMessage(MessageType::RING_MESSAGE, senderID), confirmations(confirmations){
-    this->size = SimpleMessage::getMessageSize() + 2*sizeof(long) + text.size();
+    this->messageText = text;
+    this->categoryId = categoryId;
+    this->size = SimpleMessage::getMessageSize() + 3*sizeof(long) + text.size();
     for(std::string s : confirmations){
         size += (sizeof(long) + s.size());
     }
@@ -23,12 +26,14 @@ RingMessage::RingMessage(long senderID, const std::string &text, const std::vect
 
 RingMessage::RingMessage(const RingMessage &other) : SimpleMessage(other) {
     this->messageText = other.messageText;
+    this->categoryId = other.categoryId;
     this->confirmations = other.confirmations;
 }
 
 RingMessage& RingMessage::operator=(const RingMessage &other){
     SimpleMessage::operator=(other);
     this->messageText = other.messageText;
+    this->categoryId = other.categoryId;
     this->confirmations = other.confirmations;
     return *this;
 }
@@ -50,6 +55,10 @@ std::vector<std::string> RingMessage::getConfirmationsList() const {
 
 std::string RingMessage::getMsgText() const {
     return messageText;
+}
+
+long RingMessage::getCategoryId() const {
+    return categoryId;
 }
 
 std::string RingMessage::toString() {

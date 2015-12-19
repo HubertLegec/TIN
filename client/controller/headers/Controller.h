@@ -29,6 +29,9 @@ public:
     Controller(Model* model);
     void setView(View* view);
     void initStrategyMap();
+    Model* getModel();
+    View* getView();
+    Queue<BasicEvent>* getEventsToServe();
 
 };
 

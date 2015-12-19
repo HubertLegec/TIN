@@ -24,7 +24,7 @@ TEST(CategoryListMessage, creating_test){
     CategoryListMessage msg(1, names);
 
     ASSERT_EQ(MessageType::CATEGORY_LIST, msg.getMessageType());
-    ASSERT_EQ(64, msg.getMessageSize());
+    ASSERT_EQ(88, msg.getMessageSize());
     ASSERT_EQ(3, msg.getCategories().size());
     ASSERT_EQ(1, msg.getSenderID());
     EXPECT_TRUE(msg.getCategories().at(1) == "First");
@@ -75,11 +75,12 @@ TEST(CategoryManagementMessage, creating_test){
 }
 
 TEST(NeighboursInfoMessage, creating_test){
-    NeighboursInfoMessage msg("Mathew", "10.9.5.3", 1234, "John", "11.3.5.1", 3456);
+    NeighboursInfoMessage msg(3, "Mathew", "10.9.5.3", 1234, "John", "11.3.5.1", 3456);
 
     ASSERT_EQ(MessageType::NEIGHBOURS_SET, msg.getMessageType());
-    ASSERT_EQ(56+26, msg.getMessageSize());
+    ASSERT_EQ(64+26, msg.getMessageSize());
     ASSERT_EQ(0, msg.getSenderID());
+    EXPECT_EQ(msg.getCategoryId(), 3);
     EXPECT_TRUE( msg.getLeftNeighbourName().compare("Mathew") == 0);
     EXPECT_TRUE( msg.getRightNeighbourName().compare("John") == 0);
     EXPECT_TRUE( msg.getLeftNeighbourIP().compare("10.9.5.3") == 0);
@@ -89,24 +90,25 @@ TEST(NeighboursInfoMessage, creating_test){
 }
 
 TEST(RingMessage, creating_test){
-    RingMessage msg(1, "Message text");
+    RingMessage msg(1, 5, "Message text");
 
     ASSERT_EQ(MessageType::RING_MESSAGE, msg.getMessageType());
-    ASSERT_EQ(44, msg.getMessageSize());
+    ASSERT_EQ(52, msg.getMessageSize());
     ASSERT_EQ(1, msg.getSenderID());
     EXPECT_TRUE(msg.getMsgText().compare("Message text") == 0);
     EXPECT_EQ(0, msg.getConfirmationsList().size());
+    EXPECT_EQ(5, msg.getCategoryId());
 
     msg.addConfirmation("Ann");
 
-    EXPECT_EQ(55, msg.getMessageSize());
+    EXPECT_EQ(63, msg.getMessageSize());
     EXPECT_EQ(1, msg.getConfirmationsList().size());
     EXPECT_TRUE(msg.getConfirmationsList()[0] == "Ann");
 
     std::vector<std::string> names = {"Tom", "Kate"};
     msg.addConfirmations(names);
 
-    EXPECT_EQ(78, msg.getMessageSize());
+    EXPECT_EQ(86, msg.getMessageSize());
     EXPECT_EQ(3, msg.getConfirmationsList().size());
     EXPECT_TRUE(msg.getConfirmationsList()[0] == "Ann");
     EXPECT_TRUE(msg.getConfirmationsList()[1] == "Tom");
@@ -115,7 +117,7 @@ TEST(RingMessage, creating_test){
     RingMessage msg2 = msg;
 
     ASSERT_EQ(MessageType::RING_MESSAGE, msg2.getMessageType());
-    ASSERT_EQ(78, msg2.getMessageSize());
+    ASSERT_EQ(86, msg2.getMessageSize());
     ASSERT_EQ(1, msg2.getSenderID());
     EXPECT_EQ(3, msg2.getConfirmationsList().size());
     EXPECT_TRUE(msg2.getConfirmationsList()[0] == "Ann");
