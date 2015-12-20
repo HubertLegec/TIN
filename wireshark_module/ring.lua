@@ -59,9 +59,11 @@ local ring_fields =
 
 	category_list_message_categories = ProtoField.new("Categories","ring.category_list_message.categories", ftypes.BYTES),
 
+	ring_message_category_id = ProtoField.int64 ("ring.ring_message.category_id", "Category ID", base.DEC),
 	ring_message_text = ProtoField.new("Message text", "ring.ring_message.text", ftypes.STRING),
 	ring_message_confirmations = ProtoField.new("Confirmations", "ring.ring_message.confirmations", ftypes.BYTES),
 
+	neighbour_set_category_id = ProtoField.int64 ("ring.neighbour_set.category_id", "Category ID", base.DEC),
 	neighbour_set_l_neighbour_name = ProtoField.new("Left neighbour name", "ring.neighbour_set.l_neighbour_name", ftypes.STRING),
 	neighbour_set_l_neighbour_ip = ProtoField.new("Left neighbour ip", "ring.neighbour_set.l_neighbour_ip", ftypes.STRING),
 	neighbour_set_l_neighbour_port = ProtoField.int32 ("ring.neighbour_set.l_neighbour_port", "Left neighbour port", base.DEC),
@@ -202,7 +204,9 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		tree:add(ring_fields.category_list_message_categories, tvbuf:range(start_offset, inner_offset-start_offset)):append_text("\n[readable_representation] \n" .. map_representation)
 
 	elseif msg_type == 9 then
-		
+		tree:add_le(ring_fields.ring_message_category_id, tvbuf:range(inner_offset, 8))
+		inner_offset = inner_offset + 8
+
 		local message_text = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
 		tree:add(ring_fields.ring_message_text, tvbuf:range(inner_offset, message_text:len()), message_text); inner_offset = inner_offset + message_text:len()
 
@@ -222,7 +226,9 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		tree:add(ring_fields.ring_message_confirmations, tvbuf:range(start_offset, inner_offset-start_offset)):append_text("\n	readable representation:" .. vector_representation)
 
 	elseif msg_type == 10 then
-		
+		tree:add_le(ring_fields.neighbour_set_category_id, tvbuf:range(inner_offset, 8))
+		inner_offset = inner_offset + 8
+
 		local l_neighbour_name = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
 		tree:add(ring_fields.neighbour_set_l_neighbour_name, tvbuf:range(inner_offset, l_neighbour_name:len()), l_neighbour_name)
 		inner_offset = inner_offset  + l_neighbour_name:len()
