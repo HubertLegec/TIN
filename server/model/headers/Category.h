@@ -5,28 +5,49 @@
 #include <memory>
 #include <list>
 #include "User.h"
+#include "CategoryMember.h"
 
 using namespace std;
 
 class Category {
 private:
+    bool activated;
+    const long id;
     const string name;
     const shared_ptr<User> owner;
-    shared_ptr<User> members;
+    shared_ptr<CategoryMember> members;
 
-    shared_ptr<User> findUser(int id);
+    shared_ptr<CategoryMember> findMember(long id);
 
 public:
-    Category(const shared_ptr<User> creator, const string new_name) : owner(creator), name(new_name) {
-        owner->setLeftNeighbour(owner);
-        owner->setRightNeighbour(owner);
-        members = owner;
+    Category(long id, const shared_ptr<User> creator, const string new_name) : id(id), owner(creator), name(new_name),
+                                                                               activated(true) {
+        members.reset(new CategoryMember(owner));
+        members->setLeftNeighbour(members);
+        members->setRightNeighbour(members);
     }
 
-    // TODO fabryka to tworzenia members...
+    long getID() {
+        return id;
+    }
+
+    void setActivated() {
+        activated = true;
+    }
+
+    void setDeactivated() {
+        activated = false;
+    }
+
+    bool isActivated() {
+        return activated;
+    }
+
     void addMember(shared_ptr<User> member);
 
-    void removeMember(int id);
+    void removeMember(long id);
+
+    void leaveCategory(long id);
 
     const string &getName() const {
         return name;
@@ -36,7 +57,7 @@ public:
         return owner;
     }
 
-    const shared_ptr<User> getMembers() const {
+    const shared_ptr<CategoryMember> getMembers() const {
         return members;
     }
 };

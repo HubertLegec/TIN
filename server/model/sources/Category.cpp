@@ -4,33 +4,36 @@ void Category::addMember(shared_ptr<User> member) {
     if (*owner == member)
         throw runtime_error("Member, you wanted to add, is an owner of the category!");
 
-    for (auto user = members; user->getRightNeighbour() != members; user = user->getRightNeighbour()) {
-        if (*user == member)
+    for (auto categoryMember = members;
+         categoryMember->getRightNeighbour() != members; categoryMember = categoryMember->getRightNeighbour()) {
+        if (*categoryMember->getUser() == member)
             throw runtime_error("Member, you wanted to add, already exists in the category!");
     }
 
+    shared_ptr<CategoryMember> newMember(new CategoryMember(member));
     auto first = members;
     auto last = members->getLeftNeighbour();
 
-    first->setLeftNeighbour(member);
-    member->setRightNeighbour(first);
+    first->setLeftNeighbour(newMember);
+    newMember->setRightNeighbour(first);
 
-    last->setRightNeighbour(member);
-    member->setLeftNeighbour(last);
+    last->setRightNeighbour(newMember);
+    newMember->setLeftNeighbour(last);
 }
 
-shared_ptr<User> Category::findUser(int id) {
-    for (auto user = members; user->getRightNeighbour() != members; user = user->getRightNeighbour()) {
-        if (user->getID() == id) {
-            return user;
+shared_ptr<CategoryMember> Category::findMember(long id) {
+    for (auto categoryMember = members;
+         categoryMember->getRightNeighbour() != members; categoryMember = categoryMember->getRightNeighbour()) {
+        if (categoryMember->getUser()->getID() == id) {
+            return categoryMember;
         }
     }
 
     throw out_of_range("Couldn't find specified user in the category!");
 }
 
-void Category::removeMember(int id) {
-    auto member = findUser(id);
+void Category::removeMember(long id) {
+    auto member = findMember(id);
 
     auto left_neighbour = member->getLeftNeighbour();
     auto right_neighbour = member->getRightNeighbour();

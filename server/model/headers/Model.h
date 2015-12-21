@@ -6,20 +6,35 @@
 
 class Model {
 private:
-    unordered_map<string, shared_ptr<Category> > categories;
+    long categoriesCounter;
+    long usersCounter;
+    unordered_map<long, shared_ptr<Category> > categories;
+    unordered_map<long, shared_ptr<User> > users;
 
 public:
-    const unordered_map<string, shared_ptr<Category>> &getCategories() const {
+    Model() : categoriesCounter(0), usersCounter(0) { }
+
+    const unordered_map<long, shared_ptr<Category>> &getCategories() const {
         return categories;
     }
 
-    const shared_ptr<User> getCategoryOwner(string category_name) const;
+    const shared_ptr<User> getCategoryOwner(const long categoryID);
 
-    const shared_ptr<User> getCategoryMembers(string category_name) const;
+    const shared_ptr<CategoryMember> getCategoryMembers(const long categoryID);
 
-    void addCategory(shared_ptr<User> owner, string category_name);
+    shared_ptr<User> createNewUser(const std::string &userName, int port, string IP);
 
-    void addMemberToCategory(shared_ptr<User> member, string category_name);
+    void addCategory(shared_ptr<User> owner, const string &category_name);
+
+    shared_ptr<User> getUser(const long userID);
+
+    shared_ptr<Category> getCategory(const long id);
+
+    void createCategory(long ownerID, const string &category_name);
+
+    void destroyCategory(const long id);
+
+    void addMemberToCategory(shared_ptr<User> member, const long categoryID);
 };
 
 

@@ -10,7 +10,7 @@ CategoryManagementMessage::CategoryManagementMessage() { }
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID , const std::string& userName)
                                                     : SimpleMessage(type, senderID) {
     this->categoryID = categoryID;
-    this->userID = -1;
+    this->userID = UNDEFINED_ID;
     this->userName = userName;
 
     this->size = SimpleMessage::getMessageSize() + 4*sizeof(long) + userName.size();

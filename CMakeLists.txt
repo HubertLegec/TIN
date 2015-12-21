@@ -61,9 +61,12 @@ set(SERVER_SOURCE_FILES server/main.cpp
         server/model/sources/Category.cpp
         server/model/sources/Model.cpp
         server/model/sources/User.cpp
-        server/controller/sources/Controller.cpp)
+        server/controller/sources/Controller.cpp server/strategy/sources/BasicEventStrategy.cpp server/strategy/headers/BasicEventStrategy.h server/strategy/sources/CategoryListMessageStrategy.cpp server/strategy/headers/CategoryListMessageStrategy.h server/strategy/sources/CategoryManagementStrategy.cpp server/strategy/headers/CategoryManagementStrategy.h server/model/sources/CategoryMember.cpp server/model/headers/CategoryMember.h)
+set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
+        networkMessage/sources/CategoryListMessage.cpp
+        networkMessage/sources/CategoryManagementMessage.cpp)
 
-add_executable(RING_SERVER ${SERVER_SOURCE_FILES})
+add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})
 
 
 

@@ -5,12 +5,16 @@
 
 class Controller {
 private:
-    Model model;
+    shared_ptr<Model> model;
 
 public:
     Controller() { }
 
-    Controller(Model model) : model(model) { }
+    Controller(shared_ptr<Model> model) : model(model) { }
+
+    shared_ptr<Model> getModel() const {
+        return model;
+    }
 };
 
 

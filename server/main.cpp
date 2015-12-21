@@ -7,7 +7,7 @@ using namespace std;
 
 INITIALIZE_EASYLOGGINGPP
 
-int main(int argv, char* argc[]) {
+int main(int argv, char *argc[]) {
     START_EASYLOGGINGPP(argv, argc);
     LOG(INFO) << "Server started";
     shared_ptr<User> radek(new User(0, 1111, "11.11.11.11", "radek"));

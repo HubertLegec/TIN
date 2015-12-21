@@ -22,6 +22,8 @@ private:
     long userID;
     std::string userName;
 public:
+    const static int UNDEFINED_ID = -1;
+
     CategoryManagementMessage();
     //this constructor should be used to sign up a category when user doesn't have ID
     CategoryManagementMessage(long senderID, MessageType type, long categoryID, const std::string& userName);
