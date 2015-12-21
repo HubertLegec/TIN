@@ -3,11 +3,9 @@
 //
 
 #include "gtest/gtest.h"
-#include "Model.h"
 
 TEST(ModelTest, model_get_test){
-    Model m;
-    ASSERT_EQ(5, m.getX());
+
 }
 
 

@@ -18,8 +18,7 @@ private:
 public:
     View(Controller* controller);
     void showCategoryList(std::map<long, std::string> categories);
-    void showMainMenu();
-    void showMainMenuAndNotifications(std::vector<std::string> notificationsList);
+    void showMainMenu(std::vector<std::string> notificationsList);
 };
 
 

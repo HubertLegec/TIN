@@ -9,10 +9,15 @@
 
 class ChooseMenuOptionEvent : public BasicEvent {
 
-
 public:
-    ChooseMenuOptionEvent();
+    enum OptionChosen {CREATE_CATEGORY = 'c', JOIN_CATEGORY = 'j', LEAVE_CATEGORY = 'l', QUIT = 'q', UNDEFINED  = 0 };
+
+    ChooseMenuOptionEvent(OptionChosen option);
+    OptionChosen getOptionChosen();
     std::string toString();
+
+private:
+    OptionChosen optionChosen;
 };
 
 
