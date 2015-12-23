@@ -2,7 +2,7 @@
 #include "../headers/CategoryManagementStrategy.h"
 
 void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
-    CategoryManagementMessage *categoryManagementMessage = (CategoryManagementMessage *) (message);
+    CategoryManagementMessage *categoryManagementMessage = dynamic_cast<CategoryManagementMessage *> (message);
 
     long senderID = categoryManagementMessage->getUserID();
     MessageType messageType = categoryManagementMessage->getMessageType();

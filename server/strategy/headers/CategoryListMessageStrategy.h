@@ -4,7 +4,7 @@
 
 #include "BasicEventStrategy.h"
 
-class CategoryListMessageStrategy : BasicEventStrategy {
+class CategoryListMessageStrategy : public BasicEventStrategy {
 private:
 
 public:

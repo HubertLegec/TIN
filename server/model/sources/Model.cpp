@@ -18,9 +18,10 @@ shared_ptr<User> Model::createNewUser(const string &userName, int port, string I
 }
 
 void Model::addCategory(shared_ptr<User> owner, const string &category_name) {
-    // TODO Wyszukiwanie nazw..
-//    if (categories.count(category_name) > 0)
-//        throw out_of_range("Category, you wanted to add, already exists!");
+    for (auto pair : categories) {
+        if (pair.second->getName() == category_name)
+            throw runtime_error("Category, you wanted to add, already exists!");
+    }
 
     auto map_value = shared_ptr<Category>(new Category(categoriesCounter++, owner, category_name));
     auto pair_to_add = make_pair(map_value->getID(), map_value);
