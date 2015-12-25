@@ -4,13 +4,13 @@
 
 #include "BasicEventStrategy.h"
 
-class CategoryListMessageStrategy : public BasicEventStrategy {
+class GetMessageStrategy : public BasicEventStrategy {
 private:
 
 public:
-    CategoryListMessageStrategy() : BasicEventStrategy() { }
+    GetMessageStrategy() : BasicEventStrategy() { }
 
-    CategoryListMessageStrategy(Controller *controller) : BasicEventStrategy(controller) { }
+    GetMessageStrategy(Controller *controller) : BasicEventStrategy(controller) { }
 
     virtual void serveEvent(SimpleMessage *message);
 };

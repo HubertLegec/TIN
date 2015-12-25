@@ -35,6 +35,11 @@ void ServerInfoMessage::setExtraInfo(long extraInfo) {
     this->extraInfo = extraInfo;
 }
 
+void ServerInfoMessage::setServerInfoMessageType(ServerInfoMessageType infoType) {
+    this->infoType = infoType;
+
+}
+
 long ServerInfoMessage::getExtraInfo() const {
     return extraInfo;
 }

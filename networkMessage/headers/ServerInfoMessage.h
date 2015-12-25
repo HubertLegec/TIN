@@ -24,6 +24,7 @@ public:
     long getExtraInfo() const;
     std::string getInfo() const;
     void setInfo(const std::string info);
+    void setServerInfoMessageType(ServerInfoMessageType infoType);
     std::string toString();
     template<class Archive>
     void serialize(Archive & archive){

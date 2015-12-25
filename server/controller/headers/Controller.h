@@ -29,6 +29,10 @@ public:
         return model;
     }
 
+    void putOutgoingMessage(const SimpleMessage& message) {
+        outgoingMessages.push(message);
+    }
+
     const Queue<SimpleMessage> &getIncomingMessages() const {
         return incomingMessages;
     }
