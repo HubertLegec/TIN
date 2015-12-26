@@ -1,23 +1,22 @@
 #ifndef RING_BASICEVENTSTRATEGY_H
 #define RING_BASICEVENTSTRATEGY_H
 
-#include "../../controller/headers/Controller.h"
 #include "../../../networkMessage/headers/SimpleMessage.h"
+
+class Controller;
 
 class BasicEventStrategy {
 protected:
     Controller *controller;
 
 public:
-    BasicEventStrategy() : controller(nullptr) { }
+    BasicEventStrategy();
 
-    BasicEventStrategy(Controller *controller) : controller(controller) { }
+    BasicEventStrategy(Controller *controller);
 
-    void setController(Controller *controller) {
-        this->controller = controller;
-    }
+    void setController(Controller *controller);
 
-    virtual void serveEvent(SimpleMessage *message) const { }
+    virtual void serveEvent(SimpleMessage *message) const;
 };
 
 

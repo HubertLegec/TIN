@@ -1,9 +1,15 @@
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../headers/GetMessageStrategy.h"
 #include "../../../networkMessage/headers/GetMessage.h"
+#include "../../controller/headers/Controller.h"
+
+using namespace std;
 
 void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
+
+    // TODO del..
+    cout << "TEST OUTPUT" << endl;
 
     if (getMessage->getRequestType() == CAT_LIST) {
         map<long, std::string> categories;
@@ -22,6 +28,6 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
 //            long senderID = getMessage->getSenderID();
 //            getMessage->get
 
-        throw runtime_error("Not supported yet!");
+//        throw runtime_error("Not supported yet!");
     }
 }

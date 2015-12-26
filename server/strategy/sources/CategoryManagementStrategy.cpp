@@ -3,6 +3,8 @@
 #include "../../../networkMessage/headers/GetMessage.h"
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../headers/CategoryManagementStrategy.h"
+#include "../../model/headers/Model.h"
+#include "../../controller/headers/Controller.h"
 
 void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
     CategoryManagementMessage *categoryManagementMessage = dynamic_cast<CategoryManagementMessage *> (message);
@@ -20,7 +22,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
         controller->putOutgoingMessage(returnMessage);
     } else if (messageType == GET) {
-        controller->getStrategyMap().at(typeid(GetMessage).name()).serveEvent(message);
+        controller->getStrategyMap().at(typeid(GetMessage).name())->serveEvent(message);
     } else if (messageType == CREATE_CATEGORY) {
         ServerInfoMessage returnMessage;
 

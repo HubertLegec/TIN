@@ -1,7 +1,8 @@
 #include <iostream>
-#include "model/headers/User.h"
-#include "model/headers/Model.h"
 #include "../logger/easylogging++.h"
+#include "../networkMessage/headers/SimpleMessage.h"
+#include "controller/headers/Controller.h"
+#include "../networkMessage/headers/GetMessage.h"
 
 using namespace std;
 
@@ -21,9 +22,18 @@ int main(int argv, char *argc[]) {
     cout << model.getCategory(0L)->getMembers()->getUser()->getName() << endl;
     for (auto i = model.getCategory(0L)->getMembers()->getRightNeighbour();
          i != model.getCategory(0L)->getMembers(); i = i->getRightNeighbour()) {
-        
+
         cout << i->getUser()->getName() << endl;
     }
+
+    Controller c;
+    SimpleMessage *message = new GetMessage();
+    c.putIncomingMessage(new GetMessage());
+    c.putIncomingMessage(new GetMessage());
+    c.putIncomingMessage(new GetMessage());
+
+
+    c.run();
 
     // "test" na szybko...
     // TODO testy jednostkowe
