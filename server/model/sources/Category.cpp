@@ -29,7 +29,8 @@ shared_ptr<CategoryMember> Category::findMember(long id) {
         }
     }
 
-    throw out_of_range("Couldn't find specified user in the category!");
+    return shared_ptr<CategoryMember>(nullptr);
+//    throw out_of_range("Couldn't find specified user in the category!");
 }
 
 void Category::removeMember(long id) {

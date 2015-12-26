@@ -2,7 +2,7 @@
 #include "../headers/GetMessageStrategy.h"
 #include "../../../networkMessage/headers/GetMessage.h"
 
-void GetMessageStrategy::serveEvent(SimpleMessage *message) {
+void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
 
     if (getMessage->getRequestType() == CAT_LIST) {

@@ -40,6 +40,10 @@ public:
     const Queue<SimpleMessage> &getOutgoingMessages() const {
         return outgoingMessages;
     }
+
+    const map<string, BasicEventStrategy> &getStrategyMap() const {
+        return strategyMap;
+    }
 };
 
 

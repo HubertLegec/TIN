@@ -12,7 +12,7 @@ public:
 
     CategoryManagementStrategy(Controller *controller) : BasicEventStrategy(controller) { }
 
-    virtual void serveEvent(SimpleMessage *message);
+    virtual void serveEvent(SimpleMessage *message) const ;
 };
 
 

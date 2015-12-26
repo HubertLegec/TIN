@@ -12,7 +12,7 @@ public:
 
     GetMessageStrategy(Controller *controller) : BasicEventStrategy(controller) { }
 
-    virtual void serveEvent(SimpleMessage *message);
+    virtual void serveEvent(SimpleMessage *message) const;
 };
 
 

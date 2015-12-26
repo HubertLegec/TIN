@@ -17,8 +17,6 @@ private:
     const shared_ptr<User> owner;
     shared_ptr<CategoryMember> members;
 
-    shared_ptr<CategoryMember> findMember(long id);
-
 public:
     Category(long id, const shared_ptr<User> creator, const string new_name) : id(id), owner(creator), name(new_name),
                                                                                activated(true) {
@@ -60,6 +58,8 @@ public:
     const shared_ptr<CategoryMember> getMembers() const {
         return members;
     }
+
+    shared_ptr<CategoryMember> findMember(long id);
 };
 
 

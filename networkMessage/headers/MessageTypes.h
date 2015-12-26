@@ -11,6 +11,7 @@ enum MessageType{
 
     CREATE_CATEGORY = 2,
     DESTROY_CATEGORY = 3,
+//    TODO delete? redundant
     CATEGORY_LIST = 4,
     JOIN_CATEGORY = 5,
     LEFT_CATEGORY = 6,

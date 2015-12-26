@@ -17,7 +17,7 @@ public:
         this->controller = controller;
     }
 
-    virtual void serveEvent(SimpleMessage *message) { }
+    virtual void serveEvent(SimpleMessage *message) const { }
 };
 
 

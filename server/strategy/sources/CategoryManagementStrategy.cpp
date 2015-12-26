@@ -4,7 +4,7 @@
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../headers/CategoryManagementStrategy.h"
 
-void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
+void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
     CategoryManagementMessage *categoryManagementMessage = dynamic_cast<CategoryManagementMessage *> (message);
 
     long senderID = categoryManagementMessage->getUserID();
@@ -16,35 +16,17 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
 
         returnMessage.setServerInfoMessageType(FAIL);
         returnMessage.setInfo("Undefined message.");
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
     } else if (messageType == GET) {
-        GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
-
-        if (getMessage->getRequestType() == CAT_LIST) {
-            map<long, std::string> categories;
-
-            for (auto pair: controller->getModel()->getCategories()) {
-                categories[pair.first] = pair.second->getName();
-            }
-
-            CategoryListMessage listMessage(-1, categories);
-            controller->putOutgoingMessage(listMessage);
-        } else {
-            // TODO problem polega na tym, ze ID jest teraz globalne
-            // Wiec, potrzeba przekazac wiadomosc, ktorej dokladnie kategorii
-            // dotyczy pobranie sasiadow
-
-//            long senderID = getMessage->getSenderID();
-//            getMessage->get
-
-            throw runtime_error("Not supported yet!");
-        }
+        controller->getStrategyMap().at(typeid(GetMessage).name()).serveEvent(message);
     } else if (messageType == CREATE_CATEGORY) {
         ServerInfoMessage returnMessage;
 
         model->createCategory(senderID, categoryManagementMessage->getCategoryName());
         returnMessage.setServerInfoMessageType(CATEGORY_CREATED);
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
     } else if (messageType == DESTROY_CATEGORY) {
@@ -58,9 +40,10 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
             model->destroyCategory(categoryManagementMessage->getCategoryID());
             returnMessage.setServerInfoMessageType(CATEGORY_REMOVED);
         }
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
-    } else if (messageType == CATEGORY_LIST) {
+    }/* else if (messageType == CATEGORY_LIST) {
         map<long, std::string> categories;
 
         for (auto pair: controller->getModel()->getCategories()) {
@@ -69,13 +52,14 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
 
         CategoryListMessage listMessage(-1, categories);
         controller->putOutgoingMessage(listMessage);
-    } else if (messageType == JOIN_CATEGORY) {
+    }*/else if (messageType == JOIN_CATEGORY) {
         auto memberToAdd = model->getUser(senderID);
         ServerInfoMessage returnMessage;
 
         model->getCategory(categoryManagementMessage->getCategoryID())->addMember(memberToAdd);
         returnMessage.setExtraInfo(senderID);
         returnMessage.setServerInfoMessageType(USER_ADDED);
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
     } else if (messageType == LEFT_CATEGORY) {
@@ -84,6 +68,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
         model->getCategory(categoryManagementMessage->getCategoryID())->removeMember(senderID);
         returnMessage.setExtraInfo(senderID);
         returnMessage.setServerInfoMessageType(CATEGORY_LEFT);
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
     } else if (messageType == ACTIVATE_CATEGORY) {
@@ -91,6 +76,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
 
         model->getCategory(categoryManagementMessage->getCategoryID())->setActivated();
         returnMessage.setServerInfoMessageType(CATEGORY_ACTIVATED);
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
     } else if (messageType == DEACTIVATE_CATEGORY) {
@@ -98,13 +84,14 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) {
 
         model->getCategory(categoryManagementMessage->getCategoryID())->setDeactivated();
         returnMessage.setServerInfoMessageType(CATEGORY_DEACTIVATED);
+        returnMessage.setExtraInfo(senderID);
 
         controller->putOutgoingMessage(returnMessage);
-    } else if (messageType == NEIGHBOURS_SET) {
+    } /*else if (messageType == NEIGHBOURS_SET) {
         // ???
     } else if (messageType == SERVER_INFO) {
         // ???
-    } else {
+    }*/ else {
         throw runtime_error("Unsupported MessageType!");
     }
 }
