@@ -12,7 +12,7 @@ using namespace std;
 
 class Controller {
 private:
-    const static unsigned INTERVAL_TIME = 100;
+    const static unsigned INTERVAL_TIME = 200;
     map<string, BasicEventStrategy*> strategyMap;
     Queue<shared_ptr<SimpleMessage> > incomingMessages;
     Queue<shared_ptr<SimpleMessage> > outgoingMessages;

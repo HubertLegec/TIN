@@ -28,8 +28,6 @@ void Controller::run() {
         while (!incomingMessages.isEmpty()) {
             incomingMessage = incomingMessages.pop();
             strategyMap.at(typeid(*incomingMessage.get()).name())->serveEvent(incomingMessage.get());
-
-            usleep(INTERVAL_TIME);
         }
 
         usleep(INTERVAL_TIME);

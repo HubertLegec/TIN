@@ -50,5 +50,5 @@ void Model::destroyCategory(const long id) {
     // TODO
     // Send to members message that they leave category
 
-    categories[id].reset();
+    categories.at(id).reset();
 }
