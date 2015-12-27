@@ -19,7 +19,16 @@ public:
     View(Controller* controller);
     void showCategoryList(std::map<long, std::string> categories);
     void showMainMenu(std::vector<std::string> notificationsList);
+
     void showCreateCategorySubMenu();
+    void showDeleteCategorySubMenu();
+    void showRegisterInCategorySubMenu();
+    void showJoinCategorySubMenu();
+    void showLeaveCategorySubMenu();
+    void showVisitCategorySubMenu();
+
+private:
+    void readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool passwordConfirmation = true);
 };
 
 

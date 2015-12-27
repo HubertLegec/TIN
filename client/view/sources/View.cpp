@@ -109,15 +109,118 @@ void View::showMainMenu(std::vector<std::string> notificationsList) {
 
 }
 
-void View::showCreateCategorySubMenu()
-{
+void View::showCreateCategorySubMenu() {
     std::string categoryName;
     std::string userName;
     std::string userPassword;
+
+
+    std::cout << "Creating category:" << std::endl;
+
+    readCategoryAccessData(categoryName,userName,userPassword);
+
+    std::cout << "Category name: " << categoryName << std::endl;
+    std::cout << "User name: " << userName << std::endl;
+    std::cout << "Create category? [y/n] " << std::endl;
+
+    char decision;
+    std::cin >> decision;
+    if (decision == 'y') {
+        CategoryAccessEvent event(CategoryAccessEvent::CREATE_CATEGORY, categoryName, userName, userPassword);
+        controller->getEventsToServe()->push(event);
+    }
+}
+
+void View::showDeleteCategorySubMenu()
+{
+    std::string categoryName,userName,userPassword;
+    std::cout<<"Deleting catefory:"<<std::endl;
+
+    readCategoryAccessData(categoryName,userName,userPassword,false);
+
+    std::cout << "Delete category "<<categoryName<<"  [y/n]?" << std::endl;
+
+    char decision;
+    std::cin >> decision;
+    if (decision == 'y') {
+        CategoryAccessEvent event(CategoryAccessEvent::DELETE_CATEGORY, categoryName, userName, userPassword);
+        controller->getEventsToServe()->push(event);
+    }
+}
+
+void View::showRegisterInCategorySubMenu()
+{
+    std::string categoryName,userName,userPassword;
+    std::cout<<"Registering in catefory:"<<std::endl;
+
+    readCategoryAccessData(categoryName,userName,userPassword);
+
+    std::cout << "Category name: " << categoryName << std::endl;
+    std::cout << "User name: " << userName << std::endl;
+    std::cout << "Register in category? [y/n] " << std::endl;
+
+    char decision;
+    std::cin >> decision;
+    if (decision == 'y') {
+        CategoryAccessEvent event(CategoryAccessEvent::REGISTER_IN_CATEGORY, categoryName, userName, userPassword);
+        controller->getEventsToServe()->push(event);
+    }
+}
+void View::showJoinCategorySubMenu()
+{
+    std::string categoryName,userName,userPassword;
+    std::cout<<"Joining catefory:"<<std::endl;
+
+    readCategoryAccessData(categoryName,userName,userPassword,false);
+
+    std::cout << "Join category "<<categoryName<<"  [y/n]?" << std::endl;
+
+    char decision;
+    std::cin >> decision;
+    if (decision == 'y') {
+        CategoryAccessEvent event(CategoryAccessEvent::JOIN_CATEGORY, categoryName, userName, userPassword);
+        controller->getEventsToServe()->push(event);
+    }
+}
+void View::showLeaveCategorySubMenu()
+{
+    std::string categoryName;
+    std::cout<<"Leaving category:"<<std::endl;
+
+    std::cout<<"Type category name:";
+    std::cin>>categoryName;
+
+    std::cout << "Leave category "<<categoryName<<"  [y/n]?" << std::endl;
+
+    char decision;
+    std::cin >> decision;
+    if (decision == 'y') {
+        CategoryAccessEvent event(CategoryAccessEvent::LEAVE_CATEGORY, categoryName);
+        controller->getEventsToServe()->push(event);
+    }
+}
+
+void View::showVisitCategorySubMenu()
+{
+    std::string categoryName;
+    std::cout<<"Visiting category:"<<std::endl;
+
+    std::cout<<"Type category name:";
+    std::cin>>categoryName;
+
+    std::cout << "Visit category "<<categoryName<<"  [y/n]?" << std::endl;
+
+    char decision;
+    std::cin >> decision;
+    if (decision == 'y') {
+        CategoryAccessEvent event(CategoryAccessEvent::VISIT_CATEGORY, categoryName);
+        controller->getEventsToServe()->push(event);
+    }
+}
+
+void View::readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool confirmPassword)
+{
     std::string passwordConfirmation;
-
-
-    std::cout<<"Creating category:"<<std::endl;
 
     std::cout<<"Type category name:";
     std::cin>>categoryName;
@@ -125,32 +228,23 @@ void View::showCreateCategorySubMenu()
     std::cout<<"Type user name:";
     std::cin>>userName;
 
-    while(true)
-    {
-        std::cout<<"Type your password:";
-        std::cin>>userPassword;
+    while(true) {
+        std::cout << "Type your password:";
+        std::cin >> userPassword;
 
-        std::cout<<"Confirm Password:";
-        std::cin>>passwordConfirmation;
+        if(!confirmPassword)
+            break;
 
-        if(userPassword==passwordConfirmation)
+        std::cout << "Confirm Password:";
+        std::cin >> passwordConfirmation;
+
+        if (userPassword == passwordConfirmation)
             break;
         else
-            std::cout<<"Passwords don't match!"<<std::endl;
-    }
-
-    std::cout<<"Category name: "<<categoryName<<std::endl;
-    std::cout<<"User name: "<<userName<<std::endl;
-    std::cout<<"Create category? [y/n] "<<std::endl;
-
-    char decision;
-    std::cin>>decision;
-    if(decision == 'y')
-    {
-        CategoryAccessEvent event(CategoryAccessEvent::CREATE_CATEGORY,categoryName,userName,userPassword);
-        controller->getEventsToServe()->push(event);
-        std::cout<<"Category created."<<std::endl;
+            std::cout << "Passwords don't match!" << std::endl;
     }
 }
+
+
 
 
