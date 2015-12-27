@@ -10,7 +10,16 @@
 class ChooseMenuOptionEvent : public BasicEvent {
 
 public:
-    enum OptionChosen {CREATE_CATEGORY = 'c', JOIN_CATEGORY = 'j', LEAVE_CATEGORY = 'l', QUIT = 'q', UNDEFINED  = 0 };
+    enum OptionChosen {
+        CREATE_CATEGORY = 'c',
+        DELETE_CATEGORY = 'd',
+        SHOW_CATEGORY_LIST = 's',
+        REGISTER_IN_CATEGORY = 'r',
+        JOIN_CATEGORY = 'j',
+        VISIT_CATEGORY = 'v',
+        LEAVE_CATEGORY = 'l',
+        QUIT = 'q',
+        REFRESH  = 0 };
 
     ChooseMenuOptionEvent(OptionChosen option);
     OptionChosen getOptionChosen();

@@ -32,6 +32,7 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/RingMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp)
 set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
+        clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
         clientEvents/sources/ConfirmMessageEvent.cpp
         clientEvents/sources/NetworkEvent.cpp)

@@ -5,6 +5,13 @@
 #ifndef RING_CONNECTIONINFO_H
 #define RING_CONNECTIONINFO_H
 
+
+
+
+
+
+
+
 #include <string>
 
 class ConnectionInfo {
