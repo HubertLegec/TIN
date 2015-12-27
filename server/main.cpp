@@ -27,7 +27,6 @@ int main(int argv, char *argc[]) {
     }
 
     Controller c;
-    SimpleMessage *message = new GetMessage();
     c.putIncomingMessage(new GetMessage());
     c.putIncomingMessage(new GetMessage());
     c.putIncomingMessage(new GetMessage());

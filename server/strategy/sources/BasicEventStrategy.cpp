@@ -8,5 +8,3 @@ BasicEventStrategy::BasicEventStrategy(Controller *controller) : controller(cont
 void BasicEventStrategy::setController(Controller *controller) {
     this->controller = controller;
 }
-
-void BasicEventStrategy::serveEvent(SimpleMessage *message) const { }

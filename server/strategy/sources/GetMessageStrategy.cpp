@@ -18,8 +18,7 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
             categories[pair.first] = pair.second->getName();
         }
 
-        CategoryListMessage listMessage(-1, categories);
-        controller->putOutgoingMessage(listMessage);
+        controller->putOutgoingMessage(new CategoryListMessage(-1, categories));
     } else {
         // TODO problem polega na tym, ze ID jest teraz globalne
         // Wiec, potrzeba przekazac wiadomosc, ktorej dokladnie kategorii

@@ -16,7 +16,7 @@ public:
 
     void setController(Controller *controller);
 
-    virtual void serveEvent(SimpleMessage *message) const;
+    virtual void serveEvent(SimpleMessage *message) const = 0;
 };
 
 
