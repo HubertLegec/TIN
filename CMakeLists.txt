@@ -10,19 +10,19 @@ find_package(Threads)
 # Download and unpack gtest at configure time
 configure_file(gtest-CMakeLists.txt gtest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/gtest-download )
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/gtest-download)
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/gtest-download )
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/gtest-download)
 
 # Add gtest directly to our build
 add_subdirectory(${CMAKE_BINARY_DIR}/gtest-src
         ${CMAKE_BINARY_DIR}/gtest-build
-        EXCLUDE_FROM_ALL )
+        EXCLUDE_FROM_ALL)
 
 # Add the gtest include directory, since gtest
 # doesn't add that dependency to its gtest target
 target_include_directories(gtest INTERFACE
-        "${CMAKE_BINARY_DIR}/gtest-src/include" )
+        "${CMAKE_BINARY_DIR}/gtest-src/include")
 
 
 #----------------------------------------- client ----------------------------------------------------------------------
@@ -73,8 +73,6 @@ set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})
 
 
-
-
 #------------------------------------ Tests configuration --------------------------------------------------------------
 
 #*************************** client tests **********************************************
@@ -106,11 +104,12 @@ add_executable(MESSAGES_SERIALIZATION_TESTS networkMessage_tests/messagesSeriali
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
         cereal/archives/binary.hpp)
-target_link_libraries(MESSAGES_SERIALIZATION_TESTS  gtest_main)
+target_link_libraries(MESSAGES_SERIALIZATION_TESTS gtest_main)
 add_test(NAME networkMessageSerializationTest COMMAND networkMessageSerializationTest)
 
 
 #*************************** newtwork module tests ******************************************
-add_executable(NETWORK_BASIC_TESTS networkModule_tests/networkBasicTest.cpp)
-target_link_libraries(NETWORK_BASIC_TESTS  gtest_main)
+add_executable(NETWORK_BASIC_TESTS networkModule_tests/networkBasicTest.cpp
+        networkModule/sources/NetworkController.cpp)
+target_link_libraries(NETWORK_BASIC_TESTS gtest_main)
 add_test(NAME networkBasicTest COMMAND networkBasicTest)
