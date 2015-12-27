@@ -20,13 +20,24 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
 
         controller->putOutgoingMessage(new CategoryListMessage(-1, categories));
     } else {
+        long categoryID; /* = getMessage->get */
         // TODO problem polega na tym, ze ID jest teraz globalne
         // Wiec, potrzeba przekazac wiadomosc, ktorej dokladnie kategorii
         // dotyczy pobranie sasiadow
+        long senderID = getMessage->getSenderID();
+/*
+        auto member = controller->getModel()->getCategory(categoryID)->findMember(senderID);
+        auto leftNeighbour = member->getLeftNeighbour()->getUser();
+        auto rightNeighbout = member->getRightNeighbour()->getUser();
 
-//            long senderID = getMessage->getSenderID();
-//            getMessage->get
+        NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(categoryID, leftNeighbour->getName(),
+                                                                       leftNeighbour->getIP(), leftNeighbour->getPort(),
+                                                                       rightNeighbout->getName(),
+                                                                       rightNeighbout->getIP(),
+                                                                       rightNeighbout->getPort());
 
+        controller->putOutgoingMessage(infoMessage);
+*/
 //        throw runtime_error("Not supported yet!");
     }
 }

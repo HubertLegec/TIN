@@ -30,11 +30,11 @@ void Model::addCategory(shared_ptr<User> owner, const string &category_name) {
 }
 
 shared_ptr<User> Model::getUser(const long userID) {
-    return users[userID];
+    return users.at(userID);
 }
 
 shared_ptr<Category> Model::getCategory(const long id) {
-    return categories[id];
+    return categories.at(id);
 }
 
 void Model::createCategory(long ownerID, const string &category_name) {
@@ -43,7 +43,7 @@ void Model::createCategory(long ownerID, const string &category_name) {
 }
 
 void Model::addMemberToCategory(shared_ptr<User> member, long categoryID) {
-    categories[categoryID]->addMember(member);
+    categories.at(categoryID)->addMember(member);
 }
 
 void Model::destroyCategory(const long id) {

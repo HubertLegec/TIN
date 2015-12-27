@@ -66,6 +66,7 @@ set(SERVER_SOURCE_FILES server/main.cpp
 set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
+        networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/GetMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp)
 
