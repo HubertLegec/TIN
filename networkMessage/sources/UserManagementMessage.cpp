@@ -4,7 +4,7 @@ UserManagementMessage::UserManagementMessage(MessageType type, string ip, int po
                                                                                                                    UNDEFINED_ID) {
     this->ip = ip;
     this->port = port;
-    this->login = login;
+    this->userName = login;
 
 }
 

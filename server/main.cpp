@@ -3,6 +3,8 @@
 #include "../networkMessage/headers/SimpleMessage.h"
 #include "controller/headers/Controller.h"
 #include "../networkMessage/headers/GetMessage.h"
+#include "../networkMessage/headers/CategoryManagementMessage.h"
+#include "../networkMessage/headers/UserManagementMessage.h"
 
 using namespace std;
 
@@ -31,9 +33,14 @@ int main(int argv, char *argc[]) {
     c.putIncomingMessage(new GetMessage());
     c.putIncomingMessage(new GetMessage());
 
+    c.putIncomingMessage(new UserManagementMessage(USER_SIGN_UP,  "11.11", 9999, "radek"));
+
+    c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria", "elo elo"));
+    c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria", "elo elo"));
+    c.putIncomingMessage(new CategoryManagementMessage(0, DESTROY_CATEGORY, 0, 0));
+
 
     c.run();
-
     // "test" na szybko...
     // TODO testy jednostkowe
 //    for (auto c : model.getCategories()) {

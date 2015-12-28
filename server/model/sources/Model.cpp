@@ -1,11 +1,11 @@
 #include "../headers/Model.h"
 
 const shared_ptr<User> Model::getCategoryOwner(const long categoryID) {
-    return categories[categoryID]->getOwner();
+    return categories.at(categoryID)->getOwner();
 }
 
 const shared_ptr<CategoryMember> Model::getCategoryMembers(const long categoryID) {
-    return categories[categoryID]->getMembers();
+    return categories.at(categoryID)->getMembers();
 }
 
 shared_ptr<User> Model::createNewUser(const string &userName, int port, string IP) {
@@ -38,7 +38,7 @@ shared_ptr<Category> Model::getCategory(const long id) {
 }
 
 void Model::createCategory(long ownerID, const string &category_name) {
-    auto owner = users[ownerID];
+    auto owner = users.at(ownerID);
     addCategory(owner, category_name);
 }
 
@@ -46,9 +46,22 @@ void Model::addMemberToCategory(shared_ptr<User> member, long categoryID) {
     categories.at(categoryID)->addMember(member);
 }
 
-void Model::destroyCategory(const long id) {
+void Model::destroyCategory(const long categoryID) {
     // TODO
     // Send to members message that they leave category
 
-    categories.at(id).reset();
+    categories.at(categoryID).reset();
+    categories.erase(categoryID);
+}
+
+void Model::deleteUser(const long userID) {
+    for (auto pair : categories) {
+        auto member = pair.second->findMember(userID);
+        if (member) {
+            pair.second->removeMember(userID);
+        }
+    }
+
+    users.at(userID).reset();
+    categories.erase(userID);
 }

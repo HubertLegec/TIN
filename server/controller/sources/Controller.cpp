@@ -3,6 +3,9 @@
 #include "../../../networkMessage/headers/GetMessage.h"
 #include "../../strategy/headers/CategoryManagementStrategy.h"
 #include "../../strategy/headers/GetMessageStrategy.h"
+#include "../../../logger/easylogging++.h"
+#include "../../../networkMessage/headers/UserManagementMessage.h"
+#include "../../strategy/headers/UserManagementStrategy.h"
 #include <unistd.h>
 
 Controller::Controller() : model(new Model) {
@@ -14,8 +17,9 @@ Controller::Controller(shared_ptr<Model> model) : model(model) {
 }
 
 void Controller::initStrategyMap() {
-    strategyMap[typeid(GetMessage).name()] = new GetMessageStrategy(this);
     strategyMap[typeid(CategoryManagementMessage).name()] = new CategoryManagementStrategy(this);
+    strategyMap[typeid(GetMessage).name()] = new GetMessageStrategy(this);
+    strategyMap[typeid(UserManagementMessage).name()] = new UserManagementStrategy(this);
 }
 
 #pragma clang diagnostic push
@@ -27,7 +31,13 @@ void Controller::run() {
     while (true) {
         while (!incomingMessages.isEmpty()) {
             incomingMessage = incomingMessages.pop();
-            strategyMap.at(typeid(*incomingMessage.get()).name())->serveEvent(incomingMessage.get());
+            try {
+                strategyMap.at(typeid(*incomingMessage).name())->serveEvent(incomingMessage.get());
+            } catch (out_of_range &e) {
+                LOG(ERROR) << "Bad type of incomming message";
+            } catch (exception &e) {
+                LOG(ERROR) << "Exception log: " << e.what();
+            }
         }
 
         usleep(INTERVAL_TIME);

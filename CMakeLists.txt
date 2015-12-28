@@ -30,7 +30,7 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
-        networkMessage/sources/ServerInfoMessage.cpp)
+        networkMessage/sources/ServerInfoMessage.cpp networkMessage/sources/UserManagementMessage.cpp networkMessage/headers/UserManagementMessage.h)
 set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
         clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
@@ -62,13 +62,13 @@ set(SERVER_SOURCE_FILES server/main.cpp
         server/model/sources/Category.cpp
         server/model/sources/Model.cpp
         server/model/sources/User.cpp
-        server/controller/sources/Controller.cpp server/strategy/sources/BasicEventStrategy.cpp server/strategy/headers/BasicEventStrategy.h server/strategy/sources/GetMessageStrategy.cpp server/strategy/headers/GetMessageStrategy.h server/strategy/sources/CategoryManagementStrategy.cpp server/strategy/headers/CategoryManagementStrategy.h server/model/sources/CategoryMember.cpp server/model/headers/CategoryMember.h)
+        server/controller/sources/Controller.cpp server/strategy/sources/BasicEventStrategy.cpp server/strategy/headers/BasicEventStrategy.h server/strategy/sources/GetMessageStrategy.cpp server/strategy/headers/GetMessageStrategy.h server/strategy/sources/CategoryManagementStrategy.cpp server/strategy/headers/CategoryManagementStrategy.h server/model/sources/CategoryMember.cpp server/model/headers/CategoryMember.h server/strategy/sources/UserManagementStrategy.cpp server/strategy/headers/UserManagementStrategy.h)
 set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/GetMessage.cpp
-        networkMessage/sources/ServerInfoMessage.cpp)
+        networkMessage/sources/ServerInfoMessage.cpp networkMessage/sources/UserManagementMessage.cpp networkMessage/headers/UserManagementMessage.h)
 
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})
 

@@ -26,6 +26,8 @@ public:
 
     void addCategory(shared_ptr<User> owner, const string &category_name);
 
+    void deleteUser(const long userID);
+
     shared_ptr<User> getUser(const long userID);
 
     shared_ptr<Category> getCategory(const long id);

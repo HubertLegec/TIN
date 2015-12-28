@@ -5,62 +5,67 @@
 #include "../headers/CategoryManagementStrategy.h"
 #include "../../model/headers/Model.h"
 #include "../../controller/headers/Controller.h"
+#include "../../../logger/easylogging++.h"
 
 void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
     CategoryManagementMessage *categoryManagementMessage = dynamic_cast<CategoryManagementMessage *> (message);
 
-    long senderID = categoryManagementMessage->getUserID();
+    long senderID = categoryManagementMessage->getSenderID();
     MessageType messageType = categoryManagementMessage->getMessageType();
     shared_ptr<Model> model = controller->getModel();
 
+    ServerInfoMessage *returnMessage = new ServerInfoMessage();
+    returnMessage->setExtraInfo(senderID);
+    returnMessage->setType(SERVER_INFO);
+
     if (messageType == UNDEFINED || messageType == RING_MESSAGE) {
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
+        LOG(ERROR) << "Undefined message sent by user " << senderID;
 
         returnMessage->setServerInfoMessageType(FAIL);
         returnMessage->setInfo("Undefined message.");
         returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
 
-        controller->putOutgoingMessage(returnMessage);
     } else if (messageType == GET) {
         controller->getStrategyMap().at(typeid(GetMessage).name())->serveEvent(message);
     } else if (messageType == CREATE_CATEGORY) {
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
 
+        auto categoryName = categoryManagementMessage->getCategoryName();
         try {
-            model->createCategory(senderID, categoryManagementMessage->getCategoryName());
+            model->createCategory(senderID, categoryName);
+            LOG(INFO) << "Created category " << categoryName;
             returnMessage->setServerInfoMessageType(CATEGORY_CREATED);
         } catch (exception &exception) {
+            LOG(ERROR) << "Failed to create category " << categoryName;
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo(exception.what());
         }
 
         returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
-        controller->putOutgoingMessage(returnMessage);
     } else if (messageType == DESTROY_CATEGORY) {
-        long ownerID = model->getCategoryOwner(categoryManagementMessage->getCategoryID())->getID();
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
+        long categoryID = categoryManagementMessage->getCategoryID();
+        long ownerID = model->getCategoryOwner(categoryID)->getID();
 
         if (ownerID != senderID) {
+            LOG(ERROR) << "Failed to destroy category. User " << senderID << " is not an owner of category " <<
+            categoryID;
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo("User not allowed to destroy category.");
         } else {
             try {
                 model->destroyCategory(categoryManagementMessage->getCategoryID());
+                LOG(INFO) << "Destroyed category " << categoryID;
                 returnMessage->setServerInfoMessageType(CATEGORY_REMOVED);
             } catch (out_of_range &exception) {
+                LOG(ERROR) << "Failed to destroy category. Couldn't find category " << categoryID;
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo("Couldn't find category!");
             } catch (exception &exception) {
+                LOG(ERROR) << "Failed to destroy category. Exception log: " << exception.what();
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo(exception.what());
             }
         }
 
-        returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
-        controller->putOutgoingMessage(returnMessage);
     }/* else if (messageType == CATEGORY_LIST) {
         map<long, std::string> categories;
 
@@ -71,74 +76,74 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         CategoryListMessage listMessage(-1, categories);
         controller->putOutgoingMessage(listMessage);
     }*/else if (messageType == JOIN_CATEGORY) {
+        long categoryID = categoryManagementMessage->getCategoryID();
         auto memberToAdd = model->getUser(senderID);
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
 
         try {
-            model->getCategory(categoryManagementMessage->getCategoryID())->addMember(memberToAdd);
+            model->getCategory(categoryID)->addMember(memberToAdd);
+            LOG(INFO) << "Added user " << senderID << " to category " << categoryID;
             returnMessage->setServerInfoMessageType(USER_ADDED);
         } catch (out_of_range &exception) {
+            LOG(ERROR) << "Failed to add user " << senderID << " to category " << categoryID
+            << ". Couldn't find the category";
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo("Couldn't find category!");
         } catch (runtime_error &exception) {
+            LOG(ERROR) << "Failed to add user " << senderID << " to category " << categoryID << ". Exception log: "
+            << exception.what();
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo(exception.what());
         }
-
-        returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
-        controller->putOutgoingMessage(returnMessage);
     } else if (messageType == LEFT_CATEGORY) {
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
+        long categoryID = categoryManagementMessage->getCategoryID();
 
         try {
-            model->getCategory(categoryManagementMessage->getCategoryID())->removeMember(senderID);
+            model->getCategory(categoryID)->removeMember(senderID);
+            LOG(INFO) << "User " << senderID << " left category " << categoryID ;
             returnMessage->setServerInfoMessageType(CATEGORY_LEFT);
         } catch (out_of_range &exception) {
+            LOG(ERROR) << "User " << senderID << " failed to leave category " << categoryID
+            << ". Couldn't find category";
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo("Couldn't find category!");
         } catch (exception &exception) {
+            LOG(ERROR) << "User " << senderID << " failed to leave category " << categoryID
+            << ". Exception log: " << exception.what();
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo(exception.what());
         }
-
-        returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
-        controller->putOutgoingMessage(returnMessage);
     } else if (messageType == ACTIVATE_CATEGORY) {
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
+        long categoryID = categoryManagementMessage->getCategoryID();
 
         try {
-            model->getCategory(categoryManagementMessage->getCategoryID())->setActivated();
+            model->getCategory(categoryID)->setActivated();
+            LOG(INFO) << "Category " << categoryID << " activated";
             returnMessage->setServerInfoMessageType(CATEGORY_ACTIVATED);
         } catch (out_of_range &exception) {
+            LOG(ERROR) << "Couldn't activate category " << categoryID << ". Couldn't find category";
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo("Couldn't find category");
         } catch (exception &exception) {
+            LOG(ERROR) << "Couldn't activate category " << categoryID << ". Exception log: " << exception.what();
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo(exception.what());
         }
-
-        returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
-        controller->putOutgoingMessage(returnMessage);
     } else if (messageType == DEACTIVATE_CATEGORY) {
-        ServerInfoMessage *returnMessage = new ServerInfoMessage();
+        long categoryID = categoryManagementMessage->getCategoryID();
 
         try {
             model->getCategory(categoryManagementMessage->getCategoryID())->setDeactivated();
+            LOG(INFO) << "Category " << categoryID << " deactivated";
             returnMessage->setServerInfoMessageType(CATEGORY_DEACTIVATED);
         } catch (out_of_range &exception) {
+            LOG(ERROR) << "Couldn't deactivate category " << categoryID << ". Couldn't find category";
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo("Couldn't find category");
         } catch (exception &exception) {
+            LOG(ERROR) << "Couldn't deactivate category " << categoryID << ". Exception log: " << exception.what();
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo(exception.what());
         }
-
-        returnMessage->setExtraInfo(senderID);
-        returnMessage->setType(SERVER_INFO);
-        controller->putOutgoingMessage(returnMessage);
     } /*else if (messageType == NEIGHBOURS_SET) {
         // ???
     } else if (messageType == SERVER_INFO) {
@@ -146,4 +151,6 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
     }*/ else {
         throw runtime_error("Unsupported MessageType!");
     }
+
+    controller->putOutgoingMessage(returnMessage);
 }

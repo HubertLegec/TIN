@@ -5,7 +5,8 @@
 #ifndef RING_USERMANAGEMENTMESSAGE_H
 #define RING_USERMANAGEMENTMESSAGE_H
 
-
+#include "../../cereal/archives/binary.hpp"
+#include "../../cereal/types/string.hpp"
 #include "SimpleMessage.h"
 
 using namespace std;
@@ -14,7 +15,7 @@ class UserManagementMessage : public SimpleMessage {
 private:
     int port;
     string ip;
-    string login;
+    string userName;
 
     static const long UNDEFINED_ID = -1;
 
@@ -33,8 +34,13 @@ public:
         return ip;
     }
 
-    const string &getLogin() const {
-        return login;
+    const string &getUserName() const {
+        return userName;
+    }
+
+    template<class Archive>
+    void serialize(Archive & archive){
+        archive(this->type, this->size, this->senderID, this->port, this->ip, this->userName);
     }
 };
 
