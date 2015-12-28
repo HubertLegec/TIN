@@ -16,5 +16,6 @@ int main(int argv, char* argc[]) {
     Controller controller(&model);
     View view(&controller);
     controller.setView(&view);
+    controller.start();
     return 0;
 }

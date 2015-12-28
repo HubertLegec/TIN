@@ -53,6 +53,9 @@ public:
         prepareSendThread();
     };
 
+    //close all sockets and stop all threads
+    void stop();
+
 };
 
 

@@ -90,3 +90,7 @@ void NetworkController::receiveMsg(struct sockaddr *senderAddress, int senderSoc
     receiveQueue->push(msg);
 }
 
+
+void NetworkController::stop() {
+    //TODO
+}
