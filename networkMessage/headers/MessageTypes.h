@@ -19,9 +19,10 @@ enum MessageType{
     DEACTIVATE_CATEGORY = 8,
     RING_MESSAGE = 9,
     NEIGHBOURS_SET = 10,
-    SERVER_INFO = 11
+    SERVER_INFO = 11,
+    USER_SIGN_UP = 12,
+    USER_DISCONNECTED = 13,
 };
-
 
 enum GetMessageType{
     CAT_LIST = 1,
@@ -38,6 +39,8 @@ enum ServerInfoMessageType{
     CATEGORY_JOINED = 6,
     CATEGORY_LEFT = 7,
     CATEGORY_ACTIVATED = 8,
-    CATEGORY_DEACTIVATED = 9
+    CATEGORY_DEACTIVATED = 9,
+    USER_CREATED = 10,
+    USER_DELETED = 11
 };
 #endif //RING_MESSAGETYPE_H
