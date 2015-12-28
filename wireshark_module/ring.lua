@@ -25,7 +25,9 @@ local message_type_names = {
 [8] = "SIGN_OUT_CATEGORY",
 [9] = "RING_MESSAGE",
 [10]=  "NEIGHBOURS_SET",
-[11]=  "SERVER_INFO"
+[11]=  "SERVER_INFO",
+[12]=  "USER_SIGN_UP",
+[13]=  "USER_DISCONNECTED",
 }
 
 local get_message_type_names = {
@@ -74,6 +76,11 @@ local ring_fields =
 	server_info_type = ProtoField.int32 ("ring.server_info.type", "Info type", base.DEC),
 	server_info_extra_info = ProtoField.int64 ("ring.server_info.extra_info", "Extra info", base.DEC),
 	server_info = ProtoField.new("Info", "ring.server_info.info", ftypes.STRING),
+
+	user_management_message_port = ProtoField.int32 ("ring.user_management_message.port", "Port", base.DEC),
+	user_management_message_ip = ProtoField.new("Ip", "ser_management_message_.ip", ftypes.STRING),
+	user_management_message_user_name = ProtoField.new("User name", "ser_management_message_.user_name", ftypes.STRING),
+
 }
 
 ring_proto.fields = ring_fields
@@ -260,7 +267,23 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		local server_info = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
 		tree:add(ring_fields.server_info, tvbuf:range(inner_offset, server_info:len()), server_info)
 		inner_offset = inner_offset  + server_info:len()
+
+	elseif msg_type == 12 or msg_type == 13 then
+		
+		tree:add_le(ring_fields.user_management_message_port, tvbuf:range(inner_offset, 4))
+		inner_offset = inner_offset + 4
+
+		
+		local ip_val = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.user_management_message_ip, tvbuf:range(inner_offset, ip_val:len()), ip_val)
+		inner_offset = inner_offset  + ip_val:len()
+
+		local user_name = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
+		tree:add(ring_fields.user_management_message_user_name, tvbuf:range(inner_offset, user_name:len()), user_name)
+		inner_offset = inner_offset  + user_name:len()
+	
 	end
+
 
     return length_val
 end

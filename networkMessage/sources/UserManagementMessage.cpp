@@ -6,7 +6,11 @@ UserManagementMessage::UserManagementMessage(MessageType type, string ip, int po
     this->port = port;
     this->userName = login;
 
+    this->size = SimpleMessage::getMessageSize() + sizeof(int) + 2*sizeof(long) + userName.size() + ip.size();
+
 }
 
 UserManagementMessage::UserManagementMessage(long senderID, MessageType type) : SimpleMessage(type, senderID) {
+    this->size = SimpleMessage::getMessageSize() + sizeof(int) + 2*sizeof(long) + userName.size() + ip.size();
+
 }

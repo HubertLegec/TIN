@@ -30,7 +30,9 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
-        networkMessage/sources/ServerInfoMessage.cpp networkMessage/sources/UserManagementMessage.cpp networkMessage/headers/UserManagementMessage.h)
+        networkMessage/sources/ServerInfoMessage.cpp
+        networkMessage/sources/UserManagementMessage.cpp
+        networkMessage/headers/UserManagementMessage.h)
 set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
         clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
@@ -90,6 +92,7 @@ add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesTests.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
+        networkMessage/sources/UserManagementMessage.cpp
         cereal/archives/binary.hpp)
 
 target_link_libraries(NETWORK_MESSAGES_TESTS gtest_main)
@@ -103,6 +106,7 @@ add_executable(MESSAGES_SERIALIZATION_TESTS networkMessage_tests/messagesSeriali
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
+        networkMessage/sources/UserManagementMessage.cpp
         cereal/archives/binary.hpp)
 target_link_libraries(MESSAGES_SERIALIZATION_TESTS gtest_main)
 add_test(NAME networkMessageSerializationTest COMMAND networkMessageSerializationTest)
