@@ -13,7 +13,3 @@ BasicEventStrategy::BasicEventStrategy(Controller* controller) : controller(cont
 void BasicEventStrategy::setController(Controller* controller) {
     this->controller = controller;
 }
-
-void BasicEventStrategy::serveEvent(BasicEvent event) {
-    //child classes should implement this method
-}

@@ -9,9 +9,9 @@ ConfirmMessageEventStrategy::ConfirmMessageEventStrategy() : BasicEventStrategy(
 
 ConfirmMessageEventStrategy::ConfirmMessageEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void ConfirmMessageEventStrategy::serveEvent(BasicEvent event) {
-    ConfirmMessageEvent& confirmMessageEvent = dynamic_cast<ConfirmMessageEvent&>(event);
-    long msgIndex = confirmMessageEvent.getMessageIndex();
+void ConfirmMessageEventStrategy::serveEvent(BasicEvent *event) const {
+    ConfirmMessageEvent *confirmMessageEvent = dynamic_cast<ConfirmMessageEvent *>(event);
+    long msgIndex = confirmMessageEvent->getMessageIndex();
     RingMessage m = controller->getModel()->getInboxMessages()[msgIndex];
     controller->getModel()->markMessageAsRead(msgIndex);
     ConnectionInfo sendInfo = controller->getModel()->getLeftNeighbour(m.getCategoryId());

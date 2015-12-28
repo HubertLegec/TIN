@@ -4,7 +4,7 @@
 
 #include "../headers/ChooseMenuOptionEvent.h"
 
-ChooseMenuOptionEvent::ChooseMenuOptionEvent(OptionChosen option) : BasicEvent(), optionChosen(option) { }
+ChooseMenuOptionEvent::ChooseMenuOptionEvent(const OptionChosen option) : BasicEvent(), optionChosen(option) { }
 
 ChooseMenuOptionEvent::OptionChosen ChooseMenuOptionEvent::getOptionChosen()
 {

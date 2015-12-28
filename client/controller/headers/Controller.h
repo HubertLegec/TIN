@@ -8,12 +8,13 @@
 #include <map>
 #include <string>
 #include "../../model/headers/Model.h"
-//#include "../../../networkModule/headers/NetworkController.h"
+#include "../../../networkModule/headers/NetworkController.h"
 #include "../../../utils/Queue.hpp"
 #include "../../../clientEvents/headers/BasicEvent.h"
 #include "../../model/headers/Model.h"
 #include "../../view/headers/View.h"
 #include "../../strategy/headers/BasicEventStrategy.h"
+#include "../../../networkModule/headers/MessageWrapper.h"
 
 class BasicEventStrategy;
 class View;
@@ -22,9 +23,10 @@ class Controller {
 private:
     Model* model;
     View* view;
-    //NetworkController networkController;
-    Queue<BasicEvent> eventsToServe;
-    std::map<std::string, BasicEventStrategy> strategyMap;
+    NetworkController networkController;
+    Queue<std::shared_ptr<BasicEvent>> eventsToServe;
+    Queue<std::shared_ptr<MessageWrapper>> sendQueue;
+    std::map<std::string, BasicEventStrategy *> strategyMap;
 
     bool running = true;
     pthread_t controllerThread;
@@ -32,13 +34,18 @@ private:
     static void* threadStartHelper(void* param);
 public:
     Controller(Model* model);
+
+    ~Controller();
     void setView(View* view);
     void initStrategyMap();
     void start();
     void exit();
     Model* getModel();
     View* getView();
-    Queue<BasicEvent>* getEventsToServe();
+
+    Queue<std::shared_ptr<BasicEvent>> *getEventsToServe();
+
+    void sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port);
 
 };
 

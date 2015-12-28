@@ -12,13 +12,17 @@ class NetworkEventStrategy : public BasicEventStrategy {
 public:
     NetworkEventStrategy();
     NetworkEventStrategy(Controller* controller);
-    void serveEvent(BasicEvent event);
+
+    virtual void serveEvent(BasicEvent *event) const;
 
 private:
-    void processServerInfo(SimpleMessage message);
-    void processCategoryList(SimpleMessage message);
-    void processNeighbourSet(SimpleMessage message);
-    void processRingMessage(SimpleMessage message);
+    void processServerInfo(SimpleMessage &message) const;
+
+    void processCategoryList(SimpleMessage &message) const;
+
+    void processNeighbourSet(SimpleMessage &message) const;
+
+    void processRingMessage(SimpleMessage &message) const;
 };
 
 

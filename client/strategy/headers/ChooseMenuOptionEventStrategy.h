@@ -9,12 +9,16 @@
 
 
 class ChooseMenuOptionEventStrategy : public BasicEventStrategy {
+private:
+    void showCategoryList() const;
 
+    void createCategory() const;
 
 public:
     ChooseMenuOptionEventStrategy();
     ChooseMenuOptionEventStrategy(Controller* controller);
-    void serveEvent(BasicEvent event);
+
+    virtual void serveEvent(BasicEvent *event) const;
 };
 
 

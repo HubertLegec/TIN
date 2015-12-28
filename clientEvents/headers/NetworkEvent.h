@@ -11,12 +11,12 @@
 
 class NetworkEvent : public BasicEvent {
 private:
-    SimpleMessage message;
+    std::shared_ptr<SimpleMessage> message;
 
 public:
-    NetworkEvent(SimpleMessage message);
+    NetworkEvent(std::shared_ptr<SimpleMessage> message);
 
-    SimpleMessage getMessage() const;
+    std::shared_ptr<SimpleMessage> getMessage() const;
     std::string toString();
 };
 

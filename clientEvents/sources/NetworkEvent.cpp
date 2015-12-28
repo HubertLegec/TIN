@@ -4,11 +4,11 @@
 
 #include "../headers/NetworkEvent.h"
 
-NetworkEvent::NetworkEvent(SimpleMessage message) : message(message) {
+NetworkEvent::NetworkEvent(std::shared_ptr<SimpleMessage> message) : message(message) {
 
 }
 
-SimpleMessage NetworkEvent::getMessage() const {
+std::shared_ptr<SimpleMessage> NetworkEvent::getMessage() const {
     return message;
 }
 

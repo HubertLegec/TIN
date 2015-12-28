@@ -122,3 +122,11 @@ void Model::markMessageAsRead(long messageIndex) {
 void Model::addNotification(const std::string& notification) {
     notifications.push_back(notification);
 }
+
+std::vector<std::string> Model::getNotifications() {
+    return notifications;
+}
+
+void Model::clearNotificationList() {
+    notifications.clear();
+}

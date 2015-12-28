@@ -15,27 +15,27 @@ NetworkEventStrategy::NetworkEventStrategy() : BasicEventStrategy(){ }
 
 NetworkEventStrategy::NetworkEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void NetworkEventStrategy::serveEvent(BasicEvent event) {
-    NetworkEvent& netEvent = dynamic_cast<NetworkEvent&>(event);
-    SimpleMessage msg = netEvent.getMessage();
+void NetworkEventStrategy::serveEvent(BasicEvent *event) const {
+    NetworkEvent *netEvent = dynamic_cast<NetworkEvent *>(event);
+    std::shared_ptr<SimpleMessage> msg = netEvent->getMessage();
 
-    switch (msg.getMessageType()){
+    switch (msg->getMessageType()) {
         case MessageType::SERVER_INFO :
-            processServerInfo(msg);
+            processServerInfo(*msg);
             break;
         case MessageType::CATEGORY_LIST :
-            processCategoryList(msg);
+            processCategoryList(*msg);
             break;
         case MessageType::NEIGHBOURS_SET :
-            processNeighbourSet(msg);
+            processNeighbourSet(*msg);
             break;
         case MessageType::RING_MESSAGE :
-            processRingMessage(msg);
+            processRingMessage(*msg);
             break;
     }
 }
 
-void NetworkEventStrategy::processServerInfo(SimpleMessage message) {
+void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
     ServerInfoMessage& msg = dynamic_cast<ServerInfoMessage&>(message);
     switch (msg.getInfoType()){
         case ServerInfoMessageType::CATEGORY_CREATED :
@@ -80,12 +80,12 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage message) {
     }
 }
 
-void NetworkEventStrategy::processCategoryList(SimpleMessage message) {
+void NetworkEventStrategy::processCategoryList(SimpleMessage &message) const {
     CategoryListMessage& msg = dynamic_cast<CategoryListMessage&>(message);
     controller->getView()->showCategoryList(msg.getCategories());
 }
 
-void NetworkEventStrategy::processNeighbourSet(SimpleMessage message) {
+void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
     NeighboursInfoMessage& msg = dynamic_cast<NeighboursInfoMessage&>(message);
     controller->getModel()->updateLeftNeighbour(msg.getCategoryId(),
                                                 ConnectionInfo(msg.getLeftNeighbourIP(),msg.getLeftNeighbourPort(), msg.getLeftNeighbourName()));
@@ -98,7 +98,7 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage message) {
     controller->getModel()->addNotification(ss.str());
 }
 
-void NetworkEventStrategy::processRingMessage(SimpleMessage message) {
+void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
     controller->getModel()->addMessageToInbox(msg);
 

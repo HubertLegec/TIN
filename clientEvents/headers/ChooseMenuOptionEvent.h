@@ -19,9 +19,10 @@ public:
         VISIT_CATEGORY = 'v',
         LEAVE_CATEGORY = 'l',
         QUIT = 'q',
-        REFRESH  = 0 };
+        REFRESH = 0
+    };
 
-    ChooseMenuOptionEvent(OptionChosen option);
+    ChooseMenuOptionEvent(const OptionChosen option);
     OptionChosen getOptionChosen();
     std::string toString();
 

@@ -70,7 +70,7 @@ void View::showMainMenu(std::vector<std::string> notificationsList) {
 
     char typed;
 
-    ChooseMenuOptionEvent event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH);
+    ChooseMenuOptionEvent::OptionChosen event = ChooseMenuOptionEvent::REFRESH;
 
 
     std::cout << ">";
@@ -80,32 +80,32 @@ void View::showMainMenu(std::vector<std::string> notificationsList) {
 
     switch (typed) {
         case 'c':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::CREATE_CATEGORY);
+            event = ChooseMenuOptionEvent::CREATE_CATEGORY;
             break;
         case 'd':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::DELETE_CATEGORY);
+            event = ChooseMenuOptionEvent::DELETE_CATEGORY;
             break;
         case 's':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::SHOW_CATEGORY_LIST);
+            event = ChooseMenuOptionEvent::SHOW_CATEGORY_LIST;
             break;
         case 'r':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::REGISTER_IN_CATEGORY);
+            event = ChooseMenuOptionEvent::REGISTER_IN_CATEGORY;
             break;
         case 'j':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::JOIN_CATEGORY);
+            event = ChooseMenuOptionEvent::JOIN_CATEGORY;
             break;
         case 'v':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::VISIT_CATEGORY);
+            event = ChooseMenuOptionEvent::VISIT_CATEGORY;
             break;
         case 'l':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::LEAVE_CATEGORY);
+            event = ChooseMenuOptionEvent::LEAVE_CATEGORY;
             break;
         case 'q':
-            event = ChooseMenuOptionEvent(ChooseMenuOptionEvent::QUIT);
+            event = ChooseMenuOptionEvent::QUIT;
             break;
     }
 
-    controller->getEventsToServe()->push(event);
+    controller->getEventsToServe()->push(std::shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(event)));
 
 }
 
@@ -126,8 +126,8 @@ void View::showCreateCategorySubMenu() {
     char decision;
     std::cin >> decision;
     if (decision == 'y') {
-        CategoryAccessEvent event(CategoryAccessEvent::CREATE_CATEGORY, categoryName, userName, userPassword);
-        controller->getEventsToServe()->push(event);
+        controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::CREATE_CATEGORY, categoryName, userName, userPassword)));
     }
 }
 
@@ -143,8 +143,8 @@ void View::showDeleteCategorySubMenu()
     char decision;
     std::cin >> decision;
     if (decision == 'y') {
-        CategoryAccessEvent event(CategoryAccessEvent::DELETE_CATEGORY, categoryName, userName, userPassword);
-        controller->getEventsToServe()->push(event);
+        controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::DELETE_CATEGORY, categoryName, userName, userPassword)));
     }
 }
 
@@ -162,8 +162,9 @@ void View::showRegisterInCategorySubMenu()
     char decision;
     std::cin >> decision;
     if (decision == 'y') {
-        CategoryAccessEvent event(CategoryAccessEvent::REGISTER_IN_CATEGORY, categoryName, userName, userPassword);
-        controller->getEventsToServe()->push(event);
+        controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::REGISTER_IN_CATEGORY, categoryName, userName,
+                                        userPassword)));
     }
 }
 void View::showJoinCategorySubMenu()
@@ -178,8 +179,8 @@ void View::showJoinCategorySubMenu()
     char decision;
     std::cin >> decision;
     if (decision == 'y') {
-        CategoryAccessEvent event(CategoryAccessEvent::JOIN_CATEGORY, categoryName, userName, userPassword);
-        controller->getEventsToServe()->push(event);
+        controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::JOIN_CATEGORY, categoryName, userName, userPassword)));
     }
 }
 void View::showLeaveCategorySubMenu()
@@ -195,8 +196,8 @@ void View::showLeaveCategorySubMenu()
     char decision;
     std::cin >> decision;
     if (decision == 'y') {
-        CategoryAccessEvent event(CategoryAccessEvent::LEAVE_CATEGORY, categoryName);
-        controller->getEventsToServe()->push(event);
+        controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::LEAVE_CATEGORY, categoryName)));
     }
 }
 
@@ -213,8 +214,8 @@ void View::showVisitCategorySubMenu()
     char decision;
     std::cin >> decision;
     if (decision == 'y') {
-        CategoryAccessEvent event(CategoryAccessEvent::VISIT_CATEGORY, categoryName);
-        controller->getEventsToServe()->push(event);
+        controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::VISIT_CATEGORY, categoryName)));
     }
 }
 

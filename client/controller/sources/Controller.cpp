@@ -12,9 +12,15 @@
 #include "../../strategy/headers/NetworkEventStrategy.h"
 #include "../../strategy/headers/ConfirmMessageEventStrategy.h"
 #include "../../strategy/headers/ChooseMenuOptionEventStrategy.h"
+#include "../../../logger/easylogging++.h"
 
 Controller::Controller(Model* model) : model(model) {
     initStrategyMap();
+    networkController = NetworkController();
+}
+
+Controller::~Controller() {
+    //TODO
 }
 
 void Controller::setView(View* view) {
@@ -22,9 +28,9 @@ void Controller::setView(View* view) {
 }
 
 void Controller::initStrategyMap() {
-    strategyMap[typeid(NetworkEvent).name()] = NetworkEventStrategy(this);
-    strategyMap[typeid(ConfirmMessageEvent).name()] = ConfirmMessageEventStrategy(this);
-    strategyMap[typeid(ChooseMenuOptionEvent).name()] = ChooseMenuOptionEventStrategy(this);
+    strategyMap[typeid(NetworkEvent).name()] = new NetworkEventStrategy(this);
+    strategyMap[typeid(ConfirmMessageEvent).name()] = new ConfirmMessageEventStrategy(this);
+    strategyMap[typeid(ChooseMenuOptionEvent).name()] = new ChooseMenuOptionEventStrategy(this);
 }
 
 Model* Controller::getModel() {
@@ -35,7 +41,7 @@ View* Controller::getView() {
     return view;
 }
 
-Queue<BasicEvent>* Controller::getEventsToServe() {
+Queue<std::shared_ptr<BasicEvent>> *Controller::getEventsToServe() {
     return &eventsToServe;
 }
 
@@ -46,18 +52,24 @@ void* Controller::threadStartHelper(void *param) {
 
 void* Controller::controllerWork() {
     while(running){
-        BasicEvent event = eventsToServe.pop();
-        BasicEventStrategy strategy = strategyMap[typeid(event).name()];
-        strategy.serveEvent(event);
+        std::shared_ptr<BasicEvent> event = eventsToServe.pop();
+        try {
+            strategyMap.at(typeid(*event).name())->serveEvent(event.get());
+        } catch (std::out_of_range &e) {
+            LOG(ERROR) << "Bad type of incomming message";
+        } catch (std::exception &e) {
+            LOG(ERROR) << "Exception log: " << e.what();
+        }
     }
 }
 
 void Controller::start() {
     pthread_create(&controllerThread, NULL, threadStartHelper, (void*)this);
+    view->showMainMenu(model->getNotifications());
 }
 
 void Controller::exit() {
     //TODO
-    //close connections
+    //networkController.stop();
     running = false;
 }
