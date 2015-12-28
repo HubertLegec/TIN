@@ -8,7 +8,7 @@ GetMessage::GetMessage() { }
 
 GetMessage::GetMessage(long senderID, GetMessageType request) : SimpleMessage(MessageType::GET, senderID),
                                                                 requestType(request) {
-    this->size = SimpleMessage::getMessageSize() + sizeof(requestType);
+    this->size = SimpleMessage::getMessageSize() + sizeof(requestType) + sizeof(categoryID);
 }
 
 void GetMessage::setRequestType(GetMessageType requestType) {
@@ -17,6 +17,14 @@ void GetMessage::setRequestType(GetMessageType requestType) {
 
 GetMessageType GetMessage::getRequestType() const {
     return requestType;
+}
+
+void GetMessage::setCategoryID(long categoryID) {
+    this->categoryID = categoryID;
+}
+
+long GetMessage::getCategoryID() const {
+    return categoryID;
 }
 
 std::string GetMessage::toString() {

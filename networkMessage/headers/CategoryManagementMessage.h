@@ -20,25 +20,23 @@ private:
     long categoryID;
     std::string categoryName;
     long userID;
-    std::string userName;
 public:
     const static int UNDEFINED_ID = -1;
 
     CategoryManagementMessage();
-    //this constructor should be used to sign up a category when user doesn't have ID
-    CategoryManagementMessage(long senderID, MessageType type, long categoryID, const std::string& userName);
-    //this constructor should be used to join, left, sign out or destroy the category - user has ID
+
+    //this constructor should be used to join, left, sign out or destroy the category
     CategoryManagementMessage(long senderID, MessageType type, long categoryID, long userID);
-    //this constructor should be used to create category
-    CategoryManagementMessage(long senderID, MessageType type, const std::string& categoryName, const std::string& userName);
+
+    //this constructor should be used to create new category
+    CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName, long userID);
     std::string getCategoryName() const;
-    std::string getUserName() const;
     long getCategoryID() const;
     long getUserID() const;
     std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
-        archive(this->type, this->size, this->senderID, this->categoryID, this->userID, this->categoryName, this->userName);
+        archive(this->type, this->size, this->senderID, this->categoryID, this->userID, this->categoryName);
     }
 };
 

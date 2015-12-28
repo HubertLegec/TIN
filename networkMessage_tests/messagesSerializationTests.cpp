@@ -144,7 +144,7 @@ file.close();*/
 }
 
 TEST(CategoryManagementMessage, serialization_test){
-    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category", "Bob");
+    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category", 333);
 
     std::stringstream ss; // any stream can be used
 
@@ -164,7 +164,6 @@ TEST(CategoryManagementMessage, serialization_test){
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
     EXPECT_EQ(msg.getCategoryID(), testMsg.getCategoryID());
     EXPECT_EQ(msg.getUserID(), testMsg.getUserID());
-    EXPECT_TRUE(msg.getUserName() == testMsg.getUserName());
     EXPECT_TRUE(msg.getCategoryName() == testMsg.getCategoryName());
 
     CategoryManagementMessage msg2(1, MessageType::DESTROY_CATEGORY, 12, 13);
@@ -185,7 +184,6 @@ TEST(CategoryManagementMessage, serialization_test){
     ASSERT_EQ(msg2.getSenderID(), testMsg2.getSenderID());
     EXPECT_EQ(msg2.getCategoryID(), testMsg2.getCategoryID());
     EXPECT_EQ(msg2.getUserID(), testMsg2.getUserID());
-    EXPECT_TRUE(msg2.getUserName() == testMsg2.getUserName());
     EXPECT_TRUE(msg2.getCategoryName() == testMsg2.getCategoryName());
 }
 

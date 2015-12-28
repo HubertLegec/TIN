@@ -7,35 +7,21 @@
 
 CategoryManagementMessage::CategoryManagementMessage() { }
 
-CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID , const std::string& userName)
-                                                    : SimpleMessage(type, senderID) {
-    this->categoryID = categoryID;
-    this->userID = UNDEFINED_ID;
-    this->userName = userName;
-
-    this->size = SimpleMessage::getMessageSize() + 4*sizeof(long) + userName.size();
-}
-
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID, long userID)
                                                     : SimpleMessage(type, senderID){
     this->categoryID = categoryID;
     this->userID = userID;
 
-    this->size = SimpleMessage::getMessageSize() + 4*sizeof(long);
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);
 }
 
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName,
-                                                     const std::string &userName) : SimpleMessage(type, senderID) {
-    this->categoryID = -1;
-    this->userID = -1;
-    this->userName = userName;
+                                                     long userID) : SimpleMessage(type, senderID) {
+    this->categoryID = UNDEFINED_ID;
+    this->userID = userID;
     this->categoryName = categoryName;
 
-    this->size = SimpleMessage::getMessageSize() + 4*sizeof(long) + userName.size() + categoryName.size();
-}
-
-std::string CategoryManagementMessage::getUserName() const {
-    return userName;
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long) + categoryName.size();
 }
 
 std::string CategoryManagementMessage::getCategoryName() const {

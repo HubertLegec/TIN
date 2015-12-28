@@ -33,10 +33,13 @@ TEST(CategoryListMessage, creating_test){
 }
 
 TEST(GetMessage, creating_test){
-    GetMessage msg(1, GetMessageType::CAT_LIST);
+    GetMessage msg(1, GetMessageType::NEIGHBOURS);
+    msg.setCategoryID(111);
 
+    ASSERT_EQ(28, msg.getMessageSize());
     ASSERT_EQ(MessageType::GET, msg.getMessageType());
-    ASSERT_EQ(GetMessageType::CAT_LIST, msg.getRequestType());
+    ASSERT_EQ(GetMessageType::NEIGHBOURS, msg.getRequestType());
+    ASSERT_EQ(111, msg.getCategoryID());
     ASSERT_EQ(1, msg.getSenderID());
 }
 
@@ -56,20 +59,18 @@ TEST(ServerInfoMessage, creating_test){
 }
 
 TEST(CategoryManagementMessage, creating_test){
-    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category", "Bob");
+    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category", 333);
 
     ASSERT_EQ(MessageType::CREATE_CATEGORY, msg.getMessageType());
-    ASSERT_EQ(66, msg.getMessageSize());
+    ASSERT_EQ(55, msg.getMessageSize());
     EXPECT_TRUE(msg.getCategoryName().compare("Simple Category") == 0);
-    EXPECT_TRUE(msg.getUserName().compare("Bob") == 0);
     EXPECT_EQ(msg.getCategoryID(), -1);
-    EXPECT_EQ(msg.getUserID(), -1);
+    EXPECT_EQ(msg.getUserID(), 333);
 
     CategoryManagementMessage msg2(1, MessageType::JOIN_CATEGORY, 12, 44);
     ASSERT_EQ(MessageType::JOIN_CATEGORY, msg2.getMessageType());
-    ASSERT_EQ(48, msg2.getMessageSize());
+    ASSERT_EQ(40, msg2.getMessageSize());
     ASSERT_EQ(0, msg2.getCategoryName().size());
-    ASSERT_EQ(0, msg2.getUserName().size());
     EXPECT_EQ(msg2.getCategoryID(), 12);
     EXPECT_EQ(msg2.getUserID(), 44);
 }
