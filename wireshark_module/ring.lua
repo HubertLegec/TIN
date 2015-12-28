@@ -53,11 +53,11 @@ local ring_fields =
     	msg_sender_id  		= ProtoField.int64 ("ring.sender_id", "Sender ID", base.DEC),
     
     	get_message_request_type = ProtoField.int32("ring.getMessage.requestType", "Request type", base.DEC),
+    	get_message_category_id = ProtoField.int64("ring.getMessage.category_id", "Category id", base.DEC),
 
 	category_management_message_category_id = ProtoField.int64 ("ring.category_management_message.category_id", "Category ID", base.DEC),
 	category_management_message_category_name = ProtoField.new("Category name", "ing.category_management_message.category_name", ftypes.STRING),
 	category_management_message_user_id = ProtoField.int64 ("ring.category_management_message.user_id", "User ID", base.DEC),
-	category_management_message_user_name = ProtoField.new("User name", "ring.category_management_message.user_name", ftypes.STRING),
 
 	category_list_message_categories = ProtoField.new("Categories","ring.category_list_message.categories", ftypes.BYTES),
 
@@ -175,7 +175,10 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		
 		local request_type = tvbuf:range(inner_offset, 4):le_int()
 		tree:add_le(ring_fields.get_message_request_type, tvbuf:range(inner_offset, 4)):append_text(", meaning: " .. get_message_type_names[request_type])
+		inner_offset = inner_offset + 4
 
+		tree:add_le(ring_fields.get_message_category_id, tvbuf:range(inner_offset, 8))
+		
 	elseif msg_type == 2 or msg_type == 3 or msg_type == 5 or msg_type == 6 or msg_type == 7 or msg_type == 8 then
 		
 		tree:add_le(ring_fields.category_management_message_category_id, tvbuf:range(inner_offset, 8))
@@ -188,8 +191,6 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		tree:add(ring_fields.category_management_message_category_name, tvbuf:range(inner_offset, category_name:len()), category_name)
 		inner_offset = inner_offset  + category_name:len()
 
-		local user_name = getString(tvbuf, inner_offset); inner_offset = inner_offset + 8
-		tree:add(ring_fields.category_management_message_user_name, tvbuf:range(inner_offset, user_name:len()), user_name)
 
 	elseif msg_type == 4 then
 
