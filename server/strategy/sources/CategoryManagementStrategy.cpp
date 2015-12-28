@@ -52,7 +52,18 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setInfo("User not allowed to destroy category.");
         } else {
             try {
-                model->destroyCategory(categoryManagementMessage->getCategoryID());
+                auto categoryMembers = model->getCategory(categoryID)->getMembers();
+                auto tmp = categoryMembers;
+                ServerInfoMessage *leaveMessage;
+                do {
+                    leaveMessage = new ServerInfoMessage();
+                    leaveMessage->setType(SERVER_INFO);
+                    leaveMessage->setServerInfoMessageType(CATEGORY_LEFT);
+                    controller->putOutgoingMessage(leaveMessage);
+                    tmp = tmp->getRightNeighbour();
+                } while (tmp != categoryMembers);
+
+                model->destroyCategory(categoryID);
                 LOG(INFO) << "Destroyed category " << categoryID;
                 returnMessage->setServerInfoMessageType(CATEGORY_REMOVED);
             } catch (out_of_range &exception) {
@@ -99,7 +110,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
         try {
             model->getCategory(categoryID)->removeMember(senderID);
-            LOG(INFO) << "User " << senderID << " left category " << categoryID ;
+            LOG(INFO) << "User " << senderID << " left category " << categoryID;
             returnMessage->setServerInfoMessageType(CATEGORY_LEFT);
         } catch (out_of_range &exception) {
             LOG(ERROR) << "User " << senderID << " failed to leave category " << categoryID

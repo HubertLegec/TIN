@@ -47,9 +47,6 @@ void Model::addMemberToCategory(shared_ptr<User> member, long categoryID) {
 }
 
 void Model::destroyCategory(const long categoryID) {
-    // TODO
-    // Send to members message that they leave category
-
     categories.at(categoryID).reset();
     categories.erase(categoryID);
 }

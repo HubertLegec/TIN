@@ -8,17 +8,17 @@ using namespace std;
 void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
 
-    // TODO del..
-    cout << "TEST OUTPUT" << endl;
-
     if (getMessage->getRequestType() == CAT_LIST) {
         map<long, std::string> categories;
+        CategoryListMessage *returnMessage = new CategoryListMessage();
+        returnMessage->setType(SERVER_INFO);
+        returnMessage->setSenderID(getMessage->getSenderID());
 
         for (auto pair: controller->getModel()->getCategories()) {
             categories[pair.first] = pair.second->getName();
         }
 
-        controller->putOutgoingMessage(new CategoryListMessage(-1, categories));
+        controller->putOutgoingMessage(returnMessage);
     } else {
         long categoryID; /* = getMessage->get */
         // TODO problem polega na tym, ze ID jest teraz globalne
