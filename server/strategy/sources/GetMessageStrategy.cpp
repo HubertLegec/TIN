@@ -18,7 +18,7 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
             categories[pair.first] = pair.second->getName();
         }
 
-        controller->putOutgoingMessage(returnMessage);
+        controller->sendMessage(returnMessage);
     } else {
         long categoryID; /* = getMessage->get */
         // TODO problem polega na tym, ze ID jest teraz globalne

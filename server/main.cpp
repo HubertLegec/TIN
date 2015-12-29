@@ -14,20 +14,6 @@ int main(int argv, char *argc[]) {
     START_EASYLOGGINGPP(argv, argc);
     LOG(INFO) << "Server started";
 
-    Model model;
-    auto radek = model.createNewUser("radek", 1111, "11.11.11.11");
-    auto radek1 = model.createNewUser("Radek!", 1111, "121212");
-    model.addCategory(radek, "tiny");
-    model.addCategory(radek1, "tiny2");
-    model.addMemberToCategory(radek1, 0);
-
-    cout << model.getCategory(0L)->getMembers()->getUser()->getName() << endl;
-    for (auto i = model.getCategory(0L)->getMembers()->getRightNeighbour();
-         i != model.getCategory(0L)->getMembers(); i = i->getRightNeighbour()) {
-
-        cout << i->getUser()->getName() << endl;
-    }
-
     Controller c;
     c.putIncomingMessage(new GetMessage());
     c.putIncomingMessage(new GetMessage());
@@ -35,18 +21,12 @@ int main(int argv, char *argc[]) {
 
     c.putIncomingMessage(new UserManagementMessage(USER_SIGN_UP,  "11.11", 9999, "radek"));
 
-    c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria", "elo elo"));
-    c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria", "elo elo"));
-    c.putIncomingMessage(new CategoryManagementMessage(0, DESTROY_CATEGORY, 0, 0));
+    c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria"));
+    c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria"));
+    c.putIncomingMessage(new CategoryManagementMessage(0, DESTROY_CATEGORY, 0));
 
 
     c.run();
-    // "test" na szybko...
-    // TODO testy jednostkowe
-//    for (auto c : model.getCategories()) {
-//        cout << c.second->getName() << endl;
-//        cout << c.second->getOwner()->getName() << " " << c.second->getOwner()->getIP() << endl;
-//    }
 
     return 0;
 }

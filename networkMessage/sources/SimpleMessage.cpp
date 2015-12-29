@@ -33,7 +33,7 @@ long SimpleMessage::getSenderID() const {
 }
 
 void SimpleMessage::setSenderID(long id) {
-    this->senderID = senderID;
+    this->senderID = id;
 }
 
 void SimpleMessage::setType(MessageType type) {

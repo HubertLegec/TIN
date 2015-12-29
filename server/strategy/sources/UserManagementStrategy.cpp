@@ -33,7 +33,6 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
         try {
 
             model->deleteUser(userID);
-
             LOG(INFO) << "Deleted user named " << name;
             returnMessage->setServerInfoMessageType(USER_CREATED);
         } catch (exception &e) {
@@ -43,5 +42,5 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
         returnMessage->setExtraInfo(userID);
     }
 
-    controller->putOutgoingMessage(returnMessage);
+    controller->sendMessage(returnMessage);
 }

@@ -22,6 +22,12 @@ void Controller::initStrategyMap() {
     strategyMap[typeid(UserManagementMessage).name()] = new UserManagementStrategy(this);
 }
 
+void Controller::sendMessage(SimpleMessage *message) {
+    auto user = model->getUser(message->getSenderID());
+    auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), user->getIP(), user->getPort());
+    outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
+}
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 

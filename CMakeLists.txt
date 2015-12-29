@@ -68,7 +68,8 @@ set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/GetMessage.cpp
-        networkMessage/sources/ServerInfoMessage.cpp networkMessage/sources/UserManagementMessage.cpp networkMessage/headers/UserManagementMessage.h)
+        networkMessage/sources/ServerInfoMessage.cpp networkMessage/sources/UserManagementMessage.cpp networkMessage/headers/UserManagementMessage.h
+        networkModule/sources/MessageWrapper.cpp)
 
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})
 
