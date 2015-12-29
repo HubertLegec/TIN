@@ -25,7 +25,11 @@ private:
     int sendSockfd;
     pthread_t *sendSystemThread;
     pthread_t *receiveSystemThread;
-    const sockaddr *localAddress;
+    struct addrinfo *ownAddress;
+//    const sockaddr *localAddress;
+    const char *myIP;
+    const char *myPort;
+    NetworkController *pointer;
 
     void prepareReceiveThread();
 
@@ -37,9 +41,11 @@ private:
 
     bool sendMsg(std::shared_ptr<SimpleMessage> msg);
 
-    void receiveMsg(int senderSockfd);
+    void receiveMsg(int senderSockfd, std::string hostname, int port);
 
     void createThread(pthread_t *thread, void *(*function)(void *));
+
+    char *getIpAndAddress(const struct sockaddr *sa, char *s, size_t maxlen, int &port);
 
     struct addrinfo *prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
 
@@ -55,12 +61,17 @@ public:
     NetworkController() { };
 
     NetworkController(Queue<std::shared_ptr<MessageWrapper>> *sendQueue,
-                      Queue<std::shared_ptr<MessageWrapper>> *receiveQueue,
-                      const sockaddr *localAddress)
+                      Queue<std::shared_ptr<MessageWrapper>> *receiveQueue, std::string ip, int port)
             : sendQueue(sendQueue),
               receiveQueue(receiveQueue),
-              sendSockfd(0), receiveSockfd(0),
-              localAddress(localAddress) {
+              sendSockfd(0), receiveSockfd(0) {
+        myIP = ip.c_str();
+        std::string s = std::to_string(port);
+        myPort = s.c_str();
+        pointer = this;
+        pthread_t sThread, rThread;
+        sendSystemThread = &sThread;
+        receiveSystemThread = &rThread;
         prepareReceiveThread();
         prepareSendThread();
     };

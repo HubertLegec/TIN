@@ -113,6 +113,7 @@ add_test(NAME networkMessageSerializationTest COMMAND networkMessageSerializatio
 #*************************** newtwork module tests ******************************************
 add_executable(NETWORK_BASIC_TESTS networkModule_tests/networkBasicTest.cpp
         networkModule/sources/MessageWrapper.cpp
+        networkMessage/sources/SimpleMessage.cpp
         networkModule/sources/NetworkController.cpp)
 target_link_libraries(NETWORK_BASIC_TESTS gtest_main)
 add_test(NAME networkBasicTest COMMAND networkBasicTest)
