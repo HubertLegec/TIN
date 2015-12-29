@@ -19,24 +19,22 @@ class CategoryManagementMessage : public SimpleMessage {
 private:
     long categoryID;
     std::string categoryName;
-    long userID;
 public:
     const static int UNDEFINED_ID = -1;
 
     CategoryManagementMessage();
 
     //this constructor should be used to join, left, sign out or destroy the category
-    CategoryManagementMessage(long senderID, MessageType type, long categoryID, long userID);
+    CategoryManagementMessage(long senderID, MessageType type, long categoryID);
 
     //this constructor should be used to create new category
-    CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName, long userID);
+    CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName);
     std::string getCategoryName() const;
     long getCategoryID() const;
-    long getUserID() const;
     std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
-        archive(this->type, this->size, this->senderID, this->categoryID, this->userID, this->categoryName);
+        archive(this->type, this->size, this->senderID, this->categoryID, this->categoryName);
     }
 };
 

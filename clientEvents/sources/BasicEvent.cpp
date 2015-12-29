@@ -8,3 +8,7 @@ std::string BasicEvent::toString() {
     //TODO
     return "BasicEvent";
 }
+
+std::string BasicEvent::getName() {
+    return "BASIC_EVENT";
+}

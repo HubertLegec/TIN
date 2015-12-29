@@ -22,3 +22,7 @@ std::string ConfirmMessageEvent::toString() {
     //TODO
     return "ConfirmMessageEvent";
 }
+
+std::string ConfirmMessageEvent::getName() {
+    return "CONFIRM_MESSAGE_EVENT";
+}

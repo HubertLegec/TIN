@@ -27,6 +27,7 @@ public:
     void showLeaveCategorySubMenu();
     void showVisitCategorySubMenu();
 
+    bool getUserConfirmation();
 private:
     void readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool passwordConfirmation = true);
 };

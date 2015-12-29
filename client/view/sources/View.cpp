@@ -6,6 +6,7 @@
 #include "../../../clientEvents/headers/ChooseMenuOptionEvent.h"
 #include "../../../clientEvents/headers/CategoryAccessEvent.h"
 #include <iomanip>
+#include <pthread.h>
 
 
 View::View(Controller *controller) : controller(controller) {
@@ -246,6 +247,18 @@ void View::readCategoryAccessData(std::string & categoryName, std::string & user
     }
 }
 
+bool View::getUserConfirmation() {
+    std::cout << std::endl << "Are you shure (y/n)?" << std::endl;
+    char decision;
+    std::cin >> decision;
+    std::cout << std::endl;
+    if (decision == 'y') {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 
 

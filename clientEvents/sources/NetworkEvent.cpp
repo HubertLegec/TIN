@@ -16,3 +16,7 @@ std::string NetworkEvent::toString() {
     //TODO
     return "NetworkEvent";
 }
+
+std::string NetworkEvent::getName() {
+    return "NETWORK_EVENT";
+}

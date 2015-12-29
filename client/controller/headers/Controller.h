@@ -23,7 +23,7 @@ class Controller {
 private:
     Model* model;
     View* view;
-    NetworkController networkController;
+    NetworkController *networkController;
     Queue<std::shared_ptr<BasicEvent>> eventsToServe;
     Queue<std::shared_ptr<MessageWrapper>> sendQueue;
     std::map<std::string, BasicEventStrategy *> strategyMap;

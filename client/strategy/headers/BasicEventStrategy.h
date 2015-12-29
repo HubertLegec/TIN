@@ -17,7 +17,7 @@ public:
     BasicEventStrategy(Controller* controller);
     void setController(Controller* controller);
 
-    virtual void serveEvent(BasicEvent *event) const = 0;
+    virtual void serveEvent(BasicEvent *event) = 0;
 };
 
 

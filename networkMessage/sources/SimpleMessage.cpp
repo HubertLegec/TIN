@@ -39,6 +39,9 @@ void SimpleMessage::setType(MessageType type) {
 }
 
 std::string SimpleMessage::toString() {
-    //TODO
-    return "SimpleMessage";
+    std::stringstream ss;
+    ss << "SimpleMessage[type:" << type << "; ";
+    ss << "size:" << size << "; ";
+    ss << "senderID:" << senderID << "]";
+    return ss.str();
 }

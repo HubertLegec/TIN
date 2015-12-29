@@ -9,13 +9,14 @@ ConfirmMessageEventStrategy::ConfirmMessageEventStrategy() : BasicEventStrategy(
 
 ConfirmMessageEventStrategy::ConfirmMessageEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void ConfirmMessageEventStrategy::serveEvent(BasicEvent *event) const {
+void ConfirmMessageEventStrategy::serveEvent(BasicEvent *event) {
     ConfirmMessageEvent *confirmMessageEvent = dynamic_cast<ConfirmMessageEvent *>(event);
     long msgIndex = confirmMessageEvent->getMessageIndex();
     RingMessage m = controller->getModel()->getInboxMessages()[msgIndex];
     controller->getModel()->markMessageAsRead(msgIndex);
-    ConnectionInfo sendInfo = controller->getModel()->getLeftNeighbour(m.getCategoryId());
 
-    //TODO
-    //insert message to output queue
+    m.addConfirmation(controller->getModel()->getUserName());
+    ConnectionInfo neighbour = controller->getModel()->getLeftNeighbour(m.getCategoryId());
+    auto toSend = std::shared_ptr<RingMessage>(new RingMessage(m));
+    controller->sendMessage(toSend, neighbour.getIP(), neighbour.getPort());
 }

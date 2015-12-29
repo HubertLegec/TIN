@@ -15,7 +15,7 @@ NetworkEventStrategy::NetworkEventStrategy() : BasicEventStrategy(){ }
 
 NetworkEventStrategy::NetworkEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
-void NetworkEventStrategy::serveEvent(BasicEvent *event) const {
+void NetworkEventStrategy::serveEvent(BasicEvent *event) {
     NetworkEvent *netEvent = dynamic_cast<NetworkEvent *>(event);
     std::shared_ptr<SimpleMessage> msg = netEvent->getMessage();
 
@@ -101,6 +101,5 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
 void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
     controller->getModel()->addMessageToInbox(msg);
-
     controller->getModel()->addNotification("You have a new message!\nCheck your inbox.");
 }

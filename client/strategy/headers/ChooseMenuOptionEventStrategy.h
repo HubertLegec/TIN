@@ -18,7 +18,7 @@ public:
     ChooseMenuOptionEventStrategy();
     ChooseMenuOptionEventStrategy(Controller* controller);
 
-    virtual void serveEvent(BasicEvent *event) const;
+    virtual void serveEvent(BasicEvent *event) override;
 };
 
 

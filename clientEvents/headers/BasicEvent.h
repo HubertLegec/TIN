@@ -11,6 +11,7 @@ class BasicEvent {
 public:
     virtual std::string toString();
 
+    virtual std::string getName();
 };
 
 

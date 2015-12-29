@@ -14,7 +14,7 @@ public:
     ConfirmMessageEventStrategy();
     ConfirmMessageEventStrategy(Controller* controller);
 
-    virtual void serveEvent(BasicEvent *event) const;
+    virtual void serveEvent(BasicEvent *event) override;
 };
 
 

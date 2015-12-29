@@ -13,7 +13,7 @@ public:
     NetworkEventStrategy();
     NetworkEventStrategy(Controller* controller);
 
-    virtual void serveEvent(BasicEvent *event) const;
+    virtual void serveEvent(BasicEvent *event) override;
 
 private:
     void processServerInfo(SimpleMessage &message) const;

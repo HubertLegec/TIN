@@ -11,3 +11,7 @@ std::string CategoryAccessEvent::getPassword() {return userPassword;};
 
 std::string CategoryAccessEvent::toString() {return "CategoryAccessEvent"; }
 
+std::string CategoryAccessEvent::getName() {
+    return "CATEGORY_ACCESS_EVENT";
+}
+

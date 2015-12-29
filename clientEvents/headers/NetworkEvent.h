@@ -17,7 +17,10 @@ public:
     NetworkEvent(std::shared_ptr<SimpleMessage> message);
 
     std::shared_ptr<SimpleMessage> getMessage() const;
-    std::string toString();
+
+    virtual std::string toString();
+
+    virtual std::string getName();
 };
 
 

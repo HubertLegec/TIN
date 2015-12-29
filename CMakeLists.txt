@@ -30,9 +30,9 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
+        networkMessage/sources/GetMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp
-        networkMessage/sources/UserManagementMessage.cpp
-        networkMessage/headers/UserManagementMessage.h)
+        networkMessage/sources/UserManagementMessage.cpp)
 set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
         clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp

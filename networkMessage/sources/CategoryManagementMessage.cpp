@@ -7,21 +7,19 @@
 
 CategoryManagementMessage::CategoryManagementMessage() { }
 
-CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID, long userID)
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID)
                                                     : SimpleMessage(type, senderID){
     this->categoryID = categoryID;
-    this->userID = userID;
 
-    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);
+    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long);
 }
 
-CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName,
-                                                     long userID) : SimpleMessage(type, senderID) {
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName)
+        : SimpleMessage(type, senderID) {
     this->categoryID = UNDEFINED_ID;
-    this->userID = userID;
     this->categoryName = categoryName;
 
-    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long) + categoryName.size();
+    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long) + categoryName.size();
 }
 
 std::string CategoryManagementMessage::getCategoryName() const {
@@ -32,11 +30,12 @@ long CategoryManagementMessage::getCategoryID() const {
     return categoryID;
 }
 
-long CategoryManagementMessage::getUserID() const {
-    return userID;
-}
-
 std::string CategoryManagementMessage::toString() {
-    //TODO
-    return "CategoryListMessage";
+    std::stringstream ss;
+    ss << "CategoryListMessage[type:" << type << "; ";
+    ss << "size:" << size << "; ";
+    ss << "senderID:" << senderID << "; ";
+    ss << "categoryName:" << categoryName << "; ";
+    ss << "categoryID:" << categoryID << "]";
+    return ss.str();
 }

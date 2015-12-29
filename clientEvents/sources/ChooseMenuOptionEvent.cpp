@@ -15,3 +15,7 @@ std::string ChooseMenuOptionEvent::toString() {
     //TODO
     return "ChooseMenuOptionEvent";
 }
+
+std::string ChooseMenuOptionEvent::getName() {
+    return "CHOOSE_MENU_OPTION_EVENT";
+}

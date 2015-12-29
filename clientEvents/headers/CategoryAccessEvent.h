@@ -22,7 +22,8 @@ public:
     std::string getUserName();
     std::string getPassword();
 
-    std::string toString();
+    virtual std::string toString();
+    virtual std::string getName();
 
 private:
     AccessType type;

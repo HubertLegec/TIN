@@ -7,6 +7,7 @@
 
 #include "BasicEvent.h"
 
+
 class ConfirmMessageEvent : public BasicEvent {
 private:
     //index of message in inbox
@@ -17,7 +18,10 @@ public:
     ConfirmMessageEvent(long messageIndex);
     long getMessageIndex() const;
     void setMessageIndex(long messageIndex);
-    std::string toString();
+
+    virtual std::string toString();
+
+    virtual std::string getName();
 };
 
 

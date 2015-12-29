@@ -21,7 +21,8 @@ public:
     CategoryListMessage(long senderID, const std::map<long, std::string>& categories);
     void addCategory(long categoryID, std::string categoryName);
     std::map<long, std::string> getCategories() const;
-    std::string toString();
+
+    virtual std::string toString();
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->categories);

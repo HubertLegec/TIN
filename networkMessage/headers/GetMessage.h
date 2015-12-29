@@ -17,6 +17,8 @@ private:
     GetMessageType requestType;
     long categoryID;
 public:
+    static const long UNDEFINED_ID = -1;
+
     GetMessage();
     GetMessage(long senderID, GetMessageType request);
 
