@@ -59,20 +59,19 @@ TEST(ServerInfoMessage, creating_test){
 }
 
 TEST(CategoryManagementMessage, creating_test){
-    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category", 333);
+    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category");
 
     ASSERT_EQ(MessageType::CREATE_CATEGORY, msg.getMessageType());
-    ASSERT_EQ(55, msg.getMessageSize());
+    ASSERT_EQ(47, msg.getMessageSize());
     EXPECT_TRUE(msg.getCategoryName().compare("Simple Category") == 0);
     EXPECT_EQ(msg.getCategoryID(), -1);
-    EXPECT_EQ(msg.getUserID(), 333);
 
-    CategoryManagementMessage msg2(1, MessageType::JOIN_CATEGORY, 12, 44);
+    CategoryManagementMessage msg2(1, MessageType::JOIN_CATEGORY, 12);
     ASSERT_EQ(MessageType::JOIN_CATEGORY, msg2.getMessageType());
-    ASSERT_EQ(40, msg2.getMessageSize());
+    ASSERT_EQ(32, msg2.getMessageSize());
     ASSERT_EQ(0, msg2.getCategoryName().size());
     EXPECT_EQ(msg2.getCategoryID(), 12);
-    EXPECT_EQ(msg2.getUserID(), 44);
+    EXPECT_EQ(msg2.getSenderID(), 1);
 }
 
 TEST(NeighboursInfoMessage, creating_test){

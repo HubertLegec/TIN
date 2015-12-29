@@ -144,7 +144,7 @@ file.close();*/
 }
 
 TEST(CategoryManagementMessage, serialization_test){
-    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category", 333);
+    CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category");
 
     std::stringstream ss; // any stream can be used
 
@@ -163,10 +163,9 @@ TEST(CategoryManagementMessage, serialization_test){
     ASSERT_EQ(msg.getMessageType(), testMsg.getMessageType());
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
     EXPECT_EQ(msg.getCategoryID(), testMsg.getCategoryID());
-    EXPECT_EQ(msg.getUserID(), testMsg.getUserID());
     EXPECT_TRUE(msg.getCategoryName() == testMsg.getCategoryName());
 
-    CategoryManagementMessage msg2(1, MessageType::DESTROY_CATEGORY, 12, 13);
+    CategoryManagementMessage msg2(1, MessageType::DESTROY_CATEGORY, 12);
 
     {
         cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
@@ -183,7 +182,6 @@ TEST(CategoryManagementMessage, serialization_test){
     ASSERT_EQ(msg2.getMessageType(), testMsg2.getMessageType());
     ASSERT_EQ(msg2.getSenderID(), testMsg2.getSenderID());
     EXPECT_EQ(msg2.getCategoryID(), testMsg2.getCategoryID());
-    EXPECT_EQ(msg2.getUserID(), testMsg2.getUserID());
     EXPECT_TRUE(msg2.getCategoryName() == testMsg2.getCategoryName());
 }
 
