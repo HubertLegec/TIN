@@ -13,15 +13,18 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "../../utils/Queue.hpp"
+#include "MessageWrapper.h"
 
 
 class NetworkController {
 
 private:
-    Queue<std::pair<SimpleMessage, struct sockaddr *>> *sendQueue;
-    Queue<SimpleMessage> *receiveQueue;
+    Queue<std::shared_ptr<MessageWrapper>> *sendQueue;
+    Queue<std::shared_ptr<MessageWrapper>> *receiveQueue;
     int receiveSockfd;
     int sendSockfd;
+    pthread_t *sendSystemThread;
+    pthread_t *receiveSystemThread;
     const sockaddr *localAddress;
 
     void prepareReceiveThread();
@@ -32,9 +35,17 @@ private:
 
     void createSendThread();
 
-    bool sendMsg(const char *msg, struct sockaddr *address);
+    bool sendMsg(std::shared_ptr<SimpleMessage> msg);
 
-    void receiveMsg(struct sockaddr *senderAddress, int senderSockfd);
+    void receiveMsg(int senderSockfd);
+
+    void createThread(pthread_t *thread, void *(*function)(void *));
+
+    struct addrinfo *prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
+
+    struct addrinfo *prepareListeningSocket();
+
+    const char *serializeMsg(std::shared_ptr<SimpleMessage> msg);
 
     static void *startReceiveThread(void *param);
 
@@ -43,7 +54,8 @@ private:
 public:
     NetworkController() { };
 
-    NetworkController(Queue<std::pair<SimpleMessage, struct sockaddr *>> *sendQueue, Queue<SimpleMessage> *receiveQueue,
+    NetworkController(Queue<std::shared_ptr<MessageWrapper>> *sendQueue,
+                      Queue<std::shared_ptr<MessageWrapper>> *receiveQueue,
                       const sockaddr *localAddress)
             : sendQueue(sendQueue),
               receiveQueue(receiveQueue),

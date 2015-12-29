@@ -4,11 +4,21 @@
 
 #include <unistd.h>
 #include "../headers/NetworkController.h"
+#include "../../logger/easylogging++.h"
 
 
 void NetworkController::prepareSendThread() {
-    pthread_t *thread;
-    pthread_create(thread, NULL, startSendThread, this);
+    createThread(sendSystemThread, startSendThread);
+}
+
+void NetworkController::createThread(pthread_t *thread, void *(*function)(void *)) {
+    int rc;
+    pthread_create(thread, NULL, function, this);
+    rc = pthread_join(*thread, NULL);
+    if (rc) {
+        LOG(ERROR) << "Unable to join thread" << rc;
+        exit(-1);
+    }
 }
 
 void *NetworkController::startSendThread(void *param) {
@@ -18,42 +28,117 @@ void *NetworkController::startSendThread(void *param) {
 
 void NetworkController::createSendThread() {
     while (true) {
-        std::pair<SimpleMessage, struct sockaddr *> msg = sendQueue->pop();
-        while (sendSockfd = socket(PF_UNIX, SOCK_STREAM, 0) != 0) {
-            std::cout << "Coś poszło nie tak podczas otwierania gniazda do wysyłania. Ponawiam próbę...." << std::endl;
-        }
-        if (!sendMsg(msg.first.toString().data(), msg.second))
+        std::shared_ptr<MessageWrapper> msg = sendQueue->pop();
+        struct addrinfo *serverInfo = prepareConncetionWithReceiver(msg);
+        if (!sendMsg(msg->getMessage())) {
+            LOG(ERROR) << "Couldnt send msg";
             break;
+        }
+        freeaddrinfo(serverInfo);
     }
+    pthread_exit(NULL);
 }
 
-bool NetworkController::sendMsg(const char *msg, struct sockaddr *address) {
-    if (connect(sendSockfd, address, sizeof(address)) == -1) {
-        std::cout << "Coś poszło nie tak, nie udało się utworzyć połączenia to wysłania wiadomości" << std::endl;
-        return false;
+struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg) {
+    struct addrinfo hints, *servinfo, *p;
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6
+    hints.ai_socktype = SOCK_STREAM;
+    const char *hostname = msg->getIP().c_str();
+    std::string s = std::to_string(msg->getPort());
+    char const *port = s.c_str();
+    if ((getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
+        LOG(ERROR) << "Didnt find address with hostname: " << hostname << " port: " << port;
+        exit(1);
     }
+    // loop through all the results and connect to the first we can
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sendSockfd = socket(p->ai_family, p->ai_socktype,
+                                 p->ai_protocol)) == -1) {
+            LOG(INFO) << "Not created socket. Retrying...";
+            continue;
+        }
+
+        if (connect(sendSockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(sendSockfd);
+            LOG(INFO) << "Not connected. Retrying...";
+            continue;
+        }
+
+        return servinfo; // if we get here, we must have connected successfully
+    }
+    LOG(ERROR) << "Failed to connect";
+}
+
+bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     //TODO do dorobienia obsługa wysyłania niepełnej wiadomości
-    write(sendSockfd, msg, sizeof(msg));
-    while (close(sendSockfd) != 0) {
-        std::cout << "Coś poszło nie tak podczas zamykania połączenia. Ponawiam próbę...." << std::endl;
+    const char *serializedMsg = serializeMsg(msg);
+    write(sendSockfd, serializedMsg, sizeof(msg));
+    int trialCounter = 1;
+    while (trialCounter < 4 || close(sendSockfd) != 0) {
+        LOG(INFO) << "Something went wrong during closing connection. Retrying..." << trialCounter++;
+    }
+    if (trialCounter > 3) {
+        LOG(ERROR) << "Something went wrong during closing connection.";
+        return false;
     }
     return true;
 }
 
+const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg) {
+    std::stringstream ss;
+    cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
+    oarchive(*msg); // Write the data to the archive
+    const std::string tmp = ss.str();
+    return tmp.c_str();
+
+}
+
 void NetworkController::prepareReceiveThread() {
-    while (receiveSockfd = socket(PF_UNIX, SOCK_STREAM, 0) != 0) {
-        std::cout << "Coś poszło nie tak podczas otwierania gniazda. Ponawiam próbę...." << std::endl;
+
+    if (prepareListeningSocket() == NULL)
+        exit(1);
+    //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
+    listen(receiveSockfd, 10);
+    createThread(receiveSystemThread, startReceiveThread);
+}
+
+struct addrinfo *NetworkController::prepareListeningSocket() {
+    int sockfd;
+    struct addrinfo hints, *servinfo, *p;
+
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE; // use my IP address
+
+    if ((getaddrinfo(NULL, "80", &hints, &servinfo)) != 0) {
+        LOG(ERROR) << "Something went wrong during closing connection.";
+        //TODO obsługa
+//        exit(1);
     }
-    while (bind(receiveSockfd, localAddress, sizeof(localAddress)) != 0) {
-        std::cout << "Coś poszło nie tak podczas przypisywania adresu. Ponawiam próbę...." << std::endl;
+
+    // loop through all the results and bind to the first we can
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                             p->ai_protocol)) == -1) {
+            LOG(INFO) << "Not created socket. Retrying...";
+            continue;
+        }
+
+        if (receiveSockfd = bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(sockfd);
+            LOG(INFO) << "Not bind. Retrying...";
+            continue;
+        }
+
+        return servinfo; // if we get here, we must have connected successfully
     }
-    //TODO drugi parametr oznacza liczbę połącznień oczekujących na accept - do przemyślenia
-    while (listen(receiveSockfd, 10) != 0) {
-        std::cout << "Coś poszło nie tak podczas uruchamiania oczekiwania na połaczenia. Ponawiam próbę...." <<
-        std::endl;
-    }
-    pthread_t *thread;
-    pthread_create(thread, NULL, startReceiveThread, this);
+
+    LOG(ERROR) << "Failed to bind socket";
+    return NULL;
+
 }
 
 void *NetworkController::startReceiveThread(void *param) {
@@ -74,11 +159,13 @@ void NetworkController::createReceiveThread() {
             break;
         }
         std::cout << "Poprawnie odebrałem wiadomość. Rozpoczynam procesowanie" << std::endl;
+        receiveMsg(senderSockfd);
 
     }
+    pthread_exit(NULL);
 }
 
-void NetworkController::receiveMsg(struct sockaddr *senderAddress, int senderSockfd) {
+void NetworkController::receiveMsg(int senderSockfd) {
     char *buffer = new char[1000];
     int msgLength;
     while (msgLength >= 128) {
@@ -86,11 +173,12 @@ void NetworkController::receiveMsg(struct sockaddr *senderAddress, int senderSoc
     }
     close(senderSockfd);
     //TODO dodać do kolejki
-    SimpleMessage msg;
+    std::shared_ptr<MessageWrapper> msg;
     receiveQueue->push(msg);
 }
 
 
 void NetworkController::stop() {
-    //TODO
+    pthread_cancel(*sendSystemThread);
+    pthread_cancel(*receiveSystemThread);
 }
