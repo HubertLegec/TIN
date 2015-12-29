@@ -24,16 +24,35 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
             showCategoryList();
             break;
         case ChooseMenuOptionEvent::CREATE_CATEGORY :
-            createCategory();
+            if (controller->getModel()->isRegistered()) {
+                createCategory();
+            } else {
+                createAccount();
+            }
             break;
         case ChooseMenuOptionEvent::DELETE_CATEGORY :
-            deleteCategory();
+            if (controller->getModel()->isRegistered()) {
+                deleteCategory();
+            } else {
+                createAccount();
+            }
             break;
         case ChooseMenuOptionEvent::JOIN_CATEGORY :
-            joinCategory();
+            if (controller->getModel()->isRegistered()) {
+                joinCategory();
+            } else {
+                createAccount();
+            }
             break;
         case ChooseMenuOptionEvent::LEAVE_CATEGORY :
-            leaveCategory();
+            if (controller->getModel()->isRegistered()) {
+                leaveCategory();
+            } else {
+                createAccount();
+            }
+            break;
+        case ChooseMenuOptionEvent::REFRESH :
+            refresh();
             break;
     }
 }
@@ -51,13 +70,21 @@ void ChooseMenuOptionEventStrategy::createCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::deleteCategory() const {
-    controller->getView()->showDeleteCategorySubMenu();
+    controller->getView()->showDeleteCategorySubMenu(controller->getModel()->getMyCategories());
 }
 
 void ChooseMenuOptionEventStrategy::joinCategory() const {
-    //TODO
+    controller->getView()->showJoinCategorySubMenu();
 }
 
 void ChooseMenuOptionEventStrategy::leaveCategory() const {
-    //TODO
+    controller->getView()->showLeaveCategorySubMenu();
 }
+
+void ChooseMenuOptionEventStrategy::createAccount() const {
+    controller->getView()->showRegisterNewUserSubMenu();
+}
+
+void ChooseMenuOptionEventStrategy::refresh() const {
+    controller->getView()->showMainMenu(controller->getModel()->getNotifications());
+};

@@ -6,7 +6,11 @@
 
 using namespace std;
 
-Model::Model() { }
+Model::Model() {
+    userID = UNDEFINED_ID;
+    myIP = CLIENT_DEFAULT_IP;
+    myPort = CLIENT_DEFAULT_PORT;
+}
 
 void Model::addJoinedCategory(long id, const string &name) {
     categoryNameIdMapping[name] = id;
@@ -79,11 +83,11 @@ void Model::removeCategoryAndData(long id) {
     categories.erase(id);
 }
 
-vector<pair<long, string>> Model::getMyCategories() const {
-    vector<pair<long, string>> result;
+map<long, string> Model::getMyCategories() const {
+    map<long, string> result;
     for (pair<long, CategoryInfo> p : categories) {
         if(p.second.isOwner()){
-            result.push_back(pair<long, string>(p.first, p.second.getName()));
+            result.insert(pair<long, string>(p.first, p.second.getName()));
         }
     }
     return result;
@@ -131,4 +135,28 @@ vector<string> Model::getNotifications() {
 
 void Model::clearNotificationList() {
     notifications.clear();
+}
+
+void Model::setMyIP(const std::string &ip) {
+    this->myIP = ip;
+}
+
+void Model::setMyPort(int port) {
+    this->myPort = port;
+}
+
+const std::string &Model::getMyIP() const {
+    return myIP;
+}
+
+int Model::getMyPort() const {
+    return myPort;
+}
+
+bool Model::isRegistered() const {
+    if (userID != UNDEFINED_ID) {
+        return true;
+    } else {
+        return false;
+    }
 }

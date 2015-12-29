@@ -1,17 +1,34 @@
 #include "../headers/CategoryAccessEvent.h"
-#include <iostream>
+#include <sstream>
 
-CategoryAccessEvent::CategoryAccessEvent(CategoryAccessEvent::AccessType type_, const std::string & categoryName_, const std::string & userName_,const std::string & userPassword_)
-:BasicEvent(), type(type_), categoryName(categoryName_), userName(userName_), userPassword(userPassword_) { }
+using namespace std;
 
-CategoryAccessEvent::AccessType CategoryAccessEvent::getType() { return type;}
-std::string CategoryAccessEvent::getCategoryName() { return categoryName;}
-std::string CategoryAccessEvent::getUserName() {return userName;};
-std::string CategoryAccessEvent::getPassword() {return userPassword;};
+CategoryAccessEvent::CategoryAccessEvent(CategoryAccessEvent::AccessType type_, const string &categoryName_)
+        : BasicEvent(), type(type_), categoryName(categoryName_) { }
 
-std::string CategoryAccessEvent::toString() {return "CategoryAccessEvent"; }
+CategoryAccessEvent::CategoryAccessEvent(AccessType type_, long categoryID_)
+        : BasicEvent(), type(type_), categoryId(categoryID_) { }
 
-std::string CategoryAccessEvent::getName() {
+CategoryAccessEvent::AccessType CategoryAccessEvent::getType() {
+    return type;
+}
+
+const std::string &CategoryAccessEvent::getCategoryName() const {
+    return categoryName;
+}
+
+long CategoryAccessEvent::getCategoryID() const {
+    return categoryId;
+}
+
+std::string CategoryAccessEvent::toString() const {
+    stringstream ss;
+    ss << "CategoryAccessEvent[type:" << type << "; ";
+    ss << "categoryName:" << categoryName << "]";
+
+}
+
+std::string CategoryAccessEvent::getName() const {
     return "CATEGORY_ACCESS_EVENT";
 }
 

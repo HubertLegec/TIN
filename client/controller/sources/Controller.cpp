@@ -8,10 +8,11 @@
 #include "../../strategy/headers/NetworkEventStrategy.h"
 #include "../../strategy/headers/ConfirmMessageEventStrategy.h"
 #include "../../strategy/headers/ChooseMenuOptionEventStrategy.h"
+#include "../../strategy/headers/CategoryAccessEventStrategy.h"
+#include "../../strategy/headers/UserAccountEventStrategy.h"
 
 Controller::Controller(Model* model) : model(model) {
     initStrategyMap();
-    networkController = new NetworkController();
 }
 
 Controller::~Controller() {
@@ -26,6 +27,8 @@ void Controller::initStrategyMap() {
     strategyMap["NETWORK_EVENT"] = new NetworkEventStrategy(this);
     strategyMap["CONFIRMATION_MESSAGE_EVENT"] = new ConfirmMessageEventStrategy(this);
     strategyMap["CHOOSE_MENU_OPTION_EVENT"] = new ChooseMenuOptionEventStrategy(this);
+    strategyMap["CATEGORY_ACCESS_EVENT"] = new CategoryAccessEventStrategy(this);
+    strategyMap["USER_ACCOUNT_EVENT"] = new UserAccountEventStrategy(this);
 }
 
 Model* Controller::getModel() {
@@ -41,6 +44,7 @@ Queue<std::shared_ptr<BasicEvent>> *Controller::getEventsToServe() {
 }
 
 void Controller::start() {
+    //networkController = new NetworkController(&sendQueue, &eventsToServe, model->getMyIP(), model->getMyPort());
     view->showMainMenu(model->getNotifications());
     while(running){
         std::shared_ptr<BasicEvent> event = eventsToServe.pop();

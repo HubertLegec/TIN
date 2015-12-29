@@ -5,7 +5,10 @@
 #include "../headers/View.h"
 #include "../../../clientEvents/headers/ChooseMenuOptionEvent.h"
 #include "../../../clientEvents/headers/CategoryAccessEvent.h"
+#include "../../../clientEvents/headers/UserAccountEvent.h"
 #include <iomanip>
+
+using namespace std;
 
 View::View(Controller * controller) : threadData(controller),viewThread() {
 }
@@ -13,14 +16,14 @@ View::View(Controller * controller) : threadData(controller),viewThread() {
 View::~View() { pthread_join(viewThread,NULL); }
 
 
-void View::showCategoryList(std::map<long, std::string> categories) {
+void View::showCategoryList(map<long, string> categories) {
     pthread_join(viewThread, NULL);
     *threadData.categories = categories;
     pthread_create(&viewThread, NULL, showCreateCategorySubMenuThread, &threadData);
 }
 
 
-void View::showMainMenu(std::vector<std::string> notificationsList) {
+void View::showMainMenu(vector<string> notificationsList) {
 
     pthread_join(viewThread, NULL);
     *threadData.notifications = notificationsList;
@@ -33,9 +36,10 @@ void View::showCreateCategorySubMenu() {
     pthread_create(&viewThread, NULL, showCreateCategorySubMenuThread, &threadData);
 }
 
-void View::showDeleteCategorySubMenu()
+void View::showDeleteCategorySubMenu(std::map<long, std::string> myCategories)
 {
     pthread_join(viewThread, NULL);
+    *threadData.categories = myCategories;
     pthread_create(&viewThread, NULL, showDeleteCategorySubMenuThread, &threadData);
 }
 
@@ -61,38 +65,43 @@ void View::showVisitCategorySubMenu()
     pthread_create(&viewThread, NULL, showVisitCategorySubMenuThread,&threadData);
 }
 
-void View::readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool confirmPassword)
+void View::showRegisterNewUserSubMenu() {
+    pthread_join(viewThread, NULL);
+    pthread_create(&viewThread, NULL, showRegisterNewUserSubMenuThread, &threadData);
+}
+
+void View::readCategoryAccessData(string &categoryName, string &userName, string &userPassword, bool confirmPassword)
 {
-    std::string passwordConfirmation;
+    string passwordConfirmation;
 
-    std::cout<<"Type category name:";
-    std::cin>>categoryName;
+    cout << "Type category name:";
+    cin >> categoryName;
 
-    std::cout<<"Type user name:";
-    std::cin>>userName;
+    cout << "Type user name:";
+    cin >> userName;
 
     while(true) {
-        std::cout << "Type your password:";
-        std::cin >> userPassword;
+        cout << "Type your password:";
+        cin >> userPassword;
 
         if(!confirmPassword)
             break;
 
-        std::cout << "Confirm Password:";
-        std::cin >> passwordConfirmation;
+        cout << "Confirm Password:";
+        cin >> passwordConfirmation;
 
         if (userPassword == passwordConfirmation)
             break;
         else
-            std::cout << "Passwords don't match!" << std::endl;
+            cout << "Passwords don't match!" << endl;
     }
 }
 
 bool View::getUserConfirmation() {
-    std::cout << std::endl << "Are you sure (y/n)?" << std::endl;
+    cout << endl << "Are you sure (y/n)?" << endl;
     char decision;
-    std::cin >> decision;
-    std::cout << std::endl;
+    cin >> decision;
+    cout << endl;
     if (decision == 'y') {
         return true;
     }
@@ -107,58 +116,58 @@ void* View::showCategoryListThread(void * arg)
     ThreadData * threadData = (ThreadData*)arg;
 
     int idWidth = 21; //Max long type decimal digits number + 1.
-    std::cout << "Category list:" << std::endl;
+    cout << "Category list:" << endl;
 
-    std::cout << std::setiosflags(std::ios::left);
+    cout << setiosflags(ios::left);
 
-    std::cout << std::setw(idWidth) << "id" << "name" << std::endl;
-    std::cout << std::setw(idWidth) << "----" << "----" << std::endl;
+    cout << setw(idWidth) << "id" << "name" << endl;
+    cout << setw(idWidth) << "----" << "----" << endl;
 
     for (auto category : *threadData->categories) {
-        std::cout << std::setw(idWidth) << std::setiosflags(std::ios::left) << category.first << category.second <<
-        std::endl;
+        cout << setw(idWidth) << setiosflags(ios::left) << category.first << category.second <<
+        endl;
     }
 
-    std::resetiosflags(std::ios::left);
+    resetiosflags(ios::left);
 }
 
 void* View::showMainMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::cout << "Welcome to #RING!" << std::endl;
-    std::cout << "choose action:"<<std::endl;
-    std::cout << "[c] create category" << std::endl;
-    std::cout << "[d] delete category" << std::endl;
-    std::cout << "[s] show category list" << std::endl;
-    std::cout << "[r] register in category" << std::endl;
-    std::cout << "[j] join category" << std::endl;
-    std::cout << "[v] visit category" << std::endl;
-    std::cout << "[l] leave category" << std::endl;
-    std::cout << "[q] quit" << std::endl;
+    cout << "Welcome to #RING!" << endl;
+    cout << "choose action:" << endl;
+    cout << "[c] create category" << endl;
+    cout << "[d] delete category" << endl;
+    cout << "[s] show category list" << endl;
+    cout << "[r] register in category" << endl;
+    cout << "[j] join category" << endl;
+    cout << "[v] visit category" << endl;
+    cout << "[l] leave category" << endl;
+    cout << "[q] quit" << endl;
 
     if (!(*threadData->notifications).empty()) {
-        std::cout << "-------------" << std::endl;
-        std::cout << "notifications" << std::endl;
-        std::cout << "-------------" << std::endl;
+        cout << "-------------" << endl;
+        cout << "notifications" << endl;
+        cout << "-------------" << endl;
 
-        for (std::string notification : *threadData->notifications) {
-            std::cout << notification << std::endl;
+        for (string notification : *threadData->notifications) {
+            cout << notification << endl;
         }
-        std::cout << "-------------" << std::endl;
+        cout << "-------------" << endl;
 
     }
-    std::cout << "[other] refresh" << std::endl;
+    cout << "[other] refresh" << endl;
 
     char typed;
 
     ChooseMenuOptionEvent::OptionChosen event = ChooseMenuOptionEvent::REFRESH;
 
 
-    std::cout << ">";
-    std::cin.clear();
-    std::cin.sync();
-    typed = std::cin.get();
+    cout << ">";
+    cin.clear();
+    cin.sync();
+    typed = cin.get();
 
     switch (typed) {
         case 'c':
@@ -191,7 +200,8 @@ void* View::showMainMenuThread(void * arg)
         if(getUserConfirmation()==false)
             return 0;
 
-    threadData->controller->getEventsToServe()->push(std::shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(event)));
+    threadData->controller->getEventsToServe()->push(
+            shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(event)));
 }
 
 
@@ -199,24 +209,19 @@ void* View::showCreateCategorySubMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::string categoryName;
-    std::string userName;
-    std::string userPassword;
+    string categoryName;
 
 
-    std::cout << "Creating category:" << std::endl;
-
-    readCategoryAccessData(categoryName,userName,userPassword);
-
-    std::cout << "Category name: " << categoryName << std::endl;
-    std::cout << "User name: " << userName << std::endl;
-    std::cout << "Create category? [y/n] " << std::endl;
+    cout << "Creating category:" << endl;
+    cout << "Category name: ";
+    cin >> categoryName;
+    cout << endl << "Create category? [y/n] " << endl;
 
     char decision;
-    std::cin >> decision;
+    cin >> decision;
     if (decision == 'y') {
-        threadData->controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
-                new CategoryAccessEvent(CategoryAccessEvent::CREATE_CATEGORY, categoryName, userName, userPassword)));
+        threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::CREATE_CATEGORY, categoryName)));
     }
 }
 
@@ -224,18 +229,33 @@ void* View::showDeleteCategorySubMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::string categoryName,userName,userPassword;
-    std::cout<<"Deleting catefory:"<<std::endl;
+    int idWidth = 21; //Max long type decimal digits number + 1.
+    cout << "Deleting catefory:" << endl;
+    cout << "Your categories:" << endl;
 
-    readCategoryAccessData(categoryName,userName,userPassword,false);
+    cout << setiosflags(ios::left);
 
-    std::cout << "Delete category "<<categoryName<<"  [y/n]?" << std::endl;
+    cout << setw(idWidth) << "id" << "name" << endl;
+    cout << setw(idWidth) << "----" << "----" << endl;
+
+    for (auto category : *threadData->categories) {
+        cout << setw(idWidth) << setiosflags(ios::left) << category.first << category.second <<
+        endl;
+    }
+
+    resetiosflags(ios::left);
+
+    long id;
+    cout << "Category to delete ID: ";
+    cin >> id;
+
+    cout << endl << "Delete category " << (*threadData->categories)[id] << "  [y/n]?" << endl;
 
     char decision;
-    std::cin >> decision;
+    cin >> decision;
     if (decision == 'y') {
-        threadData->controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
-                new CategoryAccessEvent(CategoryAccessEvent::DELETE_CATEGORY, categoryName, userName, userPassword)));
+        threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::DELETE_CATEGORY, id)));
     }
 }
 
@@ -243,21 +263,19 @@ void* View::showRegisterInCategorySubMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::string categoryName,userName,userPassword;
-    std::cout<<"Registering in catefory:"<<std::endl;
+    string categoryName, userName, userPassword;
+    cout << "Registering in catefory:" << endl;
 
     readCategoryAccessData(categoryName,userName,userPassword);
 
-    std::cout << "Category name: " << categoryName << std::endl;
-    std::cout << "User name: " << userName << std::endl;
-    std::cout << "Register in category? [y/n] " << std::endl;
+    cout << "Category name: " << categoryName << endl;
+    cout << "Register in category? [y/n] " << endl;
 
     char decision;
-    std::cin >> decision;
+    cin >> decision;
     if (decision == 'y') {
-        threadData->controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
-                new CategoryAccessEvent(CategoryAccessEvent::REGISTER_IN_CATEGORY, categoryName, userName,
-                                        userPassword)));
+        threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::REGISTER_IN_CATEGORY, categoryName)));
     }
 }
 
@@ -265,18 +283,18 @@ void* View::showJoinCategorySubMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::string categoryName,userName,userPassword;
-    std::cout<<"Joining catefory:"<<std::endl;
+    string categoryName, userName, userPassword;
+    cout << "Joining catefory:" << endl;
 
     readCategoryAccessData(categoryName,userName,userPassword,false);
 
-    std::cout << "Join category "<<categoryName<<"  [y/n]?" << std::endl;
+    cout << "Join category " << categoryName << "  [y/n]?" << endl;
 
     char decision;
-    std::cin >> decision;
+    cin >> decision;
     if (decision == 'y') {
-        threadData->controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
-                new CategoryAccessEvent(CategoryAccessEvent::JOIN_CATEGORY, categoryName, userName, userPassword)));
+        threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
+                new CategoryAccessEvent(CategoryAccessEvent::JOIN_CATEGORY, categoryName)));
     }
 }
 
@@ -284,40 +302,52 @@ void* View::showLeaveCategorySubMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::string categoryName;
-    std::cout<<"Leaving category:"<<std::endl;
+    string categoryName;
+    cout << "Leaving category:" << endl;
 
-    std::cout<<"Type category name:";
-    std::cin>>categoryName;
+    cout << "Type category name:";
+    cin >> categoryName;
 
-    std::cout << "Leave category "<<categoryName<<"  [y/n]?" << std::endl;
+    cout << "Leave category " << categoryName << "  [y/n]?" << endl;
 
     char decision;
-    std::cin >> decision;
+    cin >> decision;
     if (decision == 'y') {
-        threadData->controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+        threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
                 new CategoryAccessEvent(CategoryAccessEvent::LEAVE_CATEGORY, categoryName)));
     }
 }
 
-void* View::showVisitCategorySubMenuThread(void * arg)
-{
+void *View::showVisitCategorySubMenuThread(void *arg) {
+
     ThreadData * threadData = (ThreadData*)arg;
 
-    std::string categoryName;
-    std::cout<<"Visiting category:"<<std::endl;
+    string categoryName;
+    cout << "Visiting category:" << endl;
 
-    std::cout<<"Type category name:";
-    std::cin>>categoryName;
+    cout << "Type category name:";
+    cin >> categoryName;
 
-    std::cout << "Visit category "<<categoryName<<"  [y/n]?" << std::endl;
+    cout << "Visit category " << categoryName << "  [y/n]?" << endl;
 
     char decision;
-    std::cin >> decision;
+    cin >> decision;
     if (decision == 'y') {
-        threadData->controller->getEventsToServe()->push(std::shared_ptr<CategoryAccessEvent>(
+        threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
                 new CategoryAccessEvent(CategoryAccessEvent::VISIT_CATEGORY, categoryName)));
     }
+}
+
+void *View::showRegisterNewUserSubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
+
+    string userName;
+    cout << "You are not registered yet!" << endl;
+    cout << "Create your personal account:" << endl;
+    cout << "Login: ";
+    cin >> userName;
+
+    threadData->controller->getEventsToServe()->push(shared_ptr<UserAccountEvent>(new UserAccountEvent(userName)));
 }
 
 

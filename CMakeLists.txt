@@ -52,7 +52,7 @@ set(CLIENT_SOURCE_FILES client/main.cpp
         ${CLIENT_VIEW_SOURCES}
         ${CLIENT_EVENT_SOURCES}
         ${CLIENT_STRATEGY_SOURCES}
-        ${CLIENT_CONTROLLER_SOURCES} networkModule/sources/MessageWrapper.cpp networkModule/headers/MessageWrapper.h)
+        ${CLIENT_CONTROLLER_SOURCES} networkModule/sources/MessageWrapper.cpp networkModule/headers/MessageWrapper.h clientEvents/sources/UserAccountEvent.cpp clientEvents/headers/UserAccountEvent.h client/strategy/sources/CategoryAccessEventStrategy.cpp client/strategy/headers/CategoryAccessEventStrategy.h client/strategy/sources/UserAccountEventStrategy.cpp client/strategy/headers/UserAccountEventStrategy.h)
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 target_link_libraries(RING_CLIENT ${CMAKE_THREAD_LIBS_INIT})
 

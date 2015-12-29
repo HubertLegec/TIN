@@ -15,22 +15,25 @@ public:
         LEAVE_CATEGORY
     };
 
-    CategoryAccessEvent(AccessType type, const std::string & categoryName, const std::string & userName = "",const std::string & userPassword = "");
+    CategoryAccessEvent(AccessType type, const std::string &categoryName);
+
+    CategoryAccessEvent(AccessType type, long categoryID);
 
     AccessType getType();
-    std::string getCategoryName();
-    std::string getUserName();
-    std::string getPassword();
 
-    virtual std::string toString();
-    virtual std::string getName();
+    const std::string &getCategoryName() const;
+
+    long getCategoryID() const;
+
+    virtual std::string toString() const;
+
+    virtual std::string getName() const;
 
 private:
     AccessType type;
 
     std::string categoryName;
-    std::string userName;
-    std::string userPassword;
+    long categoryId;
 };
 
 

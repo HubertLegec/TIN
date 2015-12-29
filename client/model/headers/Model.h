@@ -18,6 +18,8 @@ private:
 
     long userID;
     std::string userName;
+    int myPort;
+    std::string myIP;
 
     ConnectionInfo serverInfo;
 
@@ -36,6 +38,9 @@ private:
 public:
     static constexpr const char* SERVER_DEFAULT_IP = "127.0.0.1";
     static const int SERVER_DEFAULT_PORT = 8888;
+    static constexpr const char *CLIENT_DEFAULT_IP = "127.0.0.1";
+    static const int CLIENT_DEFAULT_PORT = 7777;
+    static const long UNDEFINED_ID = -1;
 
     Model();
 
@@ -66,7 +71,8 @@ public:
 
     void addJoinedCategory(long id, const std::string &name);
     void removeCategoryAndData(long id);
-    std::vector<std::pair<long, std::string>> getMyCategories() const;
+
+    std::map<long, std::string> getMyCategories() const;
     std::vector<std::pair<long, std::string>> getJoinedCategories() const;
     bool isCategoryActive(long categoryId) const;
     void setCategoryActive(long categoryId, bool active);
@@ -77,6 +83,16 @@ public:
     void addNotification(const std::string& notification);
     std::vector<std::string> getNotifications();
     void clearNotificationList();
+
+    void setMyIP(const std::string &ip);
+
+    void setMyPort(int port);
+
+    const std::string &getMyIP() const;
+
+    int getMyPort() const;
+
+    bool isRegistered() const;
 };
 
 

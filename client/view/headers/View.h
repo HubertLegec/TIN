@@ -35,12 +35,14 @@ public:
     void showMainMenu(std::vector<std::string> notificationsList);
 
     void showCreateCategorySubMenu();
-    void showDeleteCategorySubMenu();
+
+    void showDeleteCategorySubMenu(std::map<long, std::string> myCategories);
     void showRegisterInCategorySubMenu();
     void showJoinCategorySubMenu();
     void showLeaveCategorySubMenu();
     void showVisitCategorySubMenu();
 
+    void showRegisterNewUserSubMenu();
 
 private:
     static void* showCategoryListThread(void*);
@@ -51,6 +53,8 @@ private:
     static void* showJoinCategorySubMenuThread(void*);
     static void* showLeaveCategorySubMenuThread(void*);
     static void* showVisitCategorySubMenuThread(void*);
+
+    static void *showRegisterNewUserSubMenuThread(void *);
 
     static void readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool passwordConfirmation = true);
     static bool getUserConfirmation();
