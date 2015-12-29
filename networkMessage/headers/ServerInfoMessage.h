@@ -22,10 +22,12 @@ public:
     ServerInfoMessageType getInfoType() const;
     void setExtraInfo(long extraInfo);
     long getExtraInfo() const;
-    std::string getInfo() const;
+
+    const std::string &getInfo() const;
     void setInfo(const std::string info);
     void setServerInfoMessageType(ServerInfoMessageType infoType);
-    std::string toString();
+
+    virtual std::string toString() const;
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->infoType, this->extraInfo, this->info);

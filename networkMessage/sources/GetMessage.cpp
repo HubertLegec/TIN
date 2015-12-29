@@ -4,6 +4,9 @@
 
 #include "../headers/GetMessage.h"
 
+using namespace std;
+
+
 GetMessage::GetMessage() { }
 
 GetMessage::GetMessage(long senderID, GetMessageType request) : SimpleMessage(MessageType::GET, senderID),
@@ -28,11 +31,11 @@ long GetMessage::getCategoryID() const {
     return categoryID;
 }
 
-std::string GetMessage::toString() {
-    std::stringstream ss;
+string GetMessage::toString() const {
+    stringstream ss;
     ss << "GetMessage[type:" << type << "; ";
     ss << "size:" << size << "; ";
-    ss << "senderID:" << senderID << "; ";
+    ss << "senderID:" << senderID << ";\n";
     ss << "requestType:" << requestType << "; ";
     ss << "categoryID:" << categoryID << "]";
     return ss.str();

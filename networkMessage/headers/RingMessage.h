@@ -27,9 +27,11 @@ public:
     std::vector<std::string> getConfirmationsList() const;
     void addConfirmation(const std::string& name);
     void addConfirmations(const std::vector<std::string>& nameList);
-    std::string getMsgText() const;
+
+    const std::string &getMsgText() const;
     long getCategoryId() const;
-    std::string toString();
+
+    virtual std::string toString() const;
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->categoryId, this->messageText, this->confirmations);

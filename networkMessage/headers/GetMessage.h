@@ -28,7 +28,8 @@ public:
     long getCategoryID() const;
 
     void setCategoryID(long categoryID);
-    std::string toString();
+
+    virtual std::string toString() const;
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->requestType, this->categoryID);

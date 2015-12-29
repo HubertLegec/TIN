@@ -29,9 +29,11 @@ public:
 
     //this constructor should be used to create new category
     CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName);
-    std::string getCategoryName() const;
+
+    const std::string &getCategoryName() const;
     long getCategoryID() const;
-    std::string toString();
+
+    virtual std::string toString() const;
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->categoryID, this->categoryName);

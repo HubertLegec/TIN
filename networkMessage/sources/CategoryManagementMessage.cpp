@@ -5,6 +5,8 @@
 #include <cstring>
 #include "../headers/CategoryManagementMessage.h"
 
+using namespace std;
+
 CategoryManagementMessage::CategoryManagementMessage() { }
 
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID)
@@ -14,7 +16,7 @@ CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType 
     this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long);
 }
 
-CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName)
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const string &categoryName)
         : SimpleMessage(type, senderID) {
     this->categoryID = UNDEFINED_ID;
     this->categoryName = categoryName;
@@ -22,7 +24,7 @@ CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType 
     this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long) + categoryName.size();
 }
 
-std::string CategoryManagementMessage::getCategoryName() const {
+const string &CategoryManagementMessage::getCategoryName() const {
     return categoryName;
 }
 
@@ -30,11 +32,11 @@ long CategoryManagementMessage::getCategoryID() const {
     return categoryID;
 }
 
-std::string CategoryManagementMessage::toString() {
-    std::stringstream ss;
+string CategoryManagementMessage::toString() const {
+    stringstream ss;
     ss << "CategoryListMessage[type:" << type << "; ";
     ss << "size:" << size << "; ";
-    ss << "senderID:" << senderID << "; ";
+    ss << "senderID:" << senderID << ";\n";
     ss << "categoryName:" << categoryName << "; ";
     ss << "categoryID:" << categoryID << "]";
     return ss.str();

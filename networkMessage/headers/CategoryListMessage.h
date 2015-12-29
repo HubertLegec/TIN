@@ -22,7 +22,7 @@ public:
     void addCategory(long categoryID, std::string categoryName);
     std::map<long, std::string> getCategories() const;
 
-    virtual std::string toString();
+    virtual std::string toString() const;
     template<class Archive>
     void serialize(Archive & archive){
         archive(this->type, this->size, this->senderID, this->categories);

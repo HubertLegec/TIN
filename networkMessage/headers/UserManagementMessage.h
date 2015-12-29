@@ -9,34 +9,28 @@
 #include "../../cereal/types/string.hpp"
 #include "SimpleMessage.h"
 
-using namespace std;
-
 class UserManagementMessage : public SimpleMessage {
 private:
     int port;
-    string ip;
-    string userName;
+    std::string ip;
+    std::string userName;
 
     static const long UNDEFINED_ID = -1;
 
 public:
     // To sign up user
-    UserManagementMessage(MessageType type, string ip, int port, string login);
+    UserManagementMessage(MessageType type, std::string ip, int port, std::string login);
 
     // To delete user
     UserManagementMessage(long senderID, MessageType type);
 
-    int getPort() const {
-        return port;
-    }
+    int getPort() const;
 
-    const string &getIp() const {
-        return ip;
-    }
+    const std::string &getIp() const;
 
-    const string &getUserName() const {
-        return userName;
-    }
+    const std::string &getUserName() const;
+
+    virtual std::string toString() const;
 
     template<class Archive>
     void serialize(Archive & archive){

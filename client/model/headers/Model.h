@@ -15,8 +15,6 @@
 
 class Model {
 private:
-    static constexpr const char* SERVER_DEFAULT_IP = "localhost";
-    static const int SERVER_DEFAULT_PORT = 8888;
 
     long userID;
     std::string userName;
@@ -36,6 +34,9 @@ private:
     std::map<long, CategoryInfo> categories;
 
 public:
+    static constexpr const char* SERVER_DEFAULT_IP = "127.0.0.1";
+    static const int SERVER_DEFAULT_PORT = 8888;
+
     Model();
     void setServerInfo(std::string ip, int port);
     ConnectionInfo getServerInfo() const;

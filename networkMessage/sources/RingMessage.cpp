@@ -5,21 +5,24 @@
 #include <cstring>
 #include "../headers/RingMessage.h"
 
+using namespace std;
+
 RingMessage::RingMessage() : SimpleMessage() { }
 
-RingMessage::RingMessage(long senderID, long categoryId, const std::string &text) : SimpleMessage(MessageType::RING_MESSAGE, senderID) {
+RingMessage::RingMessage(long senderID, long categoryId, const string &text) : SimpleMessage(MessageType::RING_MESSAGE,
+                                                                                             senderID) {
     this->messageText = text;
     this->categoryId = categoryId;
 
     this->size = SimpleMessage::getMessageSize() + 3*sizeof(long) + text.size();
 }
 
-RingMessage::RingMessage(long senderID, long categoryId, const std::string &text, const std::vector<std::string> &confirmations)
+RingMessage::RingMessage(long senderID, long categoryId, const string &text, const vector<string> &confirmations)
                         : SimpleMessage(MessageType::RING_MESSAGE, senderID), confirmations(confirmations){
     this->messageText = text;
     this->categoryId = categoryId;
     this->size = SimpleMessage::getMessageSize() + 3*sizeof(long) + text.size();
-    for(std::string s : confirmations){
+    for (string s : confirmations) {
         size += (sizeof(long) + s.size());
     }
 }
@@ -38,22 +41,22 @@ RingMessage& RingMessage::operator=(const RingMessage &other){
     return *this;
 }
 
-void RingMessage::addConfirmation(const std::string &name) {
+void RingMessage::addConfirmation(const string &name) {
     confirmations.push_back(name);
     size += (sizeof(long) + name.size());
 }
 
-void RingMessage::addConfirmations(const std::vector<std::string> &nameList) {
-    for(std::string s : nameList){
+void RingMessage::addConfirmations(const vector<string> &nameList) {
+    for (string s : nameList) {
         addConfirmation(s);
     }
 }
 
-std::vector<std::string> RingMessage::getConfirmationsList() const {
+vector<string> RingMessage::getConfirmationsList() const {
     return confirmations;
 }
 
-std::string RingMessage::getMsgText() const {
+const string &RingMessage::getMsgText() const {
     return messageText;
 }
 
@@ -61,8 +64,23 @@ long RingMessage::getCategoryId() const {
     return categoryId;
 }
 
-std::string RingMessage::toString() {
-    //TODO
-    return "RingMessage";
+string RingMessage::toString() const {
+    stringstream ss;
+    ss << "RingMessage[type:" << type << "; ";
+    ss << "size:" << size << "; ";
+    ss << "senderID:" << senderID << ";\n";
+    ss << "categoryID:" << categoryId << "; ";
+    ss << "messageText:" << messageText << "; ";
+    ss << "confirmations:{\n";
+    for (int i = 0; i < confirmations.size(); i++) {
+        if (i < confirmations.size() - 1) {
+            ss << confirmations[i] << "\n";
+        } else {
+            ss << confirmations[i];
+        }
+    }
+
+    ss << "}]";
+    return ss.str();
 }
 

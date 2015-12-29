@@ -4,10 +4,13 @@
 
 #include "../headers/NeighboursInfoMessage.h"
 
+using namespace std;
+
 NeighboursInfoMessage::NeighboursInfoMessage() : SimpleMessage(){ }
 
-NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const std::string& lNeighName, const std::string& lNeighIP, int lNeighPort,
-                                             const std::string& rNeighName, const std::string& rNeighIP, int rNeighPort)
+NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const string &lNeighName, const string &lNeighIP,
+                                             int lNeighPort,
+                                             const string &rNeighName, const string &rNeighIP, int rNeighPort)
                                             : SimpleMessage(MessageType::NEIGHBOURS_SET, 0){
     this->categoryId = categoryId;
     this->lNeighbourName = lNeighName;
@@ -21,11 +24,11 @@ NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const std::string&
                  + lNeighName.size() + rNeighName.size() + lNeighIP.size() + rNeighIP.size();
 }
 
-std::string NeighboursInfoMessage::getLeftNeighbourName() const {
+const string &NeighboursInfoMessage::getLeftNeighbourName() const {
     return lNeighbourName;
 }
 
-std::string NeighboursInfoMessage::getLeftNeighbourIP() const {
+const string &NeighboursInfoMessage::getLeftNeighbourIP() const {
     return lNeighbourIP;
 }
 
@@ -33,11 +36,11 @@ int NeighboursInfoMessage::getLeftNeighbourPort() const {
     return lNeighbourPort;
 }
 
-std::string NeighboursInfoMessage::getRightNeighbourName() const {
+const string &NeighboursInfoMessage::getRightNeighbourName() const {
     return rNeighbourName;
 }
 
-std::string NeighboursInfoMessage::getRightNeighbourIP() const {
+const string &NeighboursInfoMessage::getRightNeighbourIP() const {
     return rNeighbourIP;
 }
 
@@ -49,7 +52,17 @@ long NeighboursInfoMessage::getCategoryId() const {
     return categoryId;
 }
 
-std::string NeighboursInfoMessage::toString() {
-    //TODO
-    return "NeighbourInfoMessage";
+string NeighboursInfoMessage::toString() const {
+    stringstream ss;
+    ss << "NeighbourInfoMessage[type:" << type << "; ";
+    ss << "size:" << size << "; ";
+    ss << "senderID:" << senderID << "; ";
+    ss << "categoryID:" << categoryId << ";\n";
+    ss << "lNeighName:" << lNeighbourName << "; ";
+    ss << "lNeighIP:" << lNeighbourIP << "; ";
+    ss << "lNeighPort:" << lNeighbourPort << ";\n";
+    ss << "rNeighName:" << rNeighbourName << "; ";
+    ss << "rNeighIP:" << rNeighbourIP << "; ";
+    ss << "rNeighPort:" << rNeighbourPort << "]";
+    return ss.str();
 }

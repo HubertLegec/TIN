@@ -5,6 +5,8 @@
 #include <sstream>
 #include "../headers/SimpleMessage.h"
 
+using namespace std;
+
 SimpleMessage::SimpleMessage() { }
 
 SimpleMessage::SimpleMessage(MessageType type, long senderID) : type(type), senderID(senderID) {
@@ -38,8 +40,8 @@ void SimpleMessage::setType(MessageType type) {
     this->type = type;
 }
 
-std::string SimpleMessage::toString() {
-    std::stringstream ss;
+string SimpleMessage::toString() const {
+    stringstream ss;
     ss << "SimpleMessage[type:" << type << "; ";
     ss << "size:" << size << "; ";
     ss << "senderID:" << senderID << "]";

@@ -5,29 +5,47 @@
 #include <cstring>
 #include "../headers/CategoryListMessage.h"
 
+using namespace std;
+
 CategoryListMessage::CategoryListMessage() : SimpleMessage() { }
 
-CategoryListMessage::CategoryListMessage(long senderID, const std::map<long, std::string>& categories)
+CategoryListMessage::CategoryListMessage(long senderID, const map<long, string> &categories)
                                         : SimpleMessage(MessageType::CATEGORY_LIST, senderID), categories(categories) {
 
     this->size = SimpleMessage::getMessageSize() + sizeof(long) + categories.size()*sizeof(long);
-    for(std::pair<long, std::string> p : categories){
+    for (pair<long, string> p : categories) {
         size += (sizeof(long) + p.second.size());
     }
 }
 
-std::map<long, std::string> CategoryListMessage::getCategories() const {
+map<long, string> CategoryListMessage::getCategories() const {
     return categories;
 }
 
-void CategoryListMessage::addCategory(long categoryID, std::string categoryName) {
-    categories.insert(std::pair<long, std::string>(categoryID, categoryName));
+void CategoryListMessage::addCategory(long categoryID, string categoryName) {
+    categories.insert(pair<long, string>(categoryID, categoryName));
     size += (sizeof(long) + categoryName.size());
 }
 
-std::string CategoryListMessage::toString() {
-    //TODO
-    return "CategoryListMessage";
+string CategoryListMessage::toString() const {
+    stringstream ss;
+    ss << "CategoryListMessage[type:" << type << "; ";
+    ss << "size:" << size << "; ";
+    ss << "senderID:" << senderID << "; ";
+    ss << "categories:{\n";
+    int i = 0;
+    for (pair<long, string> p : categories) {
+        i++;
+        if (i < categories.size()) {
+            ss << "id:" << p.first << ", name:" << p.second << endl;
+        } else {
+            ss << "id:" << p.first << ", name:" << p.second;
+        }
+    }
+
+    ss << "}]";
+
+    return ss.str();
 }
 
 

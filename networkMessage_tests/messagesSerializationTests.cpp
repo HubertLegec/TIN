@@ -68,11 +68,6 @@ TEST(NeighboursInfoMessage, serialization_test) {
         oarchive(msg); // Write the data to the archive
     }
 
-    std::ofstream file;
-    file.open("/home/hubert/neighserial");
-    file << ss.str();
-    file.close();
-
     NeighboursInfoMessage testMsg;
     {
         cereal::BinaryInputArchive iarchive(ss); // Create an input archive
@@ -123,11 +118,6 @@ TEST(CategoryListMessage, serialization_test){
         cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
         oarchive(msg); // Write the data to the archive
     }
-
-/*std::ofstream file;
-file.open("/home/hubert/catListSer");
-file << ss.str();
-file.close();*/
 
     CategoryListMessage testMsg;
     {
