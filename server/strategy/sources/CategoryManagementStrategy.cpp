@@ -16,6 +16,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
     ServerInfoMessage *returnMessage = new ServerInfoMessage();
     returnMessage->setExtraInfo(senderID);
+    returnMessage->setSenderID(senderID);
     returnMessage->setType(SERVER_INFO);
 
     if (messageType == UNDEFINED || messageType == RING_MESSAGE) {
@@ -59,7 +60,8 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     leaveMessage = new ServerInfoMessage();
                     leaveMessage->setType(SERVER_INFO);
                     leaveMessage->setServerInfoMessageType(CATEGORY_LEFT);
-                    controller->putOutgoingMessage(leaveMessage);
+                    leaveMessage->setSenderID(tmp->getUser()->getID());
+                    controller->sendMessage(leaveMessage);
                     tmp = tmp->getRightNeighbour();
                 } while (tmp != categoryMembers);
 
@@ -163,5 +165,5 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         throw runtime_error("Unsupported MessageType!");
     }
 
-    controller->putOutgoingMessage(returnMessage);
+    controller->sendMessage(returnMessage);
 }

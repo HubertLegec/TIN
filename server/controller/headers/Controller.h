@@ -7,6 +7,7 @@
 #include "../../../networkMessage/headers/SimpleMessage.h"
 #include "../../../utils/Queue.hpp"
 #include "../../strategy/headers/BasicEventStrategy.h"
+#include "../../../networkModule/headers/MessageWrapper.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ private:
     const static unsigned INTERVAL_TIME = 200;
     map<string, BasicEventStrategy*> strategyMap;
     Queue<shared_ptr<SimpleMessage> > incomingMessages;
-    Queue<shared_ptr<SimpleMessage> > outgoingMessages;
+    Queue<shared_ptr<MessageWrapper> > outgoingMessages;
     shared_ptr<Model> model;
 
     void initStrategyMap();
@@ -29,15 +30,15 @@ public:
         return model;
     }
 
-    void putOutgoingMessage(SimpleMessage &message) {
-        outgoingMessages.push(shared_ptr<SimpleMessage>(&message));
+    void putOutgoingMessage(MessageWrapper &message) {
+        outgoingMessages.push(shared_ptr<MessageWrapper>(&message));
     }
 
-    void putOutgoingMessage(SimpleMessage *message) {
-        outgoingMessages.push(shared_ptr<SimpleMessage>(message));
+    void putOutgoingMessage(MessageWrapper *message) {
+        outgoingMessages.push(shared_ptr<MessageWrapper>(message));
     }
 
-    void putOutgoingMessage(shared_ptr<SimpleMessage> message) {
+    void putOutgoingMessage(shared_ptr<MessageWrapper> message) {
         outgoingMessages.push(message);
     }
 
@@ -53,11 +54,13 @@ public:
         incomingMessages.push(message);
     }
 
+    void sendMessage(SimpleMessage *message);
+
     const Queue<shared_ptr<SimpleMessage> > &getIncomingMessages() const {
         return incomingMessages;
     }
 
-    const Queue<shared_ptr<SimpleMessage> > &getOutgoingMessages() const {
+    const Queue<shared_ptr<MessageWrapper> > &getOutgoingMessages() const {
         return outgoingMessages;
     }
 
