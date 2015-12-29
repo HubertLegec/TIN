@@ -15,9 +15,7 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
     ChooseMenuOptionEvent *chooseMenuOptionEvent = dynamic_cast<ChooseMenuOptionEvent *>(event);
     switch (chooseMenuOptionEvent->getOptionChosen()) {
         case ChooseMenuOptionEvent::QUIT :
-            if (controller->getView()->getUserConfirmation()) {
-                controller->exit();
-            }
+            controller->exit();
             break;
         case ChooseMenuOptionEvent::SHOW_CATEGORY_LIST :
             showCategoryList();
