@@ -25,9 +25,9 @@ public:
     ChooseMenuOptionEvent(const OptionChosen option);
     OptionChosen getOptionChosen();
 
-    virtual std::string toString();
+    virtual std::string toString() const;
 
-    virtual std::string getName();
+    virtual std::string getName() const;
 
 private:
     OptionChosen optionChosen;

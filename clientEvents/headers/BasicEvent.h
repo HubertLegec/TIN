@@ -9,9 +9,9 @@
 
 class BasicEvent {
 public:
-    virtual std::string toString();
+    virtual std::string toString() const = 0;
 
-    virtual std::string getName();
+    virtual std::string getName() const = 0;
 };
 
 

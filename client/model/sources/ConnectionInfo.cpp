@@ -4,9 +4,13 @@
 
 #include "../headers/ConnectionInfo.h"
 
+using namespace std;
+
 ConnectionInfo::ConnectionInfo() { }
 
-ConnectionInfo::ConnectionInfo(std::string ip, int port, std::string name) : ip(ip), port(port), name(name){ }
+ConnectionInfo::ConnectionInfo(const string &ip, int port, const string &name) : ip(ip), port(port), name(name) {
+
+}
 
 ConnectionInfo::ConnectionInfo(const ConnectionInfo &other) {
     this->ip = other.ip;
@@ -21,7 +25,7 @@ ConnectionInfo& ConnectionInfo::operator=(const ConnectionInfo &other) {
     return *this;
 }
 
-std::string ConnectionInfo::getIP() const {
+const string &ConnectionInfo::getIP() const {
     return ip;
 }
 
@@ -29,11 +33,11 @@ int ConnectionInfo::getPort() const {
     return port;
 }
 
-std::string ConnectionInfo::getName() const {
+const string &ConnectionInfo::getName() const {
     return name;
 }
 
-void ConnectionInfo::setIP(std::string ip) {
+void ConnectionInfo::setIP(const string &ip) {
     this->ip = ip;
 }
 
@@ -41,6 +45,6 @@ void ConnectionInfo::setPort(int port) {
     this->port = port;
 }
 
-void ConnectionInfo::setName(std::string name) {
+void ConnectionInfo::setName(const string &name) {
     this->name = name;
 }

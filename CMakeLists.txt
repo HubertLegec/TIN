@@ -33,13 +33,11 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/GetMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp
         networkMessage/sources/UserManagementMessage.cpp)
-set(CLIENT_EVENT_SOURCES clientEvents/sources/BasicEvent.cpp
-        clientEvents/sources/CategoryAccessEvent.cpp
+set(CLIENT_EVENT_SOURCES clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
         clientEvents/sources/ConfirmMessageEvent.cpp
         clientEvents/sources/NetworkEvent.cpp)
-set(CLIENT_STRATEGY_SOURCES client/strategy/sources/BasicEventStrategy.cpp
-        client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
+set(CLIENT_STRATEGY_SOURCES client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
         client/strategy/sources/ConfirmMessageEventStrategy.cpp
         client/strategy/sources/NetworkEventStrategy.cpp)
 set(CLIENT_MODEL_SOURCES client/model/sources/Model.cpp

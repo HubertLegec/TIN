@@ -18,9 +18,9 @@ public:
 
     std::shared_ptr<SimpleMessage> getMessage() const;
 
-    virtual std::string toString();
+    virtual std::string toString() const;
 
-    virtual std::string getName();
+    virtual std::string getName() const;
 };
 
 

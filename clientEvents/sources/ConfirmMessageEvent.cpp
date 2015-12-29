@@ -2,7 +2,10 @@
 // Created by hubert.legec on 2015-12-15.
 //
 
+#include <sstream>
 #include "../headers/ConfirmMessageEvent.h"
+
+using namespace std;
 
 ConfirmMessageEvent::ConfirmMessageEvent() : BasicEvent() { }
 
@@ -18,11 +21,12 @@ void ConfirmMessageEvent::setMessageIndex(long messageIndex) {
     this->messageIndex = messageIndex;
 }
 
-std::string ConfirmMessageEvent::toString() {
-    //TODO
-    return "ConfirmMessageEvent";
+string ConfirmMessageEvent::toString() const {
+    stringstream ss;
+    ss << "ConfirmMessageEvent[messageIndex:" << messageIndex << "]";
+    return ss.str();
 }
 
-std::string ConfirmMessageEvent::getName() {
+string ConfirmMessageEvent::getName() const {
     return "CONFIRM_MESSAGE_EVENT";
 }

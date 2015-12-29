@@ -13,9 +13,9 @@ class BasicEventStrategy {
 protected:
     Controller* controller;
 public:
-    BasicEventStrategy();
-    BasicEventStrategy(Controller* controller);
-    void setController(Controller* controller);
+    BasicEventStrategy() : controller(nullptr) { }
+
+    BasicEventStrategy(Controller *controller) : controller(controller) { }
 
     virtual void serveEvent(BasicEvent *event) = 0;
 };

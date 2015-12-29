@@ -3,6 +3,7 @@
 //
 
 #include <sstream>
+#include "../../../logger/easylogging++.h"
 #include "../../model/headers/Model.h"
 #include "../../view/headers/View.h"
 #include "../headers/NetworkEventStrategy.h"
@@ -11,13 +12,16 @@
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../../../networkMessage/headers/NeighboursInfoMessage.h"
 
+using namespace std;
+
 NetworkEventStrategy::NetworkEventStrategy() : BasicEventStrategy(){ }
 
 NetworkEventStrategy::NetworkEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
 void NetworkEventStrategy::serveEvent(BasicEvent *event) {
+    LOG(INFO) << "NetworkEventStrategy::serveEvent:\n" << event->toString();
     NetworkEvent *netEvent = dynamic_cast<NetworkEvent *>(event);
-    std::shared_ptr<SimpleMessage> msg = netEvent->getMessage();
+    shared_ptr<SimpleMessage> msg = netEvent->getMessage();
 
     switch (msg->getMessageType()) {
         case MessageType::SERVER_INFO :
@@ -91,10 +95,10 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
                                                 ConnectionInfo(msg.getLeftNeighbourIP(),msg.getLeftNeighbourPort(), msg.getLeftNeighbourName()));
     controller->getModel()->updateRightNeighbour(msg.getCategoryId(),
                                                  ConnectionInfo(msg.getRightNeighbourIP(), msg.getRightNeighbourPort(), msg.getRightNeighbourName()));
-    std::stringstream ss;
+    stringstream ss;
     ss << "Neighbours updated: \n";
-    ss << "Left neighbour: " << msg.getLeftNeighbourName() << std::endl;
-    ss << "Right neighbour: " << msg.getRightNeighbourName() << std::endl;
+    ss << "Left neighbour: " << msg.getLeftNeighbourName() << endl;
+    ss << "Right neighbour: " << msg.getRightNeighbourName() << endl;
     controller->getModel()->addNotification(ss.str());
 }
 

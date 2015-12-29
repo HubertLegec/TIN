@@ -2,7 +2,10 @@
 // Created by hubert.legec on 2015-12-15.
 //
 
+#include <sstream>
 #include "../headers/ChooseMenuOptionEvent.h"
+
+using namespace std;
 
 ChooseMenuOptionEvent::ChooseMenuOptionEvent(const OptionChosen option) : BasicEvent(), optionChosen(option) { }
 
@@ -11,11 +14,12 @@ ChooseMenuOptionEvent::OptionChosen ChooseMenuOptionEvent::getOptionChosen()
     return optionChosen;
 }
 
-std::string ChooseMenuOptionEvent::toString() {
-    //TODO
-    return "ChooseMenuOptionEvent";
+string ChooseMenuOptionEvent::toString() const {
+    stringstream ss;
+    ss << "ChooseMenuOptionEvent[optionChoosen:" << optionChosen << "]";
+    return ss.str();
 }
 
-std::string ChooseMenuOptionEvent::getName() {
+string ChooseMenuOptionEvent::getName() const {
     return "CHOOSE_MENU_OPTION_EVENT";
 }

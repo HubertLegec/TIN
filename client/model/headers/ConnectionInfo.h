@@ -5,13 +5,6 @@
 #ifndef RING_CONNECTIONINFO_H
 #define RING_CONNECTIONINFO_H
 
-
-
-
-
-
-
-
 #include <string>
 
 class ConnectionInfo {
@@ -21,13 +14,18 @@ private:
     int port;
 public:
     ConnectionInfo();
-    ConnectionInfo(std::string ip, int port, std::string name);
+
+    ConnectionInfo(const std::string &ip, int port, const std::string &name);
     ConnectionInfo(const ConnectionInfo& other);
     ConnectionInfo& operator=(const ConnectionInfo& other);
-    std::string getIP() const;
-    void setIP(std::string ip);
-    std::string getName() const;
-    void setName(std::string name);
+
+    const std::string &getIP() const;
+
+    void setIP(const std::string &ip);
+
+    const std::string &getName() const;
+
+    void setName(const std::string &name);
     int getPort() const;
     void setPort(int port);
 };

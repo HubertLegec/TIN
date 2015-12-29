@@ -4,11 +4,13 @@
 
 #include "../headers/CategoryInfo.h"
 
+using namespace std;
+
 CategoryInfo::CategoryInfo() { }
 
-CategoryInfo::CategoryInfo(std::string name, bool owner) : name(name), owner(owner) { }
+CategoryInfo::CategoryInfo(const string &name, bool owner) : name(name), owner(owner) { }
 
-ConnectionInfo CategoryInfo::getLeftNeighbour() const {
+const ConnectionInfo &CategoryInfo::getLeftNeighbour() const {
     return leftNeighbour;
 }
 
@@ -20,7 +22,7 @@ void CategoryInfo::updateRightNeighbour(const ConnectionInfo& info) {
     rightNeighbour = info;
 }
 
-ConnectionInfo CategoryInfo::getRightNeighbour() const {
+const ConnectionInfo &CategoryInfo::getRightNeighbour() const {
     return rightNeighbour;
 }
 
@@ -40,14 +42,14 @@ void CategoryInfo::setActive(bool active) {
     this->active = active;
 }
 
-void CategoryInfo::addMessage(const std::string& message) {
+void CategoryInfo::addMessage(const string &message) {
     messages.push_back(message);
 }
 
-std::vector<std::string> CategoryInfo::getMessages() const {
+vector<string> CategoryInfo::getMessages() const {
     return messages;
 }
 
-std::string CategoryInfo::getName() const {
+const string &CategoryInfo::getName() const {
     return name;
 }

@@ -38,28 +38,40 @@ public:
     static const int SERVER_DEFAULT_PORT = 8888;
 
     Model();
-    void setServerInfo(std::string ip, int port);
-    ConnectionInfo getServerInfo() const;
-    std::string getCategoryName(long id) const;
-    long getCategoryId(std::string name) const;
-    void setUserName(std::string userName);
-    std::string getUserName() const;
+
+    void setServerInfo(const std::string &ip, int port);
+
+    const ConnectionInfo &getServerInfo() const;
+
+    const std::string &getCategoryName(long id) const;
+
+    long getCategoryId(const std::string &name) const;
+
+    void setUserName(const std::string &userName);
+
+    const std::string &getUserName() const;
     void setUserId(long userId);
     long getUserId() const;
-    void addMessageToCategory(long categoryId, std::string message);
+
+    void addMessageToCategory(long categoryId, const std::string &message);
     std::vector<std::string> getCategoryMessages(long categoryId);
     void updateLeftNeighbour(long categoryId, const ConnectionInfo& info);
     void updateRightNeighbour(long categoryId, const ConnectionInfo& info);
-    ConnectionInfo getLeftNeighbour(long categoryId);
-    ConnectionInfo getRightNeighbour(long categoryId);
-    void addMyCategory(long id, std::string name);
-    void addJoinedCategory(long id, std::string name);
+
+    const ConnectionInfo &getLeftNeighbour(long categoryId);
+
+    const ConnectionInfo &getRightNeighbour(long categoryId);
+
+    void addMyCategory(long id, const std::string &name);
+
+    void addJoinedCategory(long id, const std::string &name);
     void removeCategoryAndData(long id);
     std::vector<std::pair<long, std::string>> getMyCategories() const;
     std::vector<std::pair<long, std::string>> getJoinedCategories() const;
     bool isCategoryActive(long categoryId) const;
     void setCategoryActive(long categoryId, bool active);
-    void addMessageToInbox(RingMessage message);
+
+    void addMessageToInbox(const RingMessage &message);
     std::vector<RingMessage> getInboxMessages() const;
     void markMessageAsRead(long messageIndex);
     void addNotification(const std::string& notification);

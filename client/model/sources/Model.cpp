@@ -4,35 +4,37 @@
 
 #include "../headers/Model.h"
 
+using namespace std;
+
 Model::Model() { }
 
-void Model::addJoinedCategory(long id, std::string name) {
+void Model::addJoinedCategory(long id, const string &name) {
     categoryNameIdMapping[name] = id;
     categories[id] = CategoryInfo(name);
 }
 
-void Model::addMessageToCategory(long categoryId, std::string message) {
+void Model::addMessageToCategory(long categoryId, const string &message) {
     categories[categoryId].addMessage(message);
 }
 
-void Model::addMyCategory(long id, std::string name) {
+void Model::addMyCategory(long id, const string &name) {
     categoryNameIdMapping[name] = id;
     categories[id] = CategoryInfo(name, true);
 }
 
-std::vector<std::string> Model::getCategoryMessages(long categoryId) {
+vector<string> Model::getCategoryMessages(long categoryId) {
     return categories.at(categoryId).getMessages();
 }
 
-std::string Model::getCategoryName(long id) const {
+const string &Model::getCategoryName(long id) const {
     return categories.at(id).getName();
 }
 
-long Model::getCategoryId(std::string name) const {
+long Model::getCategoryId(const string &name) const {
     return categoryNameIdMapping.at(name);
 }
 
-ConnectionInfo Model::getLeftNeighbour(long categoryId) {
+const ConnectionInfo &Model::getLeftNeighbour(long categoryId) {
     return categories.at(categoryId).getLeftNeighbour();
 }
 
@@ -40,7 +42,7 @@ void Model::updateLeftNeighbour(long categoryId, const ConnectionInfo& info) {
     categories.at(categoryId).updateLeftNeighbour(info);
 }
 
-ConnectionInfo Model::getRightNeighbour(long categoryId) {
+const ConnectionInfo &Model::getRightNeighbour(long categoryId) {
     return categories.at(categoryId).getRightNeighbour();
 }
 
@@ -48,11 +50,11 @@ void Model::updateRightNeighbour(long categoryId, const ConnectionInfo &info) {
     categories[categoryId].updateRightNeighbour(info);
 }
 
-ConnectionInfo Model::getServerInfo() const {
+const ConnectionInfo &Model::getServerInfo() const {
     return serverInfo;
 }
 
-void Model::setServerInfo(std::string ip, int port) {
+void Model::setServerInfo(const string &ip, int port) {
     serverInfo = ConnectionInfo(ip, port, "Server");
 }
 
@@ -64,11 +66,11 @@ void Model::setUserId(long userId) {
     this->userID = userId;
 }
 
-std::string Model::getUserName() const {
+const string &Model::getUserName() const {
     return userName;
 }
 
-void Model::setUserName(std::string userName) {
+void Model::setUserName(const string &userName) {
     this->userName = userName;
 }
 
@@ -77,21 +79,21 @@ void Model::removeCategoryAndData(long id) {
     categories.erase(id);
 }
 
-std::vector<std::pair<long, std::string>> Model::getMyCategories() const {
-    std::vector<std::pair<long, std::string>> result;
-    for(std::pair<long, CategoryInfo> p : categories){
+vector<pair<long, string>> Model::getMyCategories() const {
+    vector<pair<long, string>> result;
+    for (pair<long, CategoryInfo> p : categories) {
         if(p.second.isOwner()){
-            result.push_back(std::pair<long, std::string>(p.first, p.second.getName()));
+            result.push_back(pair<long, string>(p.first, p.second.getName()));
         }
     }
     return result;
 }
 
-std::vector<std::pair<long, std::string>> Model::getJoinedCategories() const {
-    std::vector<std::pair<long, std::string>> result;
-    for(std::pair<long, CategoryInfo> p : categories){
+vector<pair<long, string>> Model::getJoinedCategories() const {
+    vector<pair<long, string>> result;
+    for (pair<long, CategoryInfo> p : categories) {
         if(!p.second.isOwner()){
-            result.push_back(std::pair<long, std::string>(p.first, p.second.getName()));
+            result.push_back(pair<long, string>(p.first, p.second.getName()));
         }
     }
     return result;
@@ -105,11 +107,11 @@ void Model::setCategoryActive(long categoryId, bool active) {
     categories.at(categoryId).setActive(active);
 }
 
-void Model::addMessageToInbox(RingMessage message) {
+void Model::addMessageToInbox(const RingMessage &message) {
     inbox.push_back(message);
 }
 
-std::vector<RingMessage> Model::getInboxMessages() const {
+vector<RingMessage> Model::getInboxMessages() const {
     return inbox;
 }
 
@@ -119,11 +121,11 @@ void Model::markMessageAsRead(long messageIndex) {
     categories[msg.getCategoryId()].addMessage(msg.getMsgText());
 }
 
-void Model::addNotification(const std::string& notification) {
+void Model::addNotification(const string &notification) {
     notifications.push_back(notification);
 }
 
-std::vector<std::string> Model::getNotifications() {
+vector<string> Model::getNotifications() {
     return notifications;
 }
 

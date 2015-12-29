@@ -19,18 +19,22 @@ private:
     bool owner;
 public:
     CategoryInfo();
-    CategoryInfo(std::string name, bool owner = false);
+
+    CategoryInfo(const std::string &name, bool owner = false);
     void updateRightNeighbour(const ConnectionInfo& info);
-    ConnectionInfo getRightNeighbour() const;
+
+    const ConnectionInfo &getRightNeighbour() const;
     void updateLeftNeighbour(const ConnectionInfo& info);
-    ConnectionInfo getLeftNeighbour() const;
+
+    const ConnectionInfo &getLeftNeighbour() const;
     void setOwner(bool owner);
     bool isOwner() const;
     void setActive(bool active);
     bool isActive() const;
     void addMessage(const std::string& message);
     std::vector<std::string> getMessages() const;
-    std::string getName() const;
+
+    const std::string &getName() const;
 };
 
 

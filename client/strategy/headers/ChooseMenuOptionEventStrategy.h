@@ -11,8 +11,13 @@
 class ChooseMenuOptionEventStrategy : public BasicEventStrategy {
 private:
     void showCategoryList() const;
-
     void createCategory() const;
+
+    void deleteCategory() const;
+
+    void joinCategory() const;
+
+    void leaveCategory() const;
 
 public:
     ChooseMenuOptionEventStrategy();

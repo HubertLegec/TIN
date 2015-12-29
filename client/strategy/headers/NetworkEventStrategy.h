@@ -17,11 +17,8 @@ public:
 
 private:
     void processServerInfo(SimpleMessage &message) const;
-
     void processCategoryList(SimpleMessage &message) const;
-
     void processNeighbourSet(SimpleMessage &message) const;
-
     void processRingMessage(SimpleMessage &message) const;
 };
 
