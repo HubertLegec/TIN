@@ -16,7 +16,7 @@ void NetworkController::createThread(pthread_t *thread, void *(*function)(void *
     LOG(INFO) << "Creating thread for " << function;
     int rc;
     pthread_create(thread, NULL, function, ((void *) pointer));
-    LOG(INFO) << "Joining thread";
+//    LOG(INFO) << "Joining thread";
 //    rc = pthread_join(*thread, NULL);
 //    if (rc) {
 //        LOG(ERROR) << "Unable to join thread" << rc;
@@ -50,7 +50,7 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
     struct addrinfo hints, *servinfo, *p;
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6
+    hints.ai_family = AF_INET; // use AF_INET6 to force IPv6
     hints.ai_socktype = SOCK_STREAM;
     const char *hostname = msg->getIP().c_str();
     std::string s = std::to_string(msg->getPort());
@@ -75,6 +75,7 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
 
         return servinfo; // if we get here, we must have connected successfully
     }
+
     LOG(ERROR) << "Failed to connect";
 }
 
@@ -83,8 +84,8 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     const char *serializedMsg = serializeMsg(msg);
     write(sendSockfd, serializedMsg, sizeof(msg));
     int trialCounter = 1;
-    while (trialCounter < 4 && close(sendSockfd) != 0) {
-        LOG(INFO) << "Something went wrong during closing connection. Retrying..." << trialCounter++;
+    while (trialCounter < 40000 && close(sendSockfd) != 0) {
+//        LOG(INFO) << "Something went wrong during closing connection. Retrying..." << trialCounter++;
     }
     if (trialCounter > 3) {
         LOG(ERROR) << "Something went wrong during closing connection.";
@@ -120,7 +121,7 @@ struct addrinfo *NetworkController::prepareListeningSocket() {
     struct addrinfo hints, *servinfo, *p;
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // use AF_INET6 to force IPv6
+    hints.ai_family = AF_INET; // use AF_INET6 to force IPv6
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE; // use my IP address
     LOG(INFO) << "Getting my own address";
@@ -176,7 +177,7 @@ void NetworkController::createReceiveThread() {
 //        LOG(INFO) << "Aceepted connection" << senderSockfd;
         if (senderSockfd == -1) {
             //TODO błąd do obsłużenia
-            LOG(INFO) << "I couldnt connect with receiver";
+//            LOG(INFO) << "I couldnt connect with receiver";
             continue;
 //            break;
         }
