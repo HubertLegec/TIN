@@ -18,13 +18,13 @@ public:
     virtual void serveEvent(BasicEvent *event) override;
 
 private:
-    void processServerInfo(const SimpleMessage &message) const;
+    void processServerInfo(SimpleMessage &message) const;
 
-    void processCategoryList(const SimpleMessage &message) const;
+    void processCategoryList(SimpleMessage &message) const;
 
-    void processNeighbourSet(const SimpleMessage &message) const;
+    void processNeighbourSet(SimpleMessage &message) const;
 
-    void processRingMessage(const SimpleMessage &message) const;
+    void processRingMessage(SimpleMessage &message) const;
 
     /**
      * This method removes from map user categories and categories user joined

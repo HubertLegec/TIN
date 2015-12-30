@@ -7,37 +7,27 @@
 
 #include "../../../clientEvents/headers/BasicEvent.h"
 #include "../../controller/headers/Controller.h"
+#include "../../model/headers/Model.h"
+#include "../../view/headers/View.h"
+
+class View;
 class Controller;
 
 class BasicEventStrategy {
 protected:
-    const std::string &getServerIP() const {
-        return controller->getModel()->getServerInfo().getIP();
-    }
+    const std::string &getServerIP() const;
 
-    int getServerPort() const {
-        return controller->getModel()->getServerInfo().getPort();
-    }
+    int getServerPort() const;
 
-    const std::string &getMyIP() const {
-        return controller->getModel()->getMyIP();
-    }
+    const std::string &getMyIP() const;
 
-    int getMyPort() const {
-        return controller->getModel()->getMyPort();
-    }
+    int getMyPort() const;
 
-    Model *getModel() const {
-        return controller->getModel();
-    }
+    Model *getModel() const;
 
-    View *getView() const {
-        return controller->getView();
-    }
+    View *getView() const;
 
-    void sendMessage(std::shared_ptr<MessageWrapper> ptr) const {
-        controller->getSendQueue()->push(ptr);
-    }
+    void sendMessage(std::shared_ptr<MessageWrapper> ptr) const;
 
     Controller* controller;
 public:

@@ -42,11 +42,11 @@ View* Controller::getView() {
     return view;
 }
 
-State Controller::getState() const {
+Controller::State Controller::getState() const {
     return state;
 }
 
-void Controller::setState(State state) {
+void Controller::setState(Controller::State state) {
     this->state = state;
 }
 

@@ -226,10 +226,7 @@ void NetworkController::receiveMsg(int senderSockfd, std::string hostname, int p
     cereal::BinaryInputArchive iarchive(ss); // Create an input archive
     iarchive(receivedMsg);
     std::shared_ptr<SimpleMessage> msg(&receivedMsg);
-    std::string string("");
-    MessageWrapper wrapMsg(msg, hostname, port);
-    std::shared_ptr<MessageWrapper> wrappedMsg(&wrapMsg);
-    receiveQueue->push(wrappedMsg);
+    receiveQueue->push(msg);
 }
 
 

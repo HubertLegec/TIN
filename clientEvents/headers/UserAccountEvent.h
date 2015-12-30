@@ -10,15 +10,16 @@
 
 
 class UserAccountEvent : public BasicEvent {
-private:
-    Type type;
-    std::string userName;
-
 public:
     enum Type {
         CREATE = 0,
         DELETE = 1
     };
+private:
+    Type type;
+    std::string userName;
+
+public:
 
     UserAccountEvent(Type type, const std::string &userName);
 

@@ -28,6 +28,7 @@ target_include_directories(gtest INTERFACE
 #----------------------------------------- client ----------------------------------------------------------------------
 set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
+        networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
         networkMessage/sources/GetMessage.cpp
@@ -36,15 +37,21 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
 set(CLIENT_EVENT_SOURCES clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
         clientEvents/sources/ConfirmMessageEvent.cpp
-        clientEvents/sources/NetworkEvent.cpp)
-set(CLIENT_STRATEGY_SOURCES client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
+        clientEvents/sources/NetworkEvent.cpp
+        clientEvents/sources/UserAccountEvent.cpp)
+set(CLIENT_STRATEGY_SOURCES client/strategy/sources/BasicEventStrategy.cpp
+        client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
         client/strategy/sources/ConfirmMessageEventStrategy.cpp
-        client/strategy/sources/NetworkEventStrategy.cpp)
+        client/strategy/sources/NetworkEventStrategy.cpp
+        client/strategy/sources/CategoryAccessEventStrategy.cpp
+        client/strategy/sources/UserAccountEventStrategy.cpp)
 set(CLIENT_MODEL_SOURCES client/model/sources/Model.cpp
         client/model/sources/CategoryInfo.cpp
         client/model/sources/ConnectionInfo.cpp)
 set(CLIENT_VIEW_SOURCES client/view/sources/View.cpp)
 set(CLIENT_CONTROLLER_SOURCES client/controller/sources/Controller.cpp)
+set(CLIENT_NETWORK_MODULE_SOURCES networkModule/sources/NetworkController.cpp
+        networkModule/sources/MessageWrapper.cpp)
 
 set(CLIENT_SOURCE_FILES client/main.cpp
         ${CLIENT_NETWORK_MESSAGE_SOURCES}
@@ -52,7 +59,8 @@ set(CLIENT_SOURCE_FILES client/main.cpp
         ${CLIENT_VIEW_SOURCES}
         ${CLIENT_EVENT_SOURCES}
         ${CLIENT_STRATEGY_SOURCES}
-        ${CLIENT_CONTROLLER_SOURCES} networkModule/sources/MessageWrapper.cpp networkModule/headers/MessageWrapper.h clientEvents/sources/UserAccountEvent.cpp clientEvents/headers/UserAccountEvent.h client/strategy/sources/CategoryAccessEventStrategy.cpp client/strategy/headers/CategoryAccessEventStrategy.h client/strategy/sources/UserAccountEventStrategy.cpp client/strategy/headers/UserAccountEventStrategy.h)
+        ${CLIENT_CONTROLLER_SOURCES}
+        ${CLIENT_NETWORK_MODULE_SOURCES})
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 target_link_libraries(RING_CLIENT ${CMAKE_THREAD_LIBS_INIT})
 
@@ -62,13 +70,25 @@ set(SERVER_SOURCE_FILES server/main.cpp
         server/model/sources/Category.cpp
         server/model/sources/Model.cpp
         server/model/sources/User.cpp
-        server/controller/sources/Controller.cpp server/strategy/sources/BasicEventStrategy.cpp server/strategy/headers/BasicEventStrategy.h server/strategy/sources/GetMessageStrategy.cpp server/strategy/headers/GetMessageStrategy.h server/strategy/sources/CategoryManagementStrategy.cpp server/strategy/headers/CategoryManagementStrategy.h server/model/sources/CategoryMember.cpp server/model/headers/CategoryMember.h server/strategy/sources/UserManagementStrategy.cpp server/strategy/headers/UserManagementStrategy.h)
+        server/controller/sources/Controller.cpp
+        server/strategy/sources/BasicEventStrategy.cpp
+        server/strategy/headers/BasicEventStrategy.h
+        server/strategy/sources/GetMessageStrategy.cpp
+        server/strategy/headers/GetMessageStrategy.h
+        server/strategy/sources/CategoryManagementStrategy.cpp
+        server/strategy/headers/CategoryManagementStrategy.h
+        server/model/sources/CategoryMember.cpp
+        server/model/headers/CategoryMember.h
+        server/strategy/sources/UserManagementStrategy.cpp
+        server/strategy/headers/UserManagementStrategy.h)
 set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/GetMessage.cpp
-        networkMessage/sources/ServerInfoMessage.cpp networkMessage/sources/UserManagementMessage.cpp networkMessage/headers/UserManagementMessage.h
+        networkMessage/sources/ServerInfoMessage.cpp
+        networkMessage/sources/UserManagementMessage.cpp
+        networkMessage/headers/UserManagementMessage.h
         networkModule/sources/MessageWrapper.cpp)
 
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})

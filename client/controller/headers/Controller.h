@@ -20,6 +20,12 @@ class BasicEventStrategy;
 class View;
 
 class Controller {
+public:
+    enum State {
+        MAIN_MENU = 0,
+        SIGN_UP = 1,
+        CATEGORY_LIST = 2
+    };
 private:
     Model* model;
     View* view;
@@ -37,11 +43,6 @@ private:
 
     void moveThreadWork();
 public:
-    enum State {
-        MAIN_MENU = 0,
-        SIGN_UP = 1,
-        CATEGORY_LIST = 2
-    };
     Controller(Model* model);
 
     ~Controller();

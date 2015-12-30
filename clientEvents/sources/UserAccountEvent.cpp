@@ -7,7 +7,8 @@
 
 using namespace std;
 
-UserAccountEvent::UserAccountEvent(Type type, const std::string &userName) : type(type), userName(userName) {
+UserAccountEvent::UserAccountEvent(UserAccountEvent::Type type, const std::string &userName) : type(type),
+                                                                                               userName(userName) {
 
 }
 
@@ -15,7 +16,7 @@ const std::string &UserAccountEvent::getUserName() const {
     return userName;
 }
 
-Type UserAccountEvent::getType() const {
+UserAccountEvent::Type UserAccountEvent::getType() const {
     return type;
 }
 

@@ -42,7 +42,7 @@ void NetworkEventStrategy::serveEvent(BasicEvent *event) {
     }
 }
 
-void NetworkEventStrategy::processServerInfo(const SimpleMessage &message) const {
+void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processServerInfo:\n" << message.toString();
     ServerInfoMessage& msg = dynamic_cast<ServerInfoMessage&>(message);
     switch (msg.getInfoType()){
@@ -88,7 +88,7 @@ void NetworkEventStrategy::processServerInfo(const SimpleMessage &message) const
     }
 }
 
-void NetworkEventStrategy::processCategoryList(const SimpleMessage &message) const {
+void NetworkEventStrategy::processCategoryList(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processCategoryList:\n" << message.toString();
     CategoryListMessage& msg = dynamic_cast<CategoryListMessage&>(message);
     if (controller->getState() == Controller::CATEGORY_LIST) {
@@ -99,7 +99,7 @@ void NetworkEventStrategy::processCategoryList(const SimpleMessage &message) con
     }
 }
 
-void NetworkEventStrategy::processNeighbourSet(const SimpleMessage &message) const {
+void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processNeighbourSet:\n" << message.toString();
     NeighboursInfoMessage& msg = dynamic_cast<NeighboursInfoMessage&>(message);
     getModel()->updateLeftNeighbour(msg.getCategoryId(),
@@ -115,7 +115,7 @@ void NetworkEventStrategy::processNeighbourSet(const SimpleMessage &message) con
     getModel()->addNotification(ss.str());
 }
 
-void NetworkEventStrategy::processRingMessage(const SimpleMessage &message) const {
+void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processRingMessage:\n" << message.toString();
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
     getModel()->addMessageToInbox(msg);
