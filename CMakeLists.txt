@@ -102,7 +102,13 @@ add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURC
 #------------------------------------ Tests configuration --------------------------------------------------------------
 
 #*************************** client tests **********************************************
-add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp client/model/sources/Model.cpp)
+add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp
+        client/model/sources/Model.cpp
+        client/model/sources/CategoryInfo.cpp
+        client/model/sources/ConnectionInfo.cpp
+        networkMessage/sources/RingMessage.cpp
+        networkMessage/sources/SimpleMessage.cpp
+        )
 target_link_libraries(CLIENT_BASIC_TESTS gtest_main)
 add_test(NAME clientBasicTest COMMAND clientBasicTest)
 
