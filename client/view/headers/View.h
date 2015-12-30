@@ -37,22 +37,29 @@ public:
     void showCreateCategorySubMenu();
 
     void showDeleteCategorySubMenu(std::map<long, std::string> myCategories);
-    void showRegisterInCategorySubMenu();
-    void showJoinCategorySubMenu();
-    void showLeaveCategorySubMenu();
-    void showVisitCategorySubMenu();
 
+    void showSignUpCategorySubMenu(std::map<long, std::string> myCategories);
+
+    void showJoinCategorySubMenu(std::map<long, std::string> myCategories);
+
+    void showLeaveCategorySubMenu(std::map<long, std::string> myCategories);
+
+    void showSignOutCategorySubMenu(std::map<long, std::string> myCategories);
     void showRegisterNewUserSubMenu();
 
 private:
+    static const int ID_WIDTH = 21; //Max long type decimal digits number + 1.
+
     static void* showCategoryListThread(void*);
     static void* showMainMenuThread(void*);
     static void* showCreateCategorySubMenuThread(void*);
     static void* showDeleteCategorySubMenuThread(void*);
-    static void* showRegisterInCategorySubMenuThread(void*);
+
+    static void *showSignUpCategorySubMenuThread(void *);
     static void* showJoinCategorySubMenuThread(void*);
     static void* showLeaveCategorySubMenuThread(void*);
-    static void* showVisitCategorySubMenuThread(void*);
+
+    static void *showSignOutCategorySubMenuThread(void *);
 
     static void *showRegisterNewUserSubMenuThread(void *);
 

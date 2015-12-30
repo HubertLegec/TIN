@@ -11,12 +11,13 @@ class ChooseMenuOptionEvent : public BasicEvent {
 
 public:
     enum OptionChosen {
+        CREATE_USER_ACCOUNT = 'a',
         CREATE_CATEGORY = 'c',
         DELETE_CATEGORY = 'd',
         SHOW_CATEGORY_LIST = 's',
-        REGISTER_IN_CATEGORY = 'r',
+        SIGN_UP_CATEGORY = 'u',
         JOIN_CATEGORY = 'j',
-        VISIT_CATEGORY = 'v',
+        SIGN_OUT_CATEGORY = 'o',
         LEAVE_CATEGORY = 'l',
         QUIT = 'q',
         REFRESH = 0
