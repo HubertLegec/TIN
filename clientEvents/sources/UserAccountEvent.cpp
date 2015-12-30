@@ -7,12 +7,16 @@
 
 using namespace std;
 
-UserAccountEvent::UserAccountEvent(const std::string &userName) : userName(userName) {
+UserAccountEvent::UserAccountEvent(Type type, const std::string &userName) : type(type), userName(userName) {
 
 }
 
 const std::string &UserAccountEvent::getUserName() const {
     return userName;
+}
+
+Type UserAccountEvent::getType() const {
+    return type;
 }
 
 std::string UserAccountEvent::toString() const {

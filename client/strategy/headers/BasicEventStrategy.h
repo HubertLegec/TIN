@@ -11,6 +11,30 @@ class Controller;
 
 class BasicEventStrategy {
 protected:
+    const std::string &getServerIP() const {
+        return controller->getModel()->getServerInfo().getIP();
+    }
+
+    int getServerPort() const {
+        return controller->getModel()->getServerInfo().getPort();
+    }
+
+    const std::string &getMyIP() const {
+        return controller->getModel()->getMyIP();
+    }
+
+    int getMyPort() const {
+        return controller->getModel()->getMyPort();
+    }
+
+    Model *getModel() const {
+        return controller->getModel();
+    }
+
+    View *getView() const {
+        return controller->getView();
+    }
+
     Controller* controller;
 public:
     BasicEventStrategy() : controller(nullptr) { }

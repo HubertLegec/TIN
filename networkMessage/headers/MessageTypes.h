@@ -21,6 +21,8 @@ enum MessageType{
     SERVER_INFO = 11,
     USER_SIGN_UP = 12,
     USER_DISCONNECTED = 13,
+    CREATE_ACCOUNT = 14,
+    DELETE_ACCOUNT = 15
 };
 
 enum GetMessageType{

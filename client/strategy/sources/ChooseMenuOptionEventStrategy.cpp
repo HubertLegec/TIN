@@ -24,42 +24,42 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
             showCategoryList();
             break;
         case ChooseMenuOptionEvent::CREATE_CATEGORY :
-            if (controller->getModel()->isRegistered()) {
+            if (getModel()->isRegistered()) {
                 createCategory();
             } else {
                 createAccount();
             }
             break;
         case ChooseMenuOptionEvent::DELETE_CATEGORY :
-            if (controller->getModel()->isRegistered()) {
+            if (getModel()->isRegistered()) {
                 deleteCategory();
             } else {
                 createAccount();
             }
             break;
         case ChooseMenuOptionEvent::SIGN_UP_CATEGORY :
-            if (controller->getModel()->isRegistered()) {
+            if (getModel()->isRegistered()) {
                 signUpCategory();
             } else {
                 createAccount();
             }
             break;
         case ChooseMenuOptionEvent::SIGN_OUT_CATEGORY :
-            if (controller->getModel()->isRegistered()) {
+            if (getModel()->isRegistered()) {
                 signOutCategory();
             } else {
                 createAccount();
             }
             break;
         case ChooseMenuOptionEvent::JOIN_CATEGORY :
-            if (controller->getModel()->isRegistered()) {
+            if (getModel()->isRegistered()) {
                 joinCategory();
             } else {
                 createAccount();
             }
             break;
         case ChooseMenuOptionEvent::LEAVE_CATEGORY :
-            if (controller->getModel()->isRegistered()) {
+            if (getModel()->isRegistered()) {
                 leaveCategory();
             } else {
                 createAccount();
@@ -73,40 +73,42 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
 
 
 void ChooseMenuOptionEventStrategy::showCategoryList() const {
-    shared_ptr<GetMessage> toSend = make_shared<GetMessage>(controller->getModel()->getUserId(),
-                                                            GetMessageType::CAT_LIST);
-    controller->sendMessage(toSend, controller->getModel()->getServerInfo().getIP(),
-                            controller->getModel()->getServerInfo().getPort());
+    shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
+    controller->setState(Controller::CATEGORY_LIST);
+    controller->sendMessage(toSend, getServerIP(), getServerPort());
 }
 
 void ChooseMenuOptionEventStrategy::createCategory() const {
-    controller->getView()->showCreateCategorySubMenu();
+    getView()->showCreateCategorySubMenu();
 }
 
 void ChooseMenuOptionEventStrategy::deleteCategory() const {
-    controller->getView()->showDeleteCategorySubMenu(controller->getModel()->getMyCategories());
+    getView()->showDeleteCategorySubMenu(getModel()->getMyCategories());
 }
 
 void ChooseMenuOptionEventStrategy::joinCategory() const {
-    controller->getView()->showJoinCategorySubMenu(controller->getModel()->getInactiveCategories());
+    getView()->showJoinCategorySubMenu(getModel()->getInactiveCategories());
 }
 
 void ChooseMenuOptionEventStrategy::leaveCategory() const {
-    controller->getView()->showLeaveCategorySubMenu(controller->getModel()->getActiveCategories());
+    getView()->showLeaveCategorySubMenu(getModel()->getActiveCategories());
 }
 
 void ChooseMenuOptionEventStrategy::signUpCategory() const {
-    //TODO
+    controller->setState(Controller::SIGN_UP);
+    shared_ptr<GetMessage> ptr = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
+    controller->getSendQueue()->push(
+            shared_ptr<MessageWrapper>(new MessageWrapper(ptr, getServerIP(), getServerPort())));
 }
 
 void ChooseMenuOptionEventStrategy::signOutCategory() const {
-    controller->getView()->showSignOutCategorySubMenu(controller->getModel()->getJoinedCategories());
+    getView()->showSignOutCategorySubMenu(getModel()->getJoinedCategories());
 }
 
 void ChooseMenuOptionEventStrategy::createAccount() const {
-    controller->getView()->showRegisterNewUserSubMenu();
+    getView()->showRegisterNewUserSubMenu();
 }
 
 void ChooseMenuOptionEventStrategy::refresh() const {
-    controller->getView()->showMainMenu(controller->getModel()->getNotifications());
+    getView()->showMainMenu(getModel()->getNotifications());
 };

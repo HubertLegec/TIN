@@ -405,7 +405,8 @@ void *View::showRegisterNewUserSubMenuThread(void *arg) {
     cout << "Login: ";
     cin >> userName;
 
-    threadData->controller->getEventsToServe()->push(shared_ptr<UserAccountEvent>(new UserAccountEvent(userName)));
+    threadData->controller->getEventsToServe()->push(
+            shared_ptr<UserAccountEvent>(new UserAccountEvent(UserAccountEvent::CREATE, userName)));
 }
 
 

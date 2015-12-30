@@ -39,12 +39,25 @@ View* Controller::getView() {
     return view;
 }
 
+State Controller::getState() const {
+    return state;
+}
+
+void Controller::setState(State state) {
+    this->state = state;
+}
+
 Queue<std::shared_ptr<BasicEvent>> *Controller::getEventsToServe() {
     return &eventsToServe;
 }
 
+Queue<std::shared_ptr<MessageWrapper>> *Controller::getSendQueue() {
+    return &sendQueue;
+}
+
 void Controller::start() {
     //networkController = new NetworkController(&sendQueue, &eventsToServe, model->getMyIP(), model->getMyPort());
+    state = MAIN_MENU;
     view->showMainMenu(model->getNotifications());
     while(running){
         std::shared_ptr<BasicEvent> event = eventsToServe.pop();

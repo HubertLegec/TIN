@@ -42,26 +42,32 @@ void CategoryAccessEventStrategy::serveEvent(BasicEvent *event) {
     }
 }
 
-void CategoryAccessEventStrategy::createCategory(std::string name) const {
+void CategoryAccessEventStrategy::createCategory(const std::string &name) const {
+    LOG(INFO) << "CategoryAccessEventStrategy::createCategory:\n" << "categoryName: " << name;
     //TODO
 }
 
 void CategoryAccessEventStrategy::deleteCategory(long id) const {
+    LOG(INFO) << "CategoryAccessEventStrategy::deleteCategory:\n" << "categoryID: " << id;
     //TODO
 }
 
 void CategoryAccessEventStrategy::signUpCategory(long id) const {
+    LOG(INFO) << "CategoryAccessEventStrategy::signUpCategory:\n" << "categoryID: " << id;
     //TODO
 }
 
 void CategoryAccessEventStrategy::signOutCategory(long id) const {
+    LOG(INFO) << "CategoryAccessEventStrategy::signOutCategory:\n" << "categoryID: " << id;
     //TODO
 }
 
 void CategoryAccessEventStrategy::joinCategory(long id) const {
+    LOG(INFO) << "CategoryAccessEventStrategy::joinCategory:\n" << "categoryID: " << id;
     //TODO
 }
 
 void CategoryAccessEventStrategy::leaveCategory(long id) const {
+    LOG(INFO) << "CategoryAccessEventStrategy::leaveCategory:\n" << "categoryID: " << id;
     //TODO
 }

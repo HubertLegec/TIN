@@ -10,6 +10,9 @@
 
 class UserAccountEventStrategy : public BasicEventStrategy {
 private:
+    void createAccount(const std::string &name) const;
+
+    void deleteAccount() const;
 
 public:
     UserAccountEventStrategy();

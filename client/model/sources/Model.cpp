@@ -165,7 +165,7 @@ std::map<long, std::string> Model::getActiveCategories() const {
     map<long, string> result;
     for (auto c : categories) {
         if (c.second.isActive()) {
-            result.insert(c);
+            result.insert(pair<long, string>(c.first, c.second.getName()));
         }
     }
 
@@ -176,8 +176,17 @@ std::map<long, std::string> Model::getInactiveCategories() const {
     map<long, string> result;
     for (auto c : categories) {
         if (!c.second.isActive()) {
-            result.insert(c);
+            result.insert(pair<long, string>(c.first, c.second.getName()));
         }
+    }
+
+    return result;
+}
+
+std::map<long, std::string> Model::getCategories() const {
+    map<long, string> result;
+    for (auto c : categories) {
+        result.insert(pair<long, string>(c.first, c.second.getName()));
     }
 
     return result;

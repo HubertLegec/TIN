@@ -72,6 +72,7 @@ public:
     void addJoinedCategory(long id, const std::string &name);
     void removeCategoryAndData(long id);
 
+    std::map<long, std::string> getCategories() const;
     std::map<long, std::string> getMyCategories() const;
 
     std::map<long, std::string> getJoinedCategories() const;

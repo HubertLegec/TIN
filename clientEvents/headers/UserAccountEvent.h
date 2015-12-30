@@ -11,12 +11,20 @@
 
 class UserAccountEvent : public BasicEvent {
 private:
+    Type type;
     std::string userName;
 
 public:
-    UserAccountEvent(const std::string &userName);
+    enum Type {
+        CREATE = 0,
+        DELETE = 1
+    };
+
+    UserAccountEvent(Type type, const std::string &userName);
 
     const std::string &getUserName() const;
+
+    Type getType() const;
 
     virtual std::string toString() const;
 

@@ -9,7 +9,7 @@
 
 class CategoryAccessEventStrategy : public BasicEventStrategy {
 private:
-    void createCategory(std::string name) const;
+    void createCategory(const std::string &name) const;
 
     void deleteCategory(long id) const;
 

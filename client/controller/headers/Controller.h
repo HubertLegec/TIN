@@ -28,11 +28,16 @@ private:
     Queue<std::shared_ptr<MessageWrapper>> sendQueue;
     std::map<std::string, BasicEventStrategy *> strategyMap;
 
+    State state;
     bool running = true;
-    pthread_t controllerThread;
     void* controllerWork();
     static void* threadStartHelper(void* param);
 public:
+    enum State {
+        MAIN_MENU = 0,
+        SIGN_UP = 1,
+        CATEGORY_LIST = 2
+    };
     Controller(Model* model);
 
     ~Controller();
@@ -43,7 +48,13 @@ public:
     Model* getModel();
     View* getView();
 
+    State getState() const;
+
+    void setState(State state);
+
     Queue<std::shared_ptr<BasicEvent>> *getEventsToServe();
+
+    Queue<std::shared_ptr<MessageWrapper>> *getSendQueue();
 
     void sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port);
 

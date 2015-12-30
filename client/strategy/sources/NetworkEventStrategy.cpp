@@ -39,71 +39,91 @@ void NetworkEventStrategy::serveEvent(BasicEvent *event) {
     }
 }
 
-void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
+void NetworkEventStrategy::processServerInfo(const SimpleMessage &message) const {
+    LOG(INFO) << "NetworkEventStrategy::processServerInfo:\n" << message.toString();
     ServerInfoMessage& msg = dynamic_cast<ServerInfoMessage&>(message);
     switch (msg.getInfoType()){
         case ServerInfoMessageType::CATEGORY_CREATED :
-            controller->getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
-            controller->getModel()->addNotification("New category created!");
+            getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
+            getModel()->addNotification("New category created!");
             break;
 
         case ServerInfoMessageType::CATEGORY_REMOVED :
-            controller->getModel()->removeCategoryAndData(msg.getExtraInfo());
-            controller->getModel()->addNotification("One of your category removed!");
+            getModel()->removeCategoryAndData(msg.getExtraInfo());
+            getModel()->addNotification("One of your category removed!");
             break;
 
         case ServerInfoMessageType::USER_ADDED :
-            controller->getModel()->setUserName(msg.getInfo());
-            controller->getModel()->setUserId(msg.getExtraInfo());
-            controller->getModel()->addNotification("User account created!");
+            getModel()->setUserName(msg.getInfo());
+            getModel()->setUserId(msg.getExtraInfo());
+            getModel()->addNotification("User account created!");
             break;
 
         case ServerInfoMessageType::CATEGORY_JOINED :
-            controller->getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
-            controller->getModel()->addNotification("You have successfully joined the category!");
+            getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
+            getModel()->addNotification("You have successfully joined the category!");
             break;
 
         case ServerInfoMessageType::CATEGORY_LEFT :
-            controller->getModel()->removeCategoryAndData(msg.getExtraInfo());
-            controller->getModel()->addNotification("You have successfully left the category!");
+            getModel()->removeCategoryAndData(msg.getExtraInfo());
+            getModel()->addNotification("You have successfully left the category!");
             break;
 
         case ServerInfoMessageType::CATEGORY_ACTIVATED :
-            controller->getModel()->setCategoryActive(msg.getExtraInfo(), true);
-            controller->getModel()->addNotification("Category is active again!");
+            getModel()->setCategoryActive(msg.getExtraInfo(), true);
+            getModel()->addNotification("Category is active again!");
             break;
 
         case ServerInfoMessageType::CATEGORY_DEACTIVATED :
-            controller->getModel()->setCategoryActive(msg.getExtraInfo(), false);
-            controller->getModel()->addNotification("Category deactivated!");
+            getModel()->setCategoryActive(msg.getExtraInfo(), false);
+            getModel()->addNotification("Category deactivated!");
             break;
 
         case ServerInfoMessageType::FAIL :
-            controller->getModel()->addNotification(msg.getInfo());
+            getModel()->addNotification(msg.getInfo());
             break;
     }
 }
 
-void NetworkEventStrategy::processCategoryList(SimpleMessage &message) const {
+void NetworkEventStrategy::processCategoryList(const SimpleMessage &message) const {
+    LOG(INFO) << "NetworkEventStrategy::processCategoryList:\n" << message.toString();
     CategoryListMessage& msg = dynamic_cast<CategoryListMessage&>(message);
-    controller->getView()->showCategoryList(msg.getCategories());
+    if (controller->getState() == Controller::CATEGORY_LIST) {
+        getView()->showCategoryList(msg.getCategories());
+        getView()->showMainMenu(getModel()->getNotifications());
+    } else if (controller->getState() == Controller::SIGN_UP) {
+        getView()->showSignUpCategorySubMenu(filterCategories(msg.getCategories()));
+    }
 }
 
-void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
+void NetworkEventStrategy::processNeighbourSet(const SimpleMessage &message) const {
+    LOG(INFO) << "NetworkEventStrategy::processNeighbourSet:\n" << message.toString();
     NeighboursInfoMessage& msg = dynamic_cast<NeighboursInfoMessage&>(message);
-    controller->getModel()->updateLeftNeighbour(msg.getCategoryId(),
-                                                ConnectionInfo(msg.getLeftNeighbourIP(),msg.getLeftNeighbourPort(), msg.getLeftNeighbourName()));
-    controller->getModel()->updateRightNeighbour(msg.getCategoryId(),
-                                                 ConnectionInfo(msg.getRightNeighbourIP(), msg.getRightNeighbourPort(), msg.getRightNeighbourName()));
+    getModel()->updateLeftNeighbour(msg.getCategoryId(),
+                                    ConnectionInfo(msg.getLeftNeighbourIP(), msg.getLeftNeighbourPort(),
+                                                   msg.getLeftNeighbourName()));
+    getModel()->updateRightNeighbour(msg.getCategoryId(),
+                                     ConnectionInfo(msg.getRightNeighbourIP(), msg.getRightNeighbourPort(),
+                                                    msg.getRightNeighbourName()));
     stringstream ss;
     ss << "Neighbours updated: \n";
     ss << "Left neighbour: " << msg.getLeftNeighbourName() << endl;
     ss << "Right neighbour: " << msg.getRightNeighbourName() << endl;
-    controller->getModel()->addNotification(ss.str());
+    getModel()->addNotification(ss.str());
 }
 
-void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
+void NetworkEventStrategy::processRingMessage(const SimpleMessage &message) const {
+    LOG(INFO) << "NetworkEventStrategy::processRingMessage:\n" << message.toString();
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
-    controller->getModel()->addMessageToInbox(msg);
-    controller->getModel()->addNotification("You have a new message!\nCheck your inbox.");
+    getModel()->addMessageToInbox(msg);
+    getModel()->addNotification("You have a new message!\nCheck your inbox.");
+}
+
+std::map<long, std::string> NetworkEventStrategy::filterCategories(
+        const std::map<long, std::string> &categories) const {
+    map<long, string> result = categories;
+    for (pair<long, string> p : getModel()->getCategories()) {
+        result.erase(p.first);
+    }
+    return result;
 }
