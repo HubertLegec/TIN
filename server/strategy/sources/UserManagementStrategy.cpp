@@ -13,7 +13,7 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
     ServerInfoMessage *returnMessage = new ServerInfoMessage();
     returnMessage->setType(SERVER_INFO);
 
-    if (messageType == USER_SIGN_UP) {
+    if (messageType == CREATE_USER_ACCOUNT) {
         try {
             auto newUser = model->createNewUser(managementMessage->getUserName(), managementMessage->getPort(),
                                                 managementMessage->getIp());
@@ -27,7 +27,7 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setServerInfoMessageType(FAIL);
             // TODO do kogo to wyslac xD? tutaj kontroler nie pobierze na podstawie USER_ID informacji na temat adresu itd...
         }
-    } else if (messageType == USER_DISCONNECTED) {
+    } else if (messageType == DELETE_USER_ACCOUNT) {
         long userID = managementMessage->getSenderID();
         string name = model->getUser(userID)->getName();
         try {

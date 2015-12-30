@@ -26,8 +26,8 @@ local message_type_names = {
 [9] = "RING_MESSAGE",
 [10]=  "NEIGHBOURS_SET",
 [11]=  "SERVER_INFO",
-[12]=  "USER_SIGN_UP",
-[13]=  "USER_DISCONNECTED",
+	[12] = "CREATE_USER_ACCOUNT",
+	[13] = "DELETE_USER_ACCOUNT",
 }
 
 local get_message_type_names = {

@@ -19,7 +19,7 @@ int main(int argv, char *argc[]) {
     c.putIncomingMessage(new GetMessage());
     c.putIncomingMessage(new GetMessage());
 
-    c.putIncomingMessage(new UserManagementMessage(USER_SIGN_UP,  "11.11", 9999, "radek"));
+    c.putIncomingMessage(new UserManagementMessage(CREATE_USER_ACCOUNT, "11.11", 9999, "radek"));
 
     c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria"));
     c.putIncomingMessage(new CategoryManagementMessage(0, CREATE_CATEGORY, "No elo. Fajna kategoria"));

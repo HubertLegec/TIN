@@ -35,6 +35,10 @@ protected:
         return controller->getView();
     }
 
+    void sendMessage(std::shared_ptr<MessageWrapper> ptr) const {
+        controller->getSendQueue()->push(ptr);
+    }
+
     Controller* controller;
 public:
     BasicEventStrategy() : controller(nullptr) { }

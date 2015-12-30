@@ -19,10 +19,8 @@ enum MessageType{
     RING_MESSAGE = 9,
     NEIGHBOURS_SET = 10,
     SERVER_INFO = 11,
-    USER_SIGN_UP = 12,
-    USER_DISCONNECTED = 13,
-    CREATE_ACCOUNT = 14,
-    DELETE_ACCOUNT = 15
+    CREATE_USER_ACCOUNT = 12,
+    DELETE_USER_ACCOUNT = 13
 };
 
 enum GetMessageType{
