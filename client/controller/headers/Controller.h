@@ -26,12 +26,16 @@ private:
     NetworkController *networkController;
     Queue<std::shared_ptr<BasicEvent>> eventsToServe;
     Queue<std::shared_ptr<MessageWrapper>> sendQueue;
+    Queue<std::shared_ptr<SimpleMessage>> receiveQueue;
     std::map<std::string, BasicEventStrategy *> strategyMap;
+    pthread_t movingThread;
 
     State state;
     bool running = true;
     void* controllerWork();
     static void* threadStartHelper(void* param);
+
+    void moveThreadWork();
 public:
     enum State {
         MAIN_MENU = 0,

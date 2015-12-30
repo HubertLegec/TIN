@@ -5,11 +5,14 @@
 #include <typeinfo>
 #include "../headers/Controller.h"
 #include "../../../logger/easylogging++.h"
+#include "../../../clientEvents/headers/NetworkEvent.h"
 #include "../../strategy/headers/NetworkEventStrategy.h"
 #include "../../strategy/headers/ConfirmMessageEventStrategy.h"
 #include "../../strategy/headers/ChooseMenuOptionEventStrategy.h"
 #include "../../strategy/headers/CategoryAccessEventStrategy.h"
 #include "../../strategy/headers/UserAccountEventStrategy.h"
+
+using namespace std;
 
 Controller::Controller(Model* model) : model(model) {
     initStrategyMap();
@@ -56,7 +59,7 @@ Queue<std::shared_ptr<MessageWrapper>> *Controller::getSendQueue() {
 }
 
 void Controller::start() {
-    //networkController = new NetworkController(&sendQueue, &eventsToServe, model->getMyIP(), model->getMyPort());
+    networkController = new NetworkController(&sendQueue, &receiveQueue, model->getMyIP(), model->getMyPort());
     state = MAIN_MENU;
     view->showMainMenu(model->getNotifications());
     while(running){
@@ -64,9 +67,9 @@ void Controller::start() {
         LOG(INFO) << "EVENT: " << event.get()->toString();
         try {
             strategyMap.at(event.get()->getName())->serveEvent(event.get());
-        } catch (std::out_of_range &e) {
+        } catch (out_of_range &e) {
             LOG(ERROR) << "Bad type of incomming message";
-        } catch (std::exception &e) {
+        } catch (exception &e) {
             LOG(ERROR) << "Exception log: " << e.what();
         }
     }
@@ -74,11 +77,21 @@ void Controller::start() {
 
 void Controller::exit() {
     LOG(INFO) << "exit";
-    //TODO
-    //networkController.stop();
+    receiveQueue.push(shared_ptr<SimpleMessage>(new SimpleMessage(MessageType::CLIENT_CLOSE_APP, model->getUserId())));
+    networkController->stop();
     running = false;
 }
 
 void Controller::sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port) {
     sendQueue.push(std::shared_ptr<MessageWrapper>(new MessageWrapper(msg, ip, port)));
+}
+
+void Controller::moveThreadWork() {
+    while (running) {
+        shared_ptr<SimpleMessage> msg;
+        msg = receiveQueue.pop();
+        shared_ptr<NetworkEvent> event(new NetworkEvent(msg));
+        eventsToServe.push(event);
+    }
+
 }

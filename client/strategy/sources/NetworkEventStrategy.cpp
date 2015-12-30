@@ -36,6 +36,9 @@ void NetworkEventStrategy::serveEvent(BasicEvent *event) {
         case MessageType::RING_MESSAGE :
             processRingMessage(*msg);
             break;
+        case MessageType::CLIENT_CLOSE_APP :
+            //nothing to do, app will be closed
+            break;
     }
 }
 

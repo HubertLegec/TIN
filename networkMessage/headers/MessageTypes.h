@@ -20,7 +20,8 @@ enum MessageType{
     NEIGHBOURS_SET = 10,
     SERVER_INFO = 11,
     CREATE_USER_ACCOUNT = 12,
-    DELETE_USER_ACCOUNT = 13
+    DELETE_USER_ACCOUNT = 13,
+    CLIENT_CLOSE_APP = 14
 };
 
 enum GetMessageType{

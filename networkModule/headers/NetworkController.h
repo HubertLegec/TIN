@@ -20,7 +20,7 @@ class NetworkController {
 
 private:
     Queue<std::shared_ptr<MessageWrapper>> *sendQueue;
-    Queue<std::shared_ptr<MessageWrapper>> *receiveQueue;
+    Queue<std::shared_ptr<SimpleMessage>> *receiveQueue;
     int receiveSockfd;
     int sendSockfd;
     pthread_t *sendSystemThread;
@@ -61,7 +61,7 @@ public:
     NetworkController() { };
 
     NetworkController(Queue<std::shared_ptr<MessageWrapper>> *sendQueue,
-                      Queue<std::shared_ptr<MessageWrapper>> *receiveQueue, std::string ip, int port)
+                      Queue<std::shared_ptr<SimpleMessage>> *receiveQueue, std::string ip, int port)
             : sendQueue(sendQueue),
               receiveQueue(receiveQueue),
               sendSockfd(0), receiveSockfd(0) {
