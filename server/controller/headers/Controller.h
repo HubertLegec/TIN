@@ -8,13 +8,18 @@
 #include "../../../utils/Queue.hpp"
 #include "../../strategy/headers/BasicEventStrategy.h"
 #include "../../../networkModule/headers/MessageWrapper.h"
+#include "../../../networkMessage/headers/ServerInfoMessage.h"
 
 using namespace std;
+
+enum {
+    SERVER_ID = 0
+};
 
 class Controller {
 private:
     const static unsigned INTERVAL_TIME = 200;
-    map<string, BasicEventStrategy*> strategyMap;
+    map<string, BasicEventStrategy *> strategyMap;
     Queue<shared_ptr<SimpleMessage> > incomingMessages;
     Queue<shared_ptr<MessageWrapper> > outgoingMessages;
     shared_ptr<Model> model;
@@ -54,7 +59,9 @@ public:
         incomingMessages.push(message);
     }
 
-    void sendMessage(SimpleMessage *message);
+    void sendMessage(ServerInfoMessage *message);
+
+    void sendMessage(SimpleMessage *message, const long userID);
 
     const Queue<shared_ptr<SimpleMessage> > &getIncomingMessages() const {
         return incomingMessages;
@@ -64,7 +71,7 @@ public:
         return outgoingMessages;
     }
 
-    const map<string, BasicEventStrategy*> &getStrategyMap() const {
+    const map<string, BasicEventStrategy *> &getStrategyMap() const {
         return strategyMap;
     }
 

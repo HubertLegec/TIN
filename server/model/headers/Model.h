@@ -12,7 +12,7 @@ private:
     unordered_map<long, shared_ptr<User> > users;
 
 public:
-    Model() : categoriesCounter(0), usersCounter(0) { }
+    Model() : categoriesCounter(0), usersCounter(1) { }
 
     const unordered_map<long, shared_ptr<Category>> &getCategories() const {
         return categories;

@@ -2,7 +2,6 @@
 #include "../../../networkMessage/headers/UserManagementMessage.h"
 #include "../../model/headers/Model.h"
 #include "../../controller/headers/Controller.h"
-#include "../../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../../logger/easylogging++.h"
 
 void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
@@ -12,35 +11,33 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
     shared_ptr<Model> model = controller->getModel();
     ServerInfoMessage *returnMessage = new ServerInfoMessage();
     returnMessage->setType(SERVER_INFO);
+    returnMessage->setSenderID(SERVER_ID);
 
     if (messageType == CREATE_USER_ACCOUNT) {
         try {
             auto newUser = model->createNewUser(managementMessage->getUserName(), managementMessage->getPort(),
                                                 managementMessage->getIp());
 
+            returnMessage->setExtraInfo(newUser->getID());
             LOG(INFO) << "Created user named " << newUser->getName();
             returnMessage->setServerInfoMessageType(USER_CREATED);
-            returnMessage->setExtraInfo(newUser->getID());
-        }
-        catch (exception &e) {
+
+            controller->sendMessage(returnMessage);
+        } catch (exception &e) {
             LOG(ERROR) << "Failed to create user named " << managementMessage->getUserName();
-            returnMessage->setServerInfoMessageType(FAIL);
-            // TODO do kogo to wyslac xD? tutaj kontroler nie pobierze na podstawie USER_ID informacji na temat adresu itd...
         }
-    } else if (messageType == DELETE_USER_ACCOUNT) {
-        long userID = managementMessage->getSenderID();
-        string name = model->getUser(userID)->getName();
+    } else if (messageType == DELETE_USER_ACCOUNT || messageType == CLIENT_CLOSE_APP) {
+        auto userID = managementMessage->getSenderID();
+        returnMessage->setExtraInfo(userID);
         try {
 
             model->deleteUser(userID);
-            LOG(INFO) << "Deleted user named " << name;
+            LOG(INFO) << "Deleted user named " << userID;
             returnMessage->setServerInfoMessageType(USER_CREATED);
         } catch (exception &e) {
-            LOG(ERROR) << "Failed to delete user named " << name;
+            LOG(ERROR) << "Failed to delete user " << userID;
             returnMessage->setServerInfoMessageType(FAIL);
         }
-        returnMessage->setExtraInfo(userID);
+        controller->sendMessage(returnMessage);
     }
-
-    controller->sendMessage(returnMessage);
 }

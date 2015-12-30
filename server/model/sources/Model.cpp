@@ -10,9 +10,7 @@ const shared_ptr<CategoryMember> Model::getCategoryMembers(const long categoryID
 
 shared_ptr<User> Model::createNewUser(const string &userName, int port, string IP) {
     shared_ptr<User> newUser(new User(usersCounter++, port, IP, userName));
-
-    auto pair_to_add = make_pair(newUser->getID(), newUser);
-    users.insert(pair_to_add);
+    users[newUser->getID()] = newUser;
 
     return newUser;
 }
@@ -24,9 +22,7 @@ void Model::addCategory(shared_ptr<User> owner, const string &category_name) {
     }
 
     auto map_value = shared_ptr<Category>(new Category(categoriesCounter++, owner, category_name));
-    auto pair_to_add = make_pair(map_value->getID(), map_value);
-
-    categories.insert(pair_to_add);
+    categories[map_value->getID()] = map_value;
 }
 
 shared_ptr<User> Model::getUser(const long userID) {

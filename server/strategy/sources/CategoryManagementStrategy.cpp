@@ -15,8 +15,8 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
     shared_ptr<Model> model = controller->getModel();
 
     ServerInfoMessage *returnMessage = new ServerInfoMessage();
+    returnMessage->setSenderID(SERVER_ID);
     returnMessage->setExtraInfo(senderID);
-    returnMessage->setSenderID(senderID);
     returnMessage->setType(SERVER_INFO);
 
     if (messageType == UNDEFINED || messageType == RING_MESSAGE) {
@@ -38,12 +38,22 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         } catch (exception &exception) {
             LOG(ERROR) << "Failed to create category " << categoryName;
             returnMessage->setServerInfoMessageType(FAIL);
-            returnMessage->setInfo(exception.what());
+            returnMessage->setInfo("Failed to create category " + categoryName);
+        }
+    } else if (messageType == DESTROY_CATEGORY) {
+        long categoryID;
+        try {
+            categoryID = categoryManagementMessage->getCategoryID();
+        } catch (out_of_range &e) {
+            LOG(ERROR) << "Couldn't find specified category";
+            returnMessage->setServerInfoMessageType(FAIL);
+            returnMessage->setInfo("Couldn't find specified category");
+        } catch (exception &e) {
+            LOG(ERROR) << e.what();
+            returnMessage->setServerInfoMessageType(FAIL);
+            returnMessage->setInfo(e.what());
         }
 
-        returnMessage->setExtraInfo(senderID);
-    } else if (messageType == DESTROY_CATEGORY) {
-        long categoryID = categoryManagementMessage->getCategoryID();
         long ownerID = model->getCategoryOwner(categoryID)->getID();
 
         if (ownerID != senderID) {
@@ -60,7 +70,9 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     leaveMessage = new ServerInfoMessage();
                     leaveMessage->setType(SERVER_INFO);
                     leaveMessage->setServerInfoMessageType(CATEGORY_LEFT);
-                    leaveMessage->setSenderID(tmp->getUser()->getID());
+                    leaveMessage->setSenderID(SERVER_ID);
+                    leaveMessage->setExtraInfo(tmp->getUser()->getID());
+
                     controller->sendMessage(leaveMessage);
                     tmp = tmp->getRightNeighbour();
                 } while (tmp != categoryMembers);

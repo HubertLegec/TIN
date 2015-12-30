@@ -22,13 +22,27 @@ void Controller::initStrategyMap() {
     strategyMap[typeid(UserManagementMessage).name()] = new UserManagementStrategy(this);
 }
 
-void Controller::sendMessage(SimpleMessage *message) {
-    auto user = model->getUser(message->getSenderID());
-    auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), user->getIP(), user->getPort());
-    outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
+void Controller::sendMessage(ServerInfoMessage *message) {
+    sendMessage(message, message->getExtraInfo());
+}
+
+void Controller::sendMessage(SimpleMessage *message, const long userID) {
+    try {
+        auto user = model->getUser(userID);
+        auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), user->getIP(), user->getPort());
+        outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
+        LOG(DEBUG) << "Sent message to user " << message->getSenderID();
+    } catch (out_of_range &e) {
+        LOG(ERROR) << "Couldn't send message to user " << message->getSenderID() <<
+        ". User doesn'y exist in the system";
+    } catch (exception &e) {
+        LOG(ERROR) << "Couldn't send message to user " << message->getSenderID() <<
+        ". Error log: " << e.what();
+    }
 }
 
 #pragma clang diagnostic push
+
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
 void Controller::run() {
@@ -49,4 +63,5 @@ void Controller::run() {
         usleep(INTERVAL_TIME);
     }
 };
-#pragma clang diagnostic pop
+
+#pragma clang diagnostic popvoid

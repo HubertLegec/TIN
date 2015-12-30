@@ -68,9 +68,13 @@ target_link_libraries(RING_CLIENT ${CMAKE_THREAD_LIBS_INIT})
 
 set(SERVER_SOURCE_FILES server/main.cpp
         server/model/sources/Category.cpp
+        server/model/headers/Category.h
         server/model/sources/Model.cpp
+        server/model/headers/Model.h
         server/model/sources/User.cpp
+        server/model/headers/User.h
         server/controller/sources/Controller.cpp
+        server/controller/headers/Controller.h
         server/strategy/sources/BasicEventStrategy.cpp
         server/strategy/headers/BasicEventStrategy.h
         server/strategy/sources/GetMessageStrategy.cpp
@@ -81,6 +85,7 @@ set(SERVER_SOURCE_FILES server/main.cpp
         server/model/headers/CategoryMember.h
         server/strategy/sources/UserManagementStrategy.cpp
         server/strategy/headers/UserManagementStrategy.h)
+
 set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp

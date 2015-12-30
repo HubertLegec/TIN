@@ -2,42 +2,43 @@
 #include "../headers/GetMessageStrategy.h"
 #include "../../../networkMessage/headers/GetMessage.h"
 #include "../../controller/headers/Controller.h"
+#include "../../../networkMessage/headers/NeighboursInfoMessage.h"
 
 using namespace std;
 
 void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
+    auto userID = getMessage->getSenderID();
 
     if (getMessage->getRequestType() == CAT_LIST) {
-        map<long, std::string> categories;
+        map<long, string> categories;
         CategoryListMessage *returnMessage = new CategoryListMessage();
-        returnMessage->setType(SERVER_INFO);
-        returnMessage->setSenderID(getMessage->getSenderID());
+        returnMessage->setType(CATEGORY_LIST);
+        returnMessage->setSenderID(SERVER_ID);
 
         for (auto pair: controller->getModel()->getCategories()) {
             categories[pair.first] = pair.second->getName();
         }
 
-        controller->sendMessage(returnMessage);
+        controller->sendMessage(returnMessage, userID);
     } else {
-        long categoryID; /* = getMessage->get */
-        // TODO problem polega na tym, ze ID jest teraz globalne
-        // Wiec, potrzeba przekazac wiadomosc, ktorej dokladnie kategorii
-        // dotyczy pobranie sasiadow
+        long categoryID = getMessage->getCategoryID();
         long senderID = getMessage->getSenderID();
-/*
+
         auto member = controller->getModel()->getCategory(categoryID)->findMember(senderID);
         auto leftNeighbour = member->getLeftNeighbour()->getUser();
-        auto rightNeighbout = member->getRightNeighbour()->getUser();
+        auto rightNeighbour = member->getRightNeighbour()->getUser();
 
-        NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(categoryID, leftNeighbour->getName(),
-                                                                       leftNeighbour->getIP(), leftNeighbour->getPort(),
-                                                                       rightNeighbout->getName(),
-                                                                       rightNeighbout->getIP(),
-                                                                       rightNeighbout->getPort());
+        NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(categoryID,
+                                                                       leftNeighbour->getName(),
+                                                                       leftNeighbour->getIP(),
+                                                                       leftNeighbour->getPort(),
+                                                                       rightNeighbour->getName(),
+                                                                       rightNeighbour->getIP(),
+                                                                       rightNeighbour->getPort());
+        infoMessage->setSenderID(SERVER_INFO);
+        infoMessage->setType(NEIGHBOURS_SET);
 
-        controller->putOutgoingMessage(infoMessage);
-*/
-//        throw runtime_error("Not supported yet!");
+        controller->sendMessage(infoMessage, userID);
     }
 }
