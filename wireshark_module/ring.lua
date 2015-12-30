@@ -57,7 +57,6 @@ local ring_fields =
 
 	category_management_message_category_id = ProtoField.int64 ("ring.category_management_message.category_id", "Category ID", base.DEC),
 	category_management_message_category_name = ProtoField.new("Category name", "ing.category_management_message.category_name", ftypes.STRING),
-	category_management_message_user_id = ProtoField.int64 ("ring.category_management_message.user_id", "User ID", base.DEC),
 
 	category_list_message_categories = ProtoField.new("Categories","ring.category_list_message.categories", ftypes.BYTES),
 
@@ -184,8 +183,6 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		tree:add_le(ring_fields.category_management_message_category_id, tvbuf:range(inner_offset, 8))
 		inner_offset = inner_offset + 8
 
-		tree:add_le(ring_fields.category_management_message_user_id, tvbuf:range(inner_offset, 8))
-		inner_offset = inner_offset + 8
 
 		local category_name = getString(tvbuf, inner_offset);	inner_offset = inner_offset + 8
 		tree:add(ring_fields.category_management_message_category_name, tvbuf:range(inner_offset, category_name:len()), category_name)
