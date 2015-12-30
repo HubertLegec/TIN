@@ -9,9 +9,9 @@ public:
     enum AccessType {
         CREATE_CATEGORY,
         DELETE_CATEGORY,
-        REGISTER_IN_CATEGORY,
+        SIGN_UP_CATEGORY,
         JOIN_CATEGORY,
-        VISIT_CATEGORY,
+        SIGN_OUT_CATEGORY,
         LEAVE_CATEGORY
     };
 

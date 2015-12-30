@@ -20,6 +20,48 @@ void CategoryAccessEventStrategy::serveEvent(BasicEvent *event) {
     LOG(INFO) << "CategoryAccessEventStrategy::serveEvent:\n" << event->toString();
 
     CategoryAccessEvent *categoryAccessEvent = dynamic_cast<CategoryAccessEvent *>(event);
+    switch (categoryAccessEvent->getType()) {
+        case CategoryAccessEvent::CREATE_CATEGORY :
+            createCategory(categoryAccessEvent->getName());
+            break;
+        case CategoryAccessEvent::DELETE_CATEGORY :
+            deleteCategory(categoryAccessEvent->getCategoryID());
+            break;
+        case CategoryAccessEvent::SIGN_UP_CATEGORY :
+            signUpCategory(categoryAccessEvent->getCategoryID());
+            break;
+        case CategoryAccessEvent::SIGN_OUT_CATEGORY :
+            signOutCategory(categoryAccessEvent->getCategoryID());
+            break;
+        case CategoryAccessEvent::JOIN_CATEGORY :
+            joinCategory(categoryAccessEvent->getCategoryID());
+            break;
+        case CategoryAccessEvent::LEAVE_CATEGORY :
+            leaveCategory(categoryAccessEvent->getCategoryID());
+            break;
+    }
+}
 
+void CategoryAccessEventStrategy::createCategory(std::string name) const {
+    //TODO
+}
+
+void CategoryAccessEventStrategy::deleteCategory(long id) const {
+    //TODO
+}
+
+void CategoryAccessEventStrategy::signUpCategory(long id) const {
+    //TODO
+}
+
+void CategoryAccessEventStrategy::signOutCategory(long id) const {
+    //TODO
+}
+
+void CategoryAccessEventStrategy::joinCategory(long id) const {
+    //TODO
+}
+
+void CategoryAccessEventStrategy::leaveCategory(long id) const {
     //TODO
 }

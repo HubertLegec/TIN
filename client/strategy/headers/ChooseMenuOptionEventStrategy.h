@@ -16,6 +16,10 @@ private:
     void joinCategory() const;
     void leaveCategory() const;
 
+    void signUpCategory() const;
+
+    void signOutCategory() const;
+
     void createAccount() const;
 
     void refresh() const;

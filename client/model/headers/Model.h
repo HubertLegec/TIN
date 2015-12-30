@@ -73,9 +73,14 @@ public:
     void removeCategoryAndData(long id);
 
     std::map<long, std::string> getMyCategories() const;
-    std::vector<std::pair<long, std::string>> getJoinedCategories() const;
+
+    std::map<long, std::string> getJoinedCategories() const;
     bool isCategoryActive(long categoryId) const;
     void setCategoryActive(long categoryId, bool active);
+
+    std::map<long, std::string> getActiveCategories() const;
+
+    std::map<long, std::string> getInactiveCategories() const;
 
     void addMessageToInbox(const RingMessage &message);
     std::vector<RingMessage> getInboxMessages() const;

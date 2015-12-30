@@ -37,6 +37,20 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
                 createAccount();
             }
             break;
+        case ChooseMenuOptionEvent::SIGN_UP_CATEGORY :
+            if (controller->getModel()->isRegistered()) {
+                signUpCategory();
+            } else {
+                createAccount();
+            }
+            break;
+        case ChooseMenuOptionEvent::SIGN_OUT_CATEGORY :
+            if (controller->getModel()->isRegistered()) {
+                signOutCategory();
+            } else {
+                createAccount();
+            }
+            break;
         case ChooseMenuOptionEvent::JOIN_CATEGORY :
             if (controller->getModel()->isRegistered()) {
                 joinCategory();
@@ -74,11 +88,19 @@ void ChooseMenuOptionEventStrategy::deleteCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::joinCategory() const {
-    controller->getView()->showJoinCategorySubMenu();
+    controller->getView()->showJoinCategorySubMenu(controller->getModel()->getInactiveCategories());
 }
 
 void ChooseMenuOptionEventStrategy::leaveCategory() const {
-    controller->getView()->showLeaveCategorySubMenu();
+    controller->getView()->showLeaveCategorySubMenu(controller->getModel()->getActiveCategories());
+}
+
+void ChooseMenuOptionEventStrategy::signUpCategory() const {
+    //TODO
+}
+
+void ChooseMenuOptionEventStrategy::signOutCategory() const {
+    controller->getView()->showSignOutCategorySubMenu(controller->getModel()->getJoinedCategories());
 }
 
 void ChooseMenuOptionEventStrategy::createAccount() const {

@@ -9,6 +9,17 @@
 
 class CategoryAccessEventStrategy : public BasicEventStrategy {
 private:
+    void createCategory(std::string name) const;
+
+    void deleteCategory(long id) const;
+
+    void signUpCategory(long id) const;
+
+    void signOutCategory(long id) const;
+
+    void joinCategory(long id) const;
+
+    void leaveCategory(long id) const;
 
 public:
     CategoryAccessEventStrategy();

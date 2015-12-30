@@ -291,7 +291,7 @@ void *View::showSignUpCategorySubMenuThread(void *arg)
     cin >> decision;
     if (decision == 'y') {
         threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
-                new CategoryAccessEvent(CategoryAccessEvent::REGISTER_IN_CATEGORY, categoryID)));
+                new CategoryAccessEvent(CategoryAccessEvent::SIGN_UP_CATEGORY, categoryID)));
     }
 }
 
@@ -392,7 +392,7 @@ void *View::showSignOutCategorySubMenuThread(void *arg) {
     cin >> decision;
     if (decision == 'y') {
         threadData->controller->getEventsToServe()->push(shared_ptr<CategoryAccessEvent>(
-                new CategoryAccessEvent(CategoryAccessEvent::VISIT_CATEGORY, categoryID)));
+                new CategoryAccessEvent(CategoryAccessEvent::SIGN_OUT_CATEGORY, categoryID)));
     }
 }
 

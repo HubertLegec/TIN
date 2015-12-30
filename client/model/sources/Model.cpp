@@ -93,11 +93,11 @@ map<long, string> Model::getMyCategories() const {
     return result;
 }
 
-vector<pair<long, string>> Model::getJoinedCategories() const {
-    vector<pair<long, string>> result;
+map<long, string> Model::getJoinedCategories() const {
+    map<long, string> result;
     for (pair<long, CategoryInfo> p : categories) {
         if(!p.second.isOwner()){
-            result.push_back(pair<long, string>(p.first, p.second.getName()));
+            result.insert(pair<long, string>(p.first, p.second.getName()));
         }
     }
     return result;
@@ -159,4 +159,26 @@ bool Model::isRegistered() const {
     } else {
         return false;
     }
+}
+
+std::map<long, std::string> Model::getActiveCategories() const {
+    map<long, string> result;
+    for (auto c : categories) {
+        if (c.second.isActive()) {
+            result.insert(c);
+        }
+    }
+
+    return result;
+}
+
+std::map<long, std::string> Model::getInactiveCategories() const {
+    map<long, string> result;
+    for (auto c : categories) {
+        if (!c.second.isActive()) {
+            result.insert(c);
+        }
+    }
+
+    return result;
 }
