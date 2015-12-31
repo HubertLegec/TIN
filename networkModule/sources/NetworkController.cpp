@@ -35,58 +35,65 @@ void NetworkController::createSendThread() {
     while (true) {
         std::shared_ptr<MessageWrapper> msg = sendQueue->pop();
         LOG(INFO) << "I get msg to send: " << msg->getMessage()->toString();
-        struct addrinfo *serverInfo = prepareConncetionWithReceiver(msg);
+        prepareConncetionWithReceiver(msg);
         if (!sendMsg(msg->getMessage())) {
             LOG(ERROR) << "Couldnt send msg";
             break;
         }
-        freeaddrinfo(serverInfo);
     }
     pthread_exit(NULL);
 }
 
 struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg) {
     LOG(INFO) << "Creating connection with receiver. Hostname: " << msg->getIP() << " Port: " << msg->getPort();
-    struct addrinfo hints, *servinfo, *p;
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET; // use AF_INET6 to force IPv6
-    hints.ai_socktype = SOCK_STREAM;
-    const char *hostname = msg->getIP().c_str();
-    std::string s = std::to_string(msg->getPort());
-    char const *port = s.c_str();
-    if ((getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
-        LOG(ERROR) << "Didnt find address with hostname: " << hostname << " port: " << port;
-//        exit(1);
-    }
-    // loop through all the results and connect to the first we can
-    for (p = servinfo; p != NULL; p = p->ai_next) {
-        if ((sendSockfd = socket(p->ai_family, p->ai_socktype,
-                                 p->ai_protocol)) == -1) {
-            LOG(INFO) << "Not created socket. Retrying...";
-            continue;
-        }
+    hostent *hp;
+    struct in_addr ipv4addr;
+    struct in6_addr ipv6addr;
+    sockaddr_in receiver, client;
 
-        if (connect(sendSockfd, p->ai_addr, p->ai_addrlen) == -1) {
-            close(sendSockfd);
-            LOG(INFO) << "Not connected. Retrying...";
-            continue;
-        }
+    inet_pton(AF_INET, msg->getIP().c_str(), &ipv4addr);
+    hp = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
+    LOG(INFO) << "Receiver running at host NAME: " << hp->h_name;
+    bcopy(hp->h_addr, &(receiver.sin_addr), hp->h_length);
+    LOG(INFO) << "Receiver INET ADDRESS is: " << inet_ntoa(receiver.sin_addr);
 
-        return servinfo; // if we get here, we must have connected successfully
-    }
+    receiver.sin_family = AF_INET;
+    receiver.sin_port = htons(msg->getPort());
 
-    LOG(ERROR) << "Failed to connect";
+    sendSockfd = socket(AF_INET, SOCK_STREAM, 0);
+    bind(sendSockfd, (struct sockaddr *) &client, sizeof(client));
+
+    connect(sendSockfd, (struct sockaddr *) &receiver, sizeof(receiver));
+    sockaddr_in from;
+    socklen_t fromlen = sizeof(from);
+    getpeername(sendSockfd, (struct sockaddr *) &from, &fromlen);
+    LOG(INFO) << "Connected to TCPServer1: ";
+    LOG(INFO) << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
+    hp = gethostbyaddr((char *) &from.sin_addr.s_addr,
+                       sizeof(from.sin_addr.s_addr), AF_INET);
+    LOG(INFO) << "Name is : " << hp->h_name;
+
 }
 
 bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     //TODO do dorobienia obsługa wysyłania niepełnej wiadomości
     const char *serializedMsg = serializeMsg(msg);
-    write(sendSockfd, serializedMsg, sizeof(msg));
-    int trialCounter = 1;
-    while (trialCounter < 40000 && close(sendSockfd) != 0) {
-//        LOG(INFO) << "Something went wrong during closing connection. Retrying..." << trialCounter++;
+    int len = strlen(serializedMsg);
+    int sentBytes = 0;
+    LOG(INFO) << "Sending msg: " << serializedMsg << " with length: " << len << std::endl;
+    LOG(INFO) << "msg: " << msg->toString();
+    sentBytes = send(sendSockfd, serializedMsg, len, 0);
+//    sentBytes = write(sendSockfd, serializedMsg, len);
+    LOG(INFO) << "Sent: " << sentBytes << " bytes";
+    if (sentBytes == len) {
+        sleep(1);
+        close(sendSockfd);
     }
+    int trialCounter = 1;
+//    while (trialCounter < 40000 && close(sendSockfd) != 0) {
+//        LOG(INFO) << "Something went wrong during closing connection. Retrying..." << trialCounter++;
+//    }
     if (trialCounter > 3) {
         LOG(ERROR) << "Something went wrong during closing connection.";
         return false;
@@ -98,18 +105,31 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg) 
     std::stringstream ss;
     cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
     oarchive(*msg); // Write the data to the archive
-    const std::string tmp = ss.str();
-    return tmp.c_str();
+    return getcharFromString(ss.str());
 
+}
+
+const char *NetworkController::getcharFromString(std::string string) {
+    char *result = new char[string.length()];
+    for (int i = 0; i < string.length(); ++i) {
+        result[i] = '\0';
+    }
+    int j = 0;
+    for (int i = 0; i < string.length(); ++i) {
+        if (((int) string[i]) != 0) {
+            result[j++] = string[i];
+        }
+    }
+    return result;
 }
 
 void NetworkController::prepareReceiveThread() {
     LOG(INFO) << "Starting preparing receive thread";
     if (prepareListeningSocket() == NULL)
-        exit(1);
-    //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
-    LOG(INFO) << "Listen ";
-    listen(receiveSockfd, 10);
+//        exit(1);
+        //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
+        LOG(INFO) << "Listen  with sockfd: " << receiveSockfd;
+    listen(receiveSockfd, 10000);
     pthread_t thread;
     receiveSystemThread = &thread;
     createThread(receiveSystemThread, startReceiveThread);
@@ -120,38 +140,40 @@ struct addrinfo *NetworkController::prepareListeningSocket() {
     int sockfd;
     struct addrinfo hints, *servinfo, *p;
 
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_INET; // use AF_INET6 to force IPv6
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE; // use my IP address
+    memset(&hints, 0, sizeof(struct addrinfo));
     LOG(INFO) << "Getting my own address";
-    if ((getaddrinfo(NULL, myPort, &hints, &servinfo)) != 0) {
-        LOG(ERROR) << "Didnt find own address with hostname: " << myIP << " port: " << myPort;
-        //TODO obsługa
-//        exit(1);
+    struct sockaddr_in server;
+    hostent *hp;
+    char hostname[128];
+    gethostname(hostname, sizeof(hostname));
+    printf("----TCP/Server running at host NAME: %s\n", hostname);
+    hp = gethostbyname(hostname);
+    bcopy(hp->h_addr, &(server.sin_addr), hp->h_length);
+    printf("    (TCP/Server INET ADDRESS is: %s )\n", inet_ntoa(server.sin_addr));
+
+    LOG(INFO) << "Searching my own address";
+    LOG(INFO) << "Trying to get socket";
+    if ((receiveSockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        LOG(INFO) << "Not created socket. Retrying...";
+//            continue;
     }
-
-    // loop through all the results and bind to the first we can
-    for (p = servinfo; p != NULL; p = p->ai_next) {
-        LOG(INFO) << "Searching my own address";
-        LOG(INFO) << "Trying to get socket";
-        if ((sockfd = socket(p->ai_family, p->ai_socktype,
-                             p->ai_protocol)) == -1) {
-            LOG(INFO) << "Not created socket. Retrying...";
-            continue;
-        }
-        LOG(INFO) << "Trying to bind";
-        if ((receiveSockfd = bind(sockfd, p->ai_addr, p->ai_addrlen)) == -1) {
-            close(sockfd);
-            LOG(INFO) << "Not bind. Retrying...";
-            continue;
-        }
-
-        return servinfo; // if we get here, we must have connected successfully
+    LOG(INFO) << "Trying to bind";
+    server.sin_family = AF_INET;
+    server.sin_port = htons(atoi(myPort));
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    int length = sizeof(server);
+    if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
+        close(receiveSockfd);
+        LOG(INFO) << "Not bind. Retrying...";
+//            continue;
     }
+    socklen_t length1 = sizeof(server);
+    getsockname(receiveSockfd, (struct sockaddr *) &server, &length1);
+    printf("Server Port is: %d\n", ntohs(server.sin_port));
+//        break; // if we get here, we must have connected successfully
+//    }
 
-    LOG(ERROR) << "Failed to bind socket";
-    return NULL;
+
 
 }
 
@@ -165,68 +187,77 @@ void *NetworkController::startReceiveThread(void *param) {
 }
 
 void NetworkController::createReceiveThread() {
-    LOG(INFO) << "Receiving connection";
+    LOG(INFO) << "Receiving connection with sockfd: " << receiveSockfd;
     //TODO do obsłużenia mechanizm zamykania wątków
     while (true) {
 
-        struct sockaddr peer_name;
-        int socklen = sizeof(peer_name);
+        struct sockaddr_in peer_name;
+        socklen_t socklen = sizeof(peer_name);
         socklen_t *senderAddresLen;
-//        LOG(INFO) << "waitning for accept" << receiveSockfd;
-        int senderSockfd = accept(receiveSockfd, &peer_name, (socklen_t *) &socklen);
-//        LOG(INFO) << "Aceepted connection" << senderSockfd;
+        int senderSockfd = accept(receiveSockfd, (struct sockaddr *) &peer_name, &socklen);
         if (senderSockfd == -1) {
             //TODO błąd do obsłużenia
 //            LOG(INFO) << "I couldnt connect with receiver";
             continue;
 //            break;
         }
+        LOG(INFO) << "Aceepted connection" << senderSockfd;
         LOG(INFO) << "I get correct msg. Processing...";
         int currentSenderPort = 0;
-        char *hostname = getIpAndAddress(&peer_name, hostname, 100 * sizeof(char), currentSenderPort);
-        std::string currentSenderHostname(hostname);
-        receiveMsg(senderSockfd, currentSenderHostname, currentSenderPort);
+//        char *hostname = getIpAndAddress(&peer_name, hostname, 100 * sizeof(char), currentSenderPort);
+//        std::string currentSenderHostname(hostname);
+        receiveMsg(senderSockfd, peer_name);
 
     }
 //    pthread_exit(NULL);
 }
 
-char *NetworkController::getIpAndAddress(const struct sockaddr *sa, char *s, size_t maxlen, int &port) {
-    switch (sa->sa_family) {
-        case AF_INET:
-            inet_ntop(AF_INET, &(((struct sockaddr_in *) sa)->sin_addr),
-                      s, maxlen);
-            port = ((struct sockaddr_in *) sa)->sin_port;
-            break;
-        case AF_INET6:
-            inet_ntop(AF_INET6, &(((struct sockaddr_in6 *) sa)->sin6_addr),
-                      s, maxlen);
-            port = ((struct sockaddr_in6 *) sa)->sin6_port;
-            break;
-        default:
-            strncpy(s, "Unknown AF", maxlen);
-            return NULL;
-    }
 
-    return s;
-}
-
-void NetworkController::receiveMsg(int senderSockfd, std::string hostname, int port) {
+void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
+    LOG(INFO) << "Serving " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
+    hostent *hp;
+    hp = gethostbyaddr((char *) &from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
+    LOG(INFO) << "Name is : " << hp->h_name;
     char *buffer = new char[1000];
     int msgLength = 0;
     int i = 0;
-    while ((msgLength = read(senderSockfd, buffer + i, 128)) > 0) {
+    while ((msgLength = recv(senderSockfd, buffer, sizeof(buffer), 0)) > 0) {
+
         i += msgLength;
     }
+//    buffer[i] = NULL;
     LOG(INFO) << "MSG: " << buffer;
     close(senderSockfd);
     //TODO dodać do kolejki
     SimpleMessage receivedMsg;
-    std::stringstream ss(buffer);
+    LOG(INFO) << "Start reserialize";
+    std::stringstream ss(getStringFromChar(buffer));
     cereal::BinaryInputArchive iarchive(ss); // Create an input archive
     iarchive(receivedMsg);
     std::shared_ptr<SimpleMessage> msg(&receivedMsg);
+    LOG(INFO) << "Succes, i get msg: " << msg->toString();
     receiveQueue->push(msg);
+}
+
+std::string NetworkController::getStringFromChar(const char *tab) {
+    int length = 0;
+    while (true) {
+        if (tab[length++] == '\0')
+            break;
+    }
+    length = ((length / 16) + 1) * 16;
+    std::string result;
+    result.resize(16);
+    result[0] = tab[0];
+    for (int i = 1; i < length; ++i) {
+        if ((i % 4) == 0) {
+            result[(i / 4) * 4] = tab[i / 4];
+        }
+        else {
+            result[i] = 0;
+        }
+    }
+    return result;
 }
 
 

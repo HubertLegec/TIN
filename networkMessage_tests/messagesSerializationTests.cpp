@@ -14,7 +14,53 @@
 #include "../networkMessage/headers/NeighboursInfoMessage.h"
 #include "../networkMessage/headers/RingMessage.h"
 
-TEST(SimpleMessage, serialization_test){
+void print(int length, const char *string) {
+    for (int i = 0; i < length; ++i)
+        std::cout << "Znak: " << i << " : " << ((int) string[i]) << std::endl;
+}
+
+const char *getcharFromString(std::string string) {
+    char *result = new char[string.length()];
+    for (int i = 0; i < string.length(); ++i) {
+        result[i] = '\0';
+    }
+    int j = 0;
+    for (int i = 0; i < string.length(); ++i) {
+        if (((int) string[i]) != 0) {
+            result[j++] = string[i];
+        }
+    }
+    print(string.length(), result);
+    return result;
+}
+
+std::string getStringFromChar(const char *tab) {
+    int length = 0;
+    while (true) {
+        if (tab[length++] == '\0')
+            break;
+    }
+    length = ((length / 16) + 1) * 16;
+    std::string result;
+    result.resize(16);
+    result[0] = tab[0];
+    for (int i = 1; i < length; ++i) {
+        if ((i % 4) == 0) {
+            std::cout << "Append" << i << std::endl;
+            result[(i / 4) * 4] = tab[i / 4];
+        }
+        else {
+            std::cout << "Append null" << i << std::endl;
+            result[i] = 0;
+            std::cout << "result length: " << result.length() << std::endl;
+        }
+    }
+    for (int i = 0; i < result.length(); i++)
+        std::cout << "Result: " << i << " : " << ((int) result[i]) << std::endl;
+    return result;
+}
+
+TEST(SimpleMessage, serialization_test) {
     SimpleMessage msg(MessageType::SERVER_INFO, 1);
 
     std::stringstream ss; // any stream can be used
@@ -22,12 +68,18 @@ TEST(SimpleMessage, serialization_test){
     {
         cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
         oarchive(msg); // Write the data to the archive
+//        std::cout << "tu: " << ss.str() << std::endl << ss.str().c_str() << std::endl;
+//        print(ss.str().length(), ss.str().c_str());
     }
+    const char *constChar = getcharFromString(ss.str());
 
+    std::stringstream sso(getStringFromChar(constChar));
     SimpleMessage testMsg;
     {
-        cereal::BinaryInputArchive iarchive(ss); // Create an input archive
-        iarchive(testMsg); // Read the data from the archive
+        cereal::BinaryInputArchive iarchive(sso); // Create an input archive
+        iarchive(testMsg);
+//        cereal::BinaryInputArchive iarchive(ss); // Create an input archive
+//        iarchive(testMsg); // Read the data from the archive
     }
 
     ASSERT_EQ(msg.getMessageSize(), testMsg.getMessageSize());
@@ -35,7 +87,8 @@ TEST(SimpleMessage, serialization_test){
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
 }
 
-TEST(ServerInfoMessage, serialization_test){
+
+TEST(ServerInfoMessage, serialization_test) {
     ServerInfoMessage msg(13, ServerInfoMessageType::OK, "info");
 
     std::stringstream ss; // any stream can be used
@@ -86,7 +139,7 @@ TEST(NeighboursInfoMessage, serialization_test) {
     EXPECT_TRUE(msg.getRightNeighbourIP() == testMsg.getRightNeighbourIP());
 }
 
-TEST(GetMessage, serialization_test){
+TEST(GetMessage, serialization_test) {
     GetMessage msg(0, GetMessageType::CAT_LIST);
 
     std::stringstream ss; // any stream can be used
@@ -108,8 +161,10 @@ TEST(GetMessage, serialization_test){
     EXPECT_EQ(msg.getRequestType(), testMsg.getRequestType());
 }
 
-TEST(CategoryListMessage, serialization_test){
-    std::map<long, std::string> cat = {{1, "First"}, {2, "Second"}, {3, "Third"}};
+TEST(CategoryListMessage, serialization_test) {
+    std::map<long, std::string> cat = {{1, "First"},
+                                       {2, "Second"},
+                                       {3, "Third"}};
     CategoryListMessage msg(0, cat);
 
     std::stringstream ss; // any stream can be used
@@ -128,12 +183,12 @@ TEST(CategoryListMessage, serialization_test){
     ASSERT_EQ(msg.getMessageSize(), testMsg.getMessageSize());
     ASSERT_EQ(msg.getMessageType(), testMsg.getMessageType());
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
-    for(int i = 1; i <= 3; i++){
-        EXPECT_TRUE( msg.getCategories().at(i).compare(testMsg.getCategories().at(i)) == 0);
+    for (int i = 1; i <= 3; i++) {
+        EXPECT_TRUE(msg.getCategories().at(i).compare(testMsg.getCategories().at(i)) == 0);
     }
 }
 
-TEST(CategoryManagementMessage, serialization_test){
+TEST(CategoryManagementMessage, serialization_test) {
     CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category");
 
     std::stringstream ss; // any stream can be used
@@ -175,7 +230,7 @@ TEST(CategoryManagementMessage, serialization_test){
     EXPECT_TRUE(msg2.getCategoryName() == testMsg2.getCategoryName());
 }
 
-TEST(RingMessage, serialization_test){
+TEST(RingMessage, serialization_test) {
     RingMessage msg(1, 5, "Message text");
     msg.addConfirmation("Ann");
 

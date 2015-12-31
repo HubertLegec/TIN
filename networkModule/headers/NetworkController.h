@@ -14,6 +14,7 @@
 #include <netdb.h>
 #include "../../utils/Queue.hpp"
 #include "MessageWrapper.h"
+#include <unistd.h>
 
 
 class NetworkController {
@@ -23,6 +24,7 @@ private:
     Queue<std::shared_ptr<SimpleMessage>> *receiveQueue;
     int receiveSockfd;
     int sendSockfd;
+    sockaddr_in myAddr;
     pthread_t *sendSystemThread;
     pthread_t *receiveSystemThread;
     struct addrinfo *ownAddress;
@@ -41,13 +43,15 @@ private:
 
     bool sendMsg(std::shared_ptr<SimpleMessage> msg);
 
-    void receiveMsg(int senderSockfd, std::string hostname, int port);
+    void receiveMsg(int senderSockfd, struct sockaddr_in from);
 
     void createThread(pthread_t *thread, void *(*function)(void *));
 
-    char *getIpAndAddress(const struct sockaddr *sa, char *s, size_t maxlen, int &port);
-
     struct addrinfo *prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
+
+    std::string getStringFromChar(const char *tab);
+
+    const char *getcharFromString(std::string string);
 
     struct addrinfo *prepareListeningSocket();
 
