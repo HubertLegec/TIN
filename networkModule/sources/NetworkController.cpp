@@ -68,8 +68,7 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
     sockaddr_in from;
     socklen_t fromlen = sizeof(from);
     getpeername(sendSockfd, (struct sockaddr *) &from, &fromlen);
-    LOG(INFO) << "Connected to TCPServer1: ";
-    LOG(INFO) << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
+    LOG(INFO) << "Connected to TCPServer1: " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
     hp = gethostbyaddr((char *) &from.sin_addr.s_addr,
                        sizeof(from.sin_addr.s_addr), AF_INET);
     LOG(INFO) << "Name is : " << hp->h_name;
@@ -87,7 +86,6 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
 //    sentBytes = write(sendSockfd, serializedMsg, len);
     LOG(INFO) << "Sent: " << sentBytes << " bytes";
     if (sentBytes == len) {
-        sleep(1);
         close(sendSockfd);
     }
     int trialCounter = 1;
@@ -154,25 +152,21 @@ struct addrinfo *NetworkController::prepareListeningSocket() {
     LOG(INFO) << "Searching my own address";
     LOG(INFO) << "Trying to get socket";
     if ((receiveSockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        LOG(INFO) << "Not created socket. Retrying...";
+        LOG(ERROR) << "Problem with creating socket";
 //            continue;
     }
-    LOG(INFO) << "Trying to bind";
     server.sin_family = AF_INET;
     server.sin_port = htons(atoi(myPort));
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     int length = sizeof(server);
     if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
         close(receiveSockfd);
-        LOG(INFO) << "Not bind. Retrying...";
+        LOG(ERROR) << "Not bind.";
 //            continue;
     }
     socklen_t length1 = sizeof(server);
     getsockname(receiveSockfd, (struct sockaddr *) &server, &length1);
     printf("Server Port is: %d\n", ntohs(server.sin_port));
-//        break; // if we get here, we must have connected successfully
-//    }
-
 
 
 }
@@ -214,7 +208,7 @@ void NetworkController::createReceiveThread() {
 
 
 void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
-    LOG(INFO) << "Serving " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
+//    LOG(INFO) << "Serving " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
     hostent *hp;
     hp = gethostbyaddr((char *) &from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
     LOG(INFO) << "Name is : " << hp->h_name;
@@ -222,16 +216,16 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
     int msgLength = 0;
     int i = 0;
     while ((msgLength = recv(senderSockfd, buffer, sizeof(buffer), 0)) > 0) {
-
         i += msgLength;
     }
+    LOG(INFO) << "I get: " << i << " bytes";
 //    buffer[i] = NULL;
-    LOG(INFO) << "MSG: " << buffer;
+    LOG(INFO) << "Msg before transform: " << buffer;
     close(senderSockfd);
     //TODO dodać do kolejki
     SimpleMessage receivedMsg;
     LOG(INFO) << "Start reserialize";
-    std::stringstream ss(getStringFromChar(buffer));
+    std::stringstream ss(getStringFromChar(i, buffer));
     cereal::BinaryInputArchive iarchive(ss); // Create an input archive
     iarchive(receivedMsg);
     std::shared_ptr<SimpleMessage> msg(&receivedMsg);
@@ -239,24 +233,22 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
     receiveQueue->push(msg);
 }
 
-std::string NetworkController::getStringFromChar(const char *tab) {
-    int length = 0;
-    while (true) {
-        if (tab[length++] == '\0')
-            break;
-    }
-    length = ((length / 16) + 1) * 16;
+std::string NetworkController::getStringFromChar(int length, const char *tab) {
+    int size = ((size / 16) + 1) * 16;
     std::string result;
     result.resize(16);
     result[0] = tab[0];
-    for (int i = 1; i < length; ++i) {
-        if ((i % 4) == 0) {
+    for (int i = 1; i < size; ++i) {
+        if ((i % 4) == 0 && (i / 4) < length) {
+//            std::cout << "bit: " << i;
             result[(i / 4) * 4] = tab[i / 4];
         }
         else {
+//            std::cout << "bit 0: " << i;
             result[i] = 0;
         }
     }
+    LOG(INFO) << "MSG: " << result;
     return result;
 }
 

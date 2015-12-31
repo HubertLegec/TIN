@@ -49,7 +49,7 @@ private:
 
     struct addrinfo *prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
 
-    std::string getStringFromChar(const char *tab);
+    std::string getStringFromChar(int length, const char *tab);
 
     const char *getcharFromString(std::string string);
 

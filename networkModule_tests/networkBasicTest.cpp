@@ -15,7 +15,7 @@ TEST(Queue, creating_test) {
     Queue<std::shared_ptr<SimpleMessage>> rQueue;
     SimpleMessage msg(MessageType::SERVER_INFO, 1);
     std::shared_ptr<SimpleMessage> p2(&msg);
-    MessageWrapper *wrapper = new MessageWrapper(p2, "127.0.1.1", 3491);
+    MessageWrapper *wrapper = new MessageWrapper(p2, "127.0.1.1", 3499);
     Queue<std::shared_ptr<MessageWrapper>> sQueue1;
     std::shared_ptr<MessageWrapper> p1(wrapper);
 //    sQueue1.push(p1);
