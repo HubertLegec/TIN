@@ -29,9 +29,11 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
         auto categoryName = categoryManagementMessage->getCategoryName();
         try {
-            model->createCategory(senderID, categoryName);
+            long categoryID = model->createCategory(senderID, categoryName);
             LOG(INFO) << "Created category " << categoryName;
             returnMessage->setServerInfoMessageType(CATEGORY_CREATED);
+            returnMessage->setExtraInfo(categoryID);
+            returnMessage->setInfo(categoryManagementMessage->getCategoryName());
         } catch (exception &exception) {
             LOG(DEBUG) << "Failed to create category " << categoryName;
             returnMessage->setServerInfoMessageType(FAIL);
@@ -162,5 +164,5 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         LOG(DEBUG) << "Received bad message type from user " << senderID;
     }
 
-    controller->sendMessage(returnMessage);
+    controller->sendMessage(returnMessage, senderID);
 }

@@ -13,17 +13,14 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     auto requestType = getMessage->getRequestType();
 
     if (requestType == CAT_LIST) {
-//        map<long, string> categories;
         CategoryListMessage *returnMessage = new CategoryListMessage();
         returnMessage->setType(CATEGORY_LIST);
         returnMessage->setSenderID(SERVER_ID);
 
         for (auto pair: controller->getModel()->getCategories()) {
-//            categories[pair.first] = pair.second->getName();
             returnMessage->addCategory(pair.first,pair.second->getName());
         }
 
-//        returnMessage->set
         LOG(INFO) << "Sent category list to user " << userID;
         controller->sendMessage(returnMessage, userID);
     } else if (requestType == NEIGHBOURS) {

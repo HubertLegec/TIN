@@ -24,7 +24,7 @@ public:
 
     shared_ptr<User> createNewUser(const std::string &userName, int port, string IP);
 
-    void addCategory(shared_ptr<User> owner, const string &category_name);
+    long addCategory(shared_ptr<User> owner, const string &category_name);
 
     void deleteUser(const long userID);
 
@@ -32,7 +32,7 @@ public:
 
     shared_ptr<Category> getCategory(const long id);
 
-    void createCategory(long ownerID, const string &category_name);
+    long createCategory(long ownerID, const string &category_name);
 
     void destroyCategory(const long id);
 

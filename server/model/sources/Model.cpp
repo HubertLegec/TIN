@@ -15,7 +15,7 @@ shared_ptr<User> Model::createNewUser(const string &userName, int port, string I
     return newUser;
 }
 
-void Model::addCategory(shared_ptr<User> owner, const string &category_name) {
+long Model::addCategory(shared_ptr<User> owner, const string &category_name) {
     for (auto pair : categories) {
         if (pair.second->getName() == category_name)
             throw runtime_error("Category, you wanted to add, already exists!");
@@ -23,6 +23,8 @@ void Model::addCategory(shared_ptr<User> owner, const string &category_name) {
 
     auto map_value = shared_ptr<Category>(new Category(categoriesCounter++, owner, category_name));
     categories[map_value->getID()] = map_value;
+
+    return map_value->getID();
 }
 
 shared_ptr<User> Model::getUser(const long userID) {
@@ -33,9 +35,9 @@ shared_ptr<Category> Model::getCategory(const long id) {
     return categories.at(id);
 }
 
-void Model::createCategory(long ownerID, const string &category_name) {
+long Model::createCategory(long ownerID, const string &category_name) {
     auto owner = users.at(ownerID);
-    addCategory(owner, category_name);
+    return addCategory(owner, category_name);
 }
 
 void Model::addMemberToCategory(shared_ptr<User> member, long categoryID) {
