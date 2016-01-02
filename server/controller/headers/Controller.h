@@ -9,6 +9,7 @@
 #include "../../strategy/headers/BasicEventStrategy.h"
 #include "../../../networkModule/headers/MessageWrapper.h"
 #include "../../../networkMessage/headers/ServerInfoMessage.h"
+#include "../../../networkModule/headers/NetworkController.h"
 
 using namespace std;
 
@@ -18,11 +19,16 @@ enum {
 
 class Controller {
 private:
+    const static int DEFAULT_PORT = 8888;
+    const string DEFAULT_IP = "127.0.1.1";
     const static unsigned INTERVAL_TIME = 200;
+    int myPort;
+    string myIP;
     map<string, BasicEventStrategy *> strategyMap;
     Queue<shared_ptr<SimpleMessage> > incomingMessages;
     Queue<shared_ptr<MessageWrapper> > outgoingMessages;
     shared_ptr<Model> model;
+    shared_ptr<NetworkController> networkController;
 
     void initStrategyMap();
 
@@ -31,8 +37,20 @@ public:
 
     Controller(shared_ptr<Model> model);
 
+    Controller(shared_ptr<Model> model, int port);
+
+    Controller(shared_ptr<Model> model, string ip, int port);
+
     shared_ptr<Model> getModel() const {
         return model;
+    }
+
+    int getMyPort() const {
+        return myPort;
+    }
+
+    const string &getMyIP() const {
+        return myIP;
     }
 
     void putOutgoingMessage(MessageWrapper &message) {

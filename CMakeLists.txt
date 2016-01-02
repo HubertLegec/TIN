@@ -94,10 +94,11 @@ set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp
         networkMessage/sources/UserManagementMessage.cpp
         networkMessage/headers/UserManagementMessage.h
-        networkModule/sources/MessageWrapper.cpp)
+        networkModule/sources/MessageWrapper.cpp
+        networkModule/sources/NetworkController.cpp)
 
 add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})
-
+target_link_libraries(RING_SERVER ${CMAKE_THREAD_LIBS_INIT})
 
 #------------------------------------ Tests configuration --------------------------------------------------------------
 

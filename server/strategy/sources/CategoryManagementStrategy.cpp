@@ -1,6 +1,5 @@
 #include "../../../networkMessage/headers/CategoryManagementMessage.h"
 #include "../../../networkMessage/headers/ServerInfoMessage.h"
-#include "../../../networkMessage/headers/GetMessage.h"
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../headers/CategoryManagementStrategy.h"
 #include "../../model/headers/Model.h"
@@ -19,15 +18,13 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
     returnMessage->setExtraInfo(senderID);
     returnMessage->setType(SERVER_INFO);
 
-    if (messageType == UNDEFINED || messageType == RING_MESSAGE) {
+    if (messageType == UNDEFINED) {
         LOG(ERROR) << "Undefined message sent by user " << senderID;
 
         returnMessage->setServerInfoMessageType(FAIL);
         returnMessage->setInfo("Undefined message.");
         returnMessage->setExtraInfo(senderID);
 
-    } else if (messageType == GET) {
-        controller->getStrategyMap().at(typeid(GetMessage).name())->serveEvent(message);
     } else if (messageType == CREATE_CATEGORY) {
 
         auto categoryName = categoryManagementMessage->getCategoryName();
@@ -90,17 +87,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 returnMessage->setInfo(exception.what());
             }
         }
-
-    }/* else if (messageType == CATEGORY_LIST) {
-        map<long, std::string> categories;
-
-        for (auto pair: controller->getModel()->getCategories()) {
-            categories[pair.first] = pair.second->getName();
-        }
-
-        CategoryListMessage listMessage(-1, categories);
-        controller->putOutgoingMessage(listMessage);
-    }*/else if (messageType == JOIN_CATEGORY) {
+    } else if (messageType == JOIN_CATEGORY) {
         long categoryID = categoryManagementMessage->getCategoryID();
         auto memberToAdd = model->getUser(senderID);
 
@@ -169,11 +156,12 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo(exception.what());
         }
-    } /*else if (messageType == NEIGHBOURS_SET) {
-        // ???
-    } else if (messageType == SERVER_INFO) {
-        // ???
-    }*/ else {
+    } else if (messageType == NEIGHBOURS_SET || messageType == RING_MESSAGE || messageType == SERVER_INFO ||
+               messageType == CATEGORY_LIST || messageType == GET) {
+        returnMessage->setServerInfoMessageType(FAIL);
+        returnMessage->setInfo("Bad message type received");
+        LOG(ERROR) << "Received bad message type from user " << senderID;
+    } else {
         throw runtime_error("Unsupported MessageType!");
     }
 

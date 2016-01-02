@@ -6,14 +6,25 @@
 #include "../../../logger/easylogging++.h"
 #include "../../../networkMessage/headers/UserManagementMessage.h"
 #include "../../strategy/headers/UserManagementStrategy.h"
-#include <unistd.h>
 
-Controller::Controller() : model(new Model) {
+Controller::Controller() : model(new Model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
     initStrategyMap();
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
 }
 
-Controller::Controller(shared_ptr<Model> model) : model(model) {
+Controller::Controller(shared_ptr<Model> model) : model(model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
     initStrategyMap();
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
+}
+
+Controller::Controller(shared_ptr<Model> model, int port) : model(model), myIP(DEFAULT_IP), myPort(port) {
+    initStrategyMap();
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
+}
+
+Controller::Controller(shared_ptr<Model> model, string ip, int port) : model(model), myIP(ip), myPort(port) {
+    initStrategyMap();
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
 }
 
 void Controller::initStrategyMap() {
