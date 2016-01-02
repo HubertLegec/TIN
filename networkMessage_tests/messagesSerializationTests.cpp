@@ -20,40 +20,48 @@ void print(int length, const char *string) {
 }
 
 const char *getcharFromString(std::string string) {
-    char *result = new char[string.length()];
+//    for (int i = 0; i < string.length(); ++i)
+//        std::cout << "Test: " << i << ": " << (int) string[i] << std::endl;
+    char *result = new char[string.length() + 1];
     for (int i = 0; i < string.length(); ++i) {
         result[i] = '\0';
     }
     int j = 0;
     for (int i = 0; i < string.length(); ++i) {
         if (((int) string[i]) != 0) {
-            result[j++] = string[i];
+            result[i] = string[i];
         }
     }
-    print(string.length(), result);
+    result[string.length()] = -2;
+    print(string.length() + 1, result);
     return result;
 }
 
 std::string getStringFromChar(const char *tab) {
     int length = 0;
     while (true) {
-        if (tab[length++] == '\0')
+//        std::cout << "Szukam: " << tab[length] << std::endl;
+        if (((int) tab[length]) == -2) {
+//            std::cout << "Dotarłem" << length;
             break;
+        }
+        length++;
     }
-    length = ((length / 16) + 1) * 16;
+    if (length < 16)
+        length = ((length / 16) + 1) * 16;
     std::string result;
-    result.resize(16);
-    result[0] = tab[0];
-    for (int i = 1; i < length; ++i) {
-        if ((i % 4) == 0) {
-            std::cout << "Append" << i << std::endl;
-            result[(i / 4) * 4] = tab[i / 4];
-        }
-        else {
-            std::cout << "Append null" << i << std::endl;
-            result[i] = 0;
-            std::cout << "result length: " << result.length() << std::endl;
-        }
+    result.resize(length);
+    for (int i = 0; i < length; ++i) {
+        result[i] = tab[i];
+//        if ((i % 4) == 0) {
+////            std::cout << "Append" << i << std::endl;
+//            result[(i / 4) * 4] = tab[i / 4];
+//        }
+//        else {
+////            std::cout << "Append null" << i << std::endl;
+//            result[i] = 0;
+////            std::cout << "result length: " << result.length() << std::endl;
+//        }
     }
     for (int i = 0; i < result.length(); i++)
         std::cout << "Result: " << i << " : " << ((int) result[i]) << std::endl;
@@ -197,10 +205,12 @@ TEST(CategoryManagementMessage, serialization_test) {
         cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
         oarchive(msg); // Write the data to the archive
     }
+    const char *constChar = getcharFromString(ss.str());
 
+    std::stringstream sso(getStringFromChar(constChar));
     CategoryManagementMessage testMsg;
     {
-        cereal::BinaryInputArchive iarchive(ss); // Create an input archive
+        cereal::BinaryInputArchive iarchive(sso); // Create an input archive
         iarchive(testMsg); // Read the data from the archive
     }
 

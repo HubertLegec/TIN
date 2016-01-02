@@ -5,6 +5,12 @@
 #include <unistd.h>
 #include "../headers/NetworkController.h"
 #include "../../logger/easylogging++.h"
+#include "../../networkMessage/headers/GetMessage.h"
+#include "../../networkMessage/headers/CategoryManagementMessage.h"
+#include "../../networkMessage/headers/RingMessage.h"
+#include "../../networkMessage/headers/NeighboursInfoMessage.h"
+#include "../../networkMessage/headers/ServerInfoMessage.h"
+#include "../../networkMessage/headers/UserManagementMessage.h"
 
 
 void NetworkController::prepareSendThread() {
@@ -75,31 +81,70 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
 
 bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     //TODO do dorobienia obsługa wysyłania niepełnej wiadomości
-    const char *serializedMsg = serializeMsg(msg);
+    int length = 0;
+    const char *serializedMsg = serializeMsg(msg, length);
     int len = strlen(serializedMsg);
     int sentBytes = 0;
-    LOG(INFO) << "[SND] Sending msg: " << serializedMsg << " with length: " << len << std::endl;
+    LOG(INFO) << "[SND] Sending msg: " << serializedMsg << " with length: " << length << std::endl;
     LOG(INFO) << "[SND] msg: " << msg->toString();
-    sentBytes = send(sendSockfd, serializedMsg, len, 0);
+    sentBytes = send(sendSockfd, serializedMsg, length, 0);
 //    sentBytes = write(sendSockfd, serializedMsg, len);
     LOG(INFO) << "[SND] Sent: " << sentBytes << " bytes";
     int trialCounter = 1;
-    if (sentBytes == len) {
+    if (sentBytes == length) {
         while (trialCounter < 4 && close(sendSockfd) != 0) {
             LOG(INFO) << "[SND] Something went wrong during closing connection. Retrying..." << trialCounter++;
         }
     }
-    if (trialCounter > 3) {
+    if (trialCounter > 4) {
         LOG(ERROR) << "[SND] Something went wrong during closing connection.";
         return false;
     }
     return true;
 }
 
-const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg) {
+const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, int &length) {
     std::stringstream ss;
     cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
-    oarchive(*msg); // Write the data to the archive
+    switch (msg->getMessageType()) {
+        case MessageType::GET : {
+            GetMessage *getMessage = dynamic_cast<GetMessage *>(&*msg);
+            oarchive(*getMessage); // Write the data to the archive
+        }
+            break;
+        case MessageType::CREATE_CATEGORY :
+        case MessageType::DESTROY_CATEGORY :
+        case MessageType::JOIN_CATEGORY :
+        case MessageType::LEFT_CATEGORY :
+        case MessageType::ACTIVATE_CATEGORY :
+        case MessageType::DEACTIVATE_CATEGORY : {
+            CategoryManagementMessage *categoryMessage = dynamic_cast<CategoryManagementMessage *>(&*msg);
+            oarchive(*categoryMessage);
+        }
+            break;
+        case MessageType::RING_MESSAGE: {
+            RingMessage *ringMessage = dynamic_cast<RingMessage *>( &*msg);
+            oarchive(*ringMessage);
+        }
+            break;
+        case MessageType::NEIGHBOURS_SET: {
+            NeighboursInfoMessage *nghbrsMessage = dynamic_cast<NeighboursInfoMessage *>(&*msg);
+            oarchive(*nghbrsMessage);
+        }
+            break;
+        case MessageType::SERVER_INFO: {
+            ServerInfoMessage *serverInfoMessage = dynamic_cast<ServerInfoMessage *>(&*msg);
+            oarchive(*serverInfoMessage);
+        }
+            break;
+        case MessageType::CREATE_USER_ACCOUNT:
+        case MessageType::DELETE_USER_ACCOUNT: {
+            UserManagementMessage *userMenagMessage = dynamic_cast<UserManagementMessage *>(&*msg);
+            oarchive(*userMenagMessage);
+        }
+            break;
+    }
+    length = (ss.str().length());
     return getcharFromString(ss.str());
 
 }
@@ -112,7 +157,7 @@ const char *NetworkController::getcharFromString(std::string string) {
     int j = 0;
     for (int i = 0; i < string.length(); ++i) {
         if (((int) string[i]) != 0) {
-            result[j++] = string[i];
+            result[i] = string[i];
         }
     }
     return result;
@@ -204,7 +249,7 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
     char *buffer = new char[1000];
     int msgLength = 0;
     int i = 0;
-    while ((msgLength = recv(senderSockfd, buffer, sizeof(buffer), 0)) > 0) {
+    while ((msgLength = recv(senderSockfd, buffer + i, sizeof(buffer), 0)) > 0) {
         i += msgLength;
     }
     LOG(INFO) << "[REC] I get: " << i << " bytes";
@@ -212,31 +257,87 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
     LOG(INFO) << "[REC] Msg before transform: " << buffer;
     close(senderSockfd);
     //TODO dodać do kolejki
-    SimpleMessage receivedMsg;
+    SimpleMessage tempMsg;
     LOG(INFO) << "Start reserialize";
+    std::stringstream tempString(getStringFromChar(i, buffer));
     std::stringstream ss(getStringFromChar(i, buffer));
+    cereal::BinaryInputArchive iTempArchive(tempString); // Create an input archive
+    iTempArchive(tempMsg);
     cereal::BinaryInputArchive iarchive(ss); // Create an input archive
-    iarchive(receivedMsg);
-    std::shared_ptr<SimpleMessage> msg(&receivedMsg);
-    LOG(INFO) << "[REC] MSG: " << msg->toString();
-    receiveQueue->push(msg);
+
+    switch (tempMsg.getMessageType()) {
+        case MessageType::GET : {
+            GetMessage getMessage;
+            iarchive(getMessage); // Write the data to the archive
+            std::shared_ptr<GetMessage> msg(&getMessage);
+            LOG(INFO) << "[REC] MSG: " << getMessage.toString();
+            receiveQueue->push(msg);
+        }
+            break;
+        case MessageType::CREATE_CATEGORY :
+        case MessageType::DESTROY_CATEGORY :
+        case MessageType::JOIN_CATEGORY :
+        case MessageType::LEFT_CATEGORY :
+        case MessageType::ACTIVATE_CATEGORY :
+        case MessageType::DEACTIVATE_CATEGORY : {
+            CategoryManagementMessage categoryMessage;
+            iarchive(categoryMessage);
+            std::shared_ptr<CategoryManagementMessage> msg(&categoryMessage);
+            LOG(INFO) << "[REC] MSG: " << categoryMessage.toString();
+            receiveQueue->push(msg);
+        }
+            break;
+        case MessageType::RING_MESSAGE: {
+            RingMessage ringMessage;
+            iarchive(ringMessage);
+            std::shared_ptr<RingMessage> msg(&ringMessage);
+            LOG(INFO) << "[REC] MSG: " << ringMessage.toString();
+            receiveQueue->push(msg);
+        }
+            break;
+        case MessageType::NEIGHBOURS_SET: {
+            NeighboursInfoMessage nghbrsMessage;
+            iarchive(nghbrsMessage);
+            std::shared_ptr<NeighboursInfoMessage> msg(&nghbrsMessage);
+            LOG(INFO) << "[REC] MSG: " << nghbrsMessage.toString();
+            receiveQueue->push(msg);
+        }
+            break;
+        case MessageType::SERVER_INFO: {
+            ServerInfoMessage serverInfoMessage;
+            iarchive(serverInfoMessage);
+            std::shared_ptr<ServerInfoMessage> msg(&serverInfoMessage);
+            LOG(INFO) << "[REC] MSG: " << serverInfoMessage.toString();
+            receiveQueue->push(msg);
+        }
+            break;
+        case MessageType::CREATE_USER_ACCOUNT:
+        case MessageType::DELETE_USER_ACCOUNT: {
+            UserManagementMessage userMenagMessage;
+            iarchive(userMenagMessage);
+            std::shared_ptr<UserManagementMessage> msg(&userMenagMessage);
+            LOG(INFO) << "[REC] MSG: " << userMenagMessage.toString();
+            receiveQueue->push(msg);
+        }
+            break;
+    }
 }
 
-std::string NetworkController::getStringFromChar(int length, const char *tab) {
-    int size = ((length / 16) + 1) * 16;
-    LOG(INFO) << "[REC] length: " << size;
+std::string NetworkController::getStringFromChar(int length1, const char *tab) {
+    if (length1 < 16)
+        length1 = ((length1 / 16) + 1) * 16;
     std::string result;
-    result.resize(size);
-    result[0] = tab[0];
-    for (int i = 1; i < size; ++i) {
-        if ((i % 4) == 0 && (i / 4) < length) {
-            result[(i / 4) * 4] = tab[i / 4];
-        }
-        else {
-            result[i] = 0;
-        }
+    result.
+            resize(length1);
+    for (
+            int i = 0;
+            i < length1;
+            ++i) {
+        result[i] = tab[i];
     }
-    return result;
+    return
+            result;
+
 }
 
 

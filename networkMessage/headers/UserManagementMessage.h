@@ -18,6 +18,9 @@ private:
     static const long UNDEFINED_ID = -1;
 
 public:
+
+    UserManagementMessage();
+
     // To sign up user
     UserManagementMessage(MessageType type, std::string ip, int port, std::string login);
 
@@ -33,7 +36,7 @@ public:
     virtual std::string toString() const;
 
     template<class Archive>
-    void serialize(Archive & archive){
+    void serialize(Archive &archive) {
         archive(this->type, this->size, this->senderID, this->port, this->ip, this->userName);
     }
 };

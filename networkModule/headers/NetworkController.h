@@ -28,6 +28,7 @@ private:
     pthread_t *sendSystemThread;
     pthread_t *receiveSystemThread;
     struct addrinfo *ownAddress;
+    const char *myIP;
     const char *myPort;
     NetworkController *pointer;
 
@@ -53,7 +54,7 @@ private:
 
     void prepareListeningSocket();
 
-    const char *serializeMsg(std::shared_ptr<SimpleMessage> msg);
+    const char *serializeMsg(std::shared_ptr<SimpleMessage> msg, int &length);
 
     static void *startReceiveThread(void *param);
 
