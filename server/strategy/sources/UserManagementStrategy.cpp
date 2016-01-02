@@ -18,13 +18,17 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
             auto newUser = model->createNewUser(managementMessage->getUserName(), managementMessage->getPort(),
                                                 managementMessage->getIp());
 
-            returnMessage->setExtraInfo(newUser->getID());
             LOG(INFO) << "Created user named " << newUser->getName();
+            returnMessage->setExtraInfo(newUser->getID());
             returnMessage->setServerInfoMessageType(USER_CREATED);
 
             controller->sendMessage(returnMessage);
         } catch (exception &e) {
             LOG(ERROR) << "Failed to create user named " << managementMessage->getUserName();
+            returnMessage->setServerInfoMessageType(FAIL);
+            returnMessage->setInfo("Couldn't create user");
+
+            controller->sendMessage(returnMessage, managementMessage->getIp(), managementMessage->getPort());
         }
     } else if (messageType == DELETE_USER_ACCOUNT || messageType == CLIENT_CLOSE_APP) {
         auto userID = managementMessage->getSenderID();
