@@ -52,6 +52,17 @@ void Controller::sendMessage(SimpleMessage *message, const long userID) {
     }
 }
 
+void Controller::sendMessage(SimpleMessage *message, string IP, int port) {
+    try {
+        auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), IP, port);
+        outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
+        LOG(DEBUG) << "Sent message to user " << message->getSenderID();
+    } catch (exception &e) {
+        LOG(ERROR) << "Couldn't send message to user " << message->getSenderID() <<
+        ". Error log: " << e.what();
+    }
+}
+
 #pragma clang diagnostic push
 
 #pragma clang diagnostic ignored "-Wmissing-noreturn"

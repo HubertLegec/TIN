@@ -81,6 +81,8 @@ public:
 
     void sendMessage(SimpleMessage *message, const long userID);
 
+    void sendMessage(SimpleMessage *message, string IP, int port);
+
     const Queue<shared_ptr<SimpleMessage> > &getIncomingMessages() const {
         return incomingMessages;
     }
