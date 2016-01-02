@@ -267,10 +267,10 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
 
     switch (tempMsg.getMessageType()) {
         case MessageType::GET : {
-            GetMessage getMessage;
-            iarchive(getMessage); // Write the data to the archive
-            std::shared_ptr<GetMessage> msg(&getMessage);
-            LOG(INFO) << "[REC] MSG: " << getMessage.toString();
+            GetMessage *getMessage = new GetMessage();
+            iarchive(*getMessage); // Write the data to the archive
+            std::shared_ptr<GetMessage> msg(getMessage);
+            LOG(INFO) << "[REC] MSG: " << getMessage->toString();
             receiveQueue->push(msg);
         }
             break;
@@ -280,43 +280,43 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
         case MessageType::LEFT_CATEGORY :
         case MessageType::ACTIVATE_CATEGORY :
         case MessageType::DEACTIVATE_CATEGORY : {
-            CategoryManagementMessage categoryMessage;
-            iarchive(categoryMessage);
-            std::shared_ptr<CategoryManagementMessage> msg(&categoryMessage);
-            LOG(INFO) << "[REC] MSG: " << categoryMessage.toString();
+            CategoryManagementMessage *categoryMessage = new CategoryManagementMessage();
+            iarchive(*categoryMessage);
+            std::shared_ptr<CategoryManagementMessage> msg(categoryMessage);
+            LOG(INFO) << "[REC] MSG: " << categoryMessage->toString();
             receiveQueue->push(msg);
         }
             break;
         case MessageType::RING_MESSAGE: {
-            RingMessage ringMessage;
-            iarchive(ringMessage);
-            std::shared_ptr<RingMessage> msg(&ringMessage);
-            LOG(INFO) << "[REC] MSG: " << ringMessage.toString();
+            RingMessage *ringMessage = new RingMessage();
+            iarchive(*ringMessage);
+            std::shared_ptr<RingMessage> msg(ringMessage);
+            LOG(INFO) << "[REC] MSG: " << ringMessage->toString();
             receiveQueue->push(msg);
         }
             break;
         case MessageType::NEIGHBOURS_SET: {
-            NeighboursInfoMessage nghbrsMessage;
-            iarchive(nghbrsMessage);
-            std::shared_ptr<NeighboursInfoMessage> msg(&nghbrsMessage);
-            LOG(INFO) << "[REC] MSG: " << nghbrsMessage.toString();
+            NeighboursInfoMessage *nghbrsMessage = new NeighboursInfoMessage();
+            iarchive(*nghbrsMessage);
+            std::shared_ptr<NeighboursInfoMessage> msg(nghbrsMessage);
+            LOG(INFO) << "[REC] MSG: " << nghbrsMessage->toString();
             receiveQueue->push(msg);
         }
             break;
         case MessageType::SERVER_INFO: {
-            ServerInfoMessage serverInfoMessage;
-            iarchive(serverInfoMessage);
-            std::shared_ptr<ServerInfoMessage> msg(&serverInfoMessage);
-            LOG(INFO) << "[REC] MSG: " << serverInfoMessage.toString();
+            ServerInfoMessage *serverInfoMessage = new ServerInfoMessage();
+            iarchive(*serverInfoMessage);
+            std::shared_ptr<ServerInfoMessage> msg(serverInfoMessage);
+            LOG(INFO) << "[REC] MSG: " << serverInfoMessage->toString();
             receiveQueue->push(msg);
         }
             break;
         case MessageType::CREATE_USER_ACCOUNT:
         case MessageType::DELETE_USER_ACCOUNT: {
-            UserManagementMessage userMenagMessage;
-            iarchive(userMenagMessage);
-            std::shared_ptr<UserManagementMessage> msg(&userMenagMessage);
-            LOG(INFO) << "[REC] MSG: " << userMenagMessage.toString();
+            UserManagementMessage *userMenagMessage = new UserManagementMessage();
+            iarchive(*userMenagMessage);
+            std::shared_ptr<UserManagementMessage> msg(userMenagMessage);
+            LOG(INFO) << "[REC] MSG: " << userMenagMessage->toString();
             receiveQueue->push(msg);
         }
             break;
