@@ -90,7 +90,7 @@ string Controller::getMessageType(shared_ptr<SimpleMessage> message) {
     auto messageType = message->getMessageType();
     switch (messageType) {
         case GET:
-            return "USER_MANAGEMENT";
+            return "GET_MESSAGE";
 
         case CREATE_CATEGORY:
         case DESTROY_CATEGORY:
