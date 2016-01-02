@@ -72,7 +72,7 @@ void Controller::run() {
             incomingMessage = incomingMessages.pop();
             string type = getMessageType(incomingMessage);
             try {
-                strategyMap.at(typeid(*incomingMessage).name())->serveEvent(incomingMessage.get());
+                strategyMap.at(type)->serveEvent(incomingMessage.get());
             } catch (out_of_range &e) {
                 LOG(ERROR) << "Bad type of incomming message";
             } catch (exception &e) {
