@@ -69,7 +69,8 @@ void Controller::start() {
         std::shared_ptr<BasicEvent> event = eventsToServe.pop();
         LOG(INFO) << "EVENT: " << event.get()->toString();
         try {
-            strategyMap.at(event.get()->getName())->serveEvent(event.get());
+            BasicEventStrategy *str = strategyMap.at(event.get()->getName());
+            str->serveEvent(event.get());
         } catch (out_of_range &e) {
             LOG(ERROR) << "Bad type of incomming message";
         } catch (exception &e) {

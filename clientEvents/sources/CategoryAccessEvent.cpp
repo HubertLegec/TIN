@@ -25,7 +25,7 @@ std::string CategoryAccessEvent::toString() const {
     stringstream ss;
     ss << "CategoryAccessEvent[type:" << type << "; ";
     ss << "categoryName:" << categoryName << "]";
-
+    return ss.str();
 }
 
 std::string CategoryAccessEvent::getName() const {

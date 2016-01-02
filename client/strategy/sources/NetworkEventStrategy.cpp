@@ -49,6 +49,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
         case ServerInfoMessageType::CATEGORY_CREATED :
             getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
             getModel()->addNotification("New category created!");
+            getView()->showMainMenu(getModel()->getNotifications());
             break;
 
         case ServerInfoMessageType::CATEGORY_REMOVED :

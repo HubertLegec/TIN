@@ -21,7 +21,11 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
             controller->exit();
             break;
         case ChooseMenuOptionEvent::SHOW_CATEGORY_LIST :
-            showCategoryList();
+            if (getModel()->isRegistered()) {
+                showCategoryList();
+            } else {
+                createAccount();
+            }
             break;
         case ChooseMenuOptionEvent::CREATE_USER_ACCOUNT:
             createAccount();
