@@ -19,7 +19,7 @@ View::~View() { pthread_join(viewThread,NULL); }
 void View::showCategoryList(map<long, string> categories) {
     pthread_join(viewThread, NULL);
     *threadData.categories = categories;
-    pthread_create(&viewThread, NULL, showCreateCategorySubMenuThread, &threadData);
+    pthread_create(&viewThread, NULL, showCategoryListThread, &threadData);
 }
 
 

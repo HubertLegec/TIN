@@ -50,6 +50,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
             getModel()->addNotification("New category created!");
             getView()->showMainMenu(getModel()->getNotifications());
+            getModel()->clearNotificationList();
             break;
 
         case ServerInfoMessageType::CATEGORY_REMOVED :
@@ -95,6 +96,7 @@ void NetworkEventStrategy::processCategoryList(SimpleMessage &message) const {
     if (controller->getState() == Controller::CATEGORY_LIST) {
         getView()->showCategoryList(msg.getCategories());
         getView()->showMainMenu(getModel()->getNotifications());
+        getModel()->clearNotificationList();
     } else if (controller->getState() == Controller::SIGN_UP) {
         getView()->showSignUpCategorySubMenu(filterCategories(msg.getCategories()));
     }

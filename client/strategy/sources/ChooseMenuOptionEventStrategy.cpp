@@ -119,4 +119,5 @@ void ChooseMenuOptionEventStrategy::createAccount() const {
 
 void ChooseMenuOptionEventStrategy::refresh() const {
     getView()->showMainMenu(getModel()->getNotifications());
+    getModel()->clearNotificationList();
 };

@@ -24,4 +24,5 @@ void NewMessageEventStrategy::serveEvent(BasicEvent *event) {
             new MessageWrapper(ringMsg, neighbour.getIP(), neighbour.getPort()));
     sendMessage(msg);
     getView()->showMainMenu(getModel()->getNotifications());
+    getModel()->clearNotificationList();
 }
