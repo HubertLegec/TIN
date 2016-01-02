@@ -39,12 +39,12 @@ void Controller::sendMessage(SimpleMessage *message, const long userID) {
         auto user = model->getUser(userID);
         auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), user->getIP(), user->getPort());
         outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
-        LOG(INFO) << "Sent message to user " << message->getSenderID();
+        LOG(INFO) << "Sent message to user " << user->getID();
     } catch (out_of_range &e) {
-        LOG(DEBUG) << "Couldn't send message to user " << message->getSenderID() <<
+        LOG(DEBUG) << "Couldn't send message to user " << userID <<
         ". User doesn'y exist in the system";
     } catch (exception &e) {
-        LOG(DEBUG) << "Couldn't send message to user " << message->getSenderID() <<
+        LOG(DEBUG) << "Couldn't send message to user " << userID <<
         ". Exception log: " << e.what();
     }
 }
@@ -55,7 +55,7 @@ void Controller::sendMessage(SimpleMessage *message, string IP, int port) {
         outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
         LOG(INFO) << "Sent message to user " << IP;
     } catch (exception &e) {
-        LOG(DEBUG) << "Couldn't send message to user " << message->getSenderID() <<
+        LOG(DEBUG) << "Couldn't send message to user " << IP <<
         ". Error log: " << e.what();
     }
 }
