@@ -39,13 +39,13 @@ void Controller::sendMessage(SimpleMessage *message, const long userID) {
         auto user = model->getUser(userID);
         auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), user->getIP(), user->getPort());
         outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
-        LOG(DEBUG) << "Sent message to user " << message->getSenderID();
+        LOG(INFO) << "Sent message to user " << message->getSenderID();
     } catch (out_of_range &e) {
-        LOG(ERROR) << "Couldn't send message to user " << message->getSenderID() <<
+        LOG(DEBUG) << "Couldn't send message to user " << message->getSenderID() <<
         ". User doesn'y exist in the system";
     } catch (exception &e) {
-        LOG(ERROR) << "Couldn't send message to user " << message->getSenderID() <<
-        ". Error log: " << e.what();
+        LOG(DEBUG) << "Couldn't send message to user " << message->getSenderID() <<
+        ". Exception log: " << e.what();
     }
 }
 
@@ -53,9 +53,9 @@ void Controller::sendMessage(SimpleMessage *message, string IP, int port) {
     try {
         auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), IP, port);
         outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
-        LOG(DEBUG) << "Sent message to user " << IP;
+        LOG(INFO) << "Sent message to user " << IP;
     } catch (exception &e) {
-        LOG(ERROR) << "Couldn't send message to user " << message->getSenderID() <<
+        LOG(DEBUG) << "Couldn't send message to user " << message->getSenderID() <<
         ". Error log: " << e.what();
     }
 }
@@ -74,9 +74,9 @@ void Controller::run() {
             try {
                 strategyMap.at(type)->serveEvent(incomingMessage.get());
             } catch (out_of_range &e) {
-                LOG(ERROR) << "Bad type of incomming message";
+                LOG(DEBUG) << "Bad type of incomming message";
             } catch (exception &e) {
-                LOG(ERROR) << "Exception log: " << e.what();
+                LOG(DEBUG) << "Exception log: " << e.what();
             }
         }
 

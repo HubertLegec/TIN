@@ -24,7 +24,7 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
 
             controller->sendMessage(returnMessage);
         } catch (exception &e) {
-            LOG(ERROR) << "Failed to create user named " << managementMessage->getUserName();
+            LOG(DEBUG) << "Failed to create user named " << managementMessage->getUserName();
             returnMessage->setServerInfoMessageType(FAIL);
             returnMessage->setInfo("Couldn't create user");
 
@@ -43,5 +43,10 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setServerInfoMessageType(FAIL);
         }
         controller->sendMessage(returnMessage);
+    } else {
+        ServerInfoMessage *returnMessage = new ServerInfoMessage(SERVER_ID, FAIL, "Bad message type received");
+        returnMessage->setType(SERVER_INFO);
+        LOG(DEBUG) << "Received bad message type from user " << managementMessage->getIp();
+        controller->sendMessage(returnMessage, managementMessage->getIp(), managementMessage->getPort());
     }
 }
