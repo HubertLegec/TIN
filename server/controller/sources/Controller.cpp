@@ -9,22 +9,22 @@
 
 Controller::Controller() : model(new Model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
     initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
 }
 
 Controller::Controller(shared_ptr<Model> model) : model(model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
     initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
 }
 
 Controller::Controller(shared_ptr<Model> model, int port) : model(model), myIP(DEFAULT_IP), myPort(port) {
     initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
 }
 
 Controller::Controller(shared_ptr<Model> model, string ip, int port) : model(model), myIP(ip), myPort(port) {
     initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
 }
 
 void Controller::initStrategyMap() {
