@@ -285,7 +285,7 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
         case MessageType::CATEGORY_LIST : {
             CategoryListMessage *categoryListMessage = new CategoryListMessage();
             iarchive(*categoryListMessage); // Write the data to the archive
-            std::shared_ptr<GetMessage> msg(categoryListMessage);
+            std::shared_ptr<CategoryListMessage> msg(categoryListMessage);
             LOG(INFO) << "[REC] MSG: " << categoryListMessage->toString();
             receiveQueue->push(msg);
         }
