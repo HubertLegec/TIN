@@ -2,8 +2,8 @@
 
 using namespace std;
 
-UserManagementMessage::UserManagementMessage() {
-
+UserManagementMessage::UserManagementMessage() : SimpleMessage() {
+    this->size = SimpleMessage::getMessageSize() + sizeof(int) + 2 * sizeof(long);
 };
 
 UserManagementMessage::UserManagementMessage(MessageType type, string ip, int port, string login) : SimpleMessage(type,

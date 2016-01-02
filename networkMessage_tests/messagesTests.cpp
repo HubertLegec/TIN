@@ -56,6 +56,12 @@ TEST(ServerInfoMessage, creating_test){
 
     msg.setInfo("Another info");
     EXPECT_TRUE(msg.getInfo().compare("Another info") == 0);
+    EXPECT_EQ(36 + 12, msg.getMessageSize());
+    ServerInfoMessage msg2;
+    msg2.setServerInfoMessageType(ServerInfoMessageType::USER_CREATED);
+    EXPECT_EQ(36, msg2.getMessageSize());
+    msg2.setInfo("Hello!");
+    EXPECT_EQ(36 + 6, msg2.getMessageSize());
 }
 
 TEST(CategoryManagementMessage, creating_test){

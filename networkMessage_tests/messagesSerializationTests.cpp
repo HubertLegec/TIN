@@ -220,16 +220,18 @@ TEST(CategoryManagementMessage, serialization_test) {
     EXPECT_EQ(msg.getCategoryID(), testMsg.getCategoryID());
     EXPECT_TRUE(msg.getCategoryName() == testMsg.getCategoryName());
 
+    std::stringstream ss2;
+
     CategoryManagementMessage msg2(1, MessageType::DESTROY_CATEGORY, 12);
 
     {
-        cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
+        cereal::BinaryOutputArchive oarchive(ss2); // Create an output archive
         oarchive(msg2); // Write the data to the archive
     }
 
     CategoryManagementMessage testMsg2;
     {
-        cereal::BinaryInputArchive iarchive(ss); // Create an input archive
+        cereal::BinaryInputArchive iarchive(ss2); // Create an input archive
         iarchive(testMsg2); // Read the data from the archive
     }
 

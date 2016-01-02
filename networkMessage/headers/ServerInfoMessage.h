@@ -24,7 +24,8 @@ public:
     long getExtraInfo() const;
 
     const std::string &getInfo() const;
-    void setInfo(const std::string info);
+
+    void setInfo(const std::string &info);
     void setServerInfoMessageType(ServerInfoMessageType infoType);
 
     virtual std::string toString() const;

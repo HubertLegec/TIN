@@ -6,7 +6,9 @@
 
 using namespace std;
 
-NeighboursInfoMessage::NeighboursInfoMessage() : SimpleMessage(){ }
+NeighboursInfoMessage::NeighboursInfoMessage() : SimpleMessage() {
+    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(int) + 5 * sizeof(long);
+}
 
 NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const string &lNeighName, const string &lNeighIP,
                                              int lNeighPort,

@@ -7,7 +7,9 @@
 
 using namespace std;
 
-SimpleMessage::SimpleMessage() { }
+SimpleMessage::SimpleMessage() {
+    this->size = sizeof(type) + sizeof(senderID) + sizeof(size);
+}
 
 SimpleMessage::SimpleMessage(MessageType type, long senderID) : type(type), senderID(senderID) {
     this->size = sizeof(type) + sizeof(senderID) + sizeof(size);

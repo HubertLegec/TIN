@@ -7,7 +7,9 @@
 
 using namespace std;
 
-CategoryListMessage::CategoryListMessage() : SimpleMessage() { }
+CategoryListMessage::CategoryListMessage() : SimpleMessage() {
+    this->size = SimpleMessage::getMessageSize() + sizeof(long);
+}
 
 CategoryListMessage::CategoryListMessage(long senderID, const map<long, string> &categories)
                                         : SimpleMessage(MessageType::CATEGORY_LIST, senderID), categories(categories) {

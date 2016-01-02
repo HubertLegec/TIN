@@ -7,7 +7,9 @@
 
 using namespace std;
 
-RingMessage::RingMessage() : SimpleMessage() { }
+RingMessage::RingMessage() : SimpleMessage() {
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);
+}
 
 RingMessage::RingMessage(long senderID, long categoryId, const string &text) : SimpleMessage(MessageType::RING_MESSAGE,
                                                                                              senderID) {

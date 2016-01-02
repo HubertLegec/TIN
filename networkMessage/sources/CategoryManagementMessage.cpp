@@ -7,7 +7,9 @@
 
 using namespace std;
 
-CategoryManagementMessage::CategoryManagementMessage() { }
+CategoryManagementMessage::CategoryManagementMessage() : SimpleMessage() {
+    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long);
+}
 
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID)
                                                     : SimpleMessage(type, senderID){

@@ -7,7 +7,9 @@
 using namespace std;
 
 
-GetMessage::GetMessage() { }
+GetMessage::GetMessage() : SimpleMessage() {
+    this->size = SimpleMessage::getMessageSize() + sizeof(requestType) + sizeof(categoryID);
+}
 
 GetMessage::GetMessage(long senderID, GetMessageType request) : SimpleMessage(MessageType::GET, senderID),
                                                                 requestType(request) {
