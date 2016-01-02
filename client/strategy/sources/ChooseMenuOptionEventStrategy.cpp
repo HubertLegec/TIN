@@ -76,6 +76,7 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
 
 
 void ChooseMenuOptionEventStrategy::showCategoryList() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList:\n" << "userID: " << getModel()->getUserId();
     shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
     controller->setState(Controller::CATEGORY_LIST);
     controller->sendMessage(toSend, getServerIP(), getServerPort());

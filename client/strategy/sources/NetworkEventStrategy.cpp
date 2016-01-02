@@ -56,7 +56,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->addNotification("One of your category removed!");
             break;
 
-        case ServerInfoMessageType::USER_ADDED :
+        case ServerInfoMessageType::USER_CREATED :
             getModel()->setUserName(msg.getInfo());
             getModel()->setUserId(msg.getExtraInfo());
             getModel()->addNotification("User account created!");
