@@ -34,14 +34,14 @@ private:
     Queue<std::shared_ptr<MessageWrapper>> sendQueue;
     Queue<std::shared_ptr<SimpleMessage>> receiveQueue;
     std::map<std::string, BasicEventStrategy *> strategyMap;
-    pthread_t movingThread;
+    //pthread_t movingThread;
 
     State state;
     bool running = true;
     void* controllerWork();
-    static void* threadStartHelper(void* param);
+    // static void* threadStartHelper(void* param);
 
-    void moveThreadWork();
+    //  void moveThreadWork();
 public:
     Controller(Model* model);
 

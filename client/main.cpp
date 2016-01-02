@@ -9,9 +9,9 @@ INITIALIZE_EASYLOGGINGPP
 
 int main(int argv, char* argc[]) {
     START_EASYLOGGINGPP(argv, argc);
-    LOG(INFO) << "Client started";
 
-    if (argv == 1 && strcmp("-h", argc[1]) == 0) {
+    if (argv == 2 && strcmp("-h", argc[1]) == 0) {
+        LOG(INFO) << "Client help";
         cout << "******* RING help *******\n";
         cout << "'-h' - help\n";
         cout << "'-ip [param]' - set client ip\n";
@@ -21,6 +21,7 @@ int main(int argv, char* argc[]) {
         cout << "Some or all of these parameters can be omitted. Default parameters will be set then.\n";
         return 0;
     } else if (argv % 2 != 0) {
+        LOG(INFO) << "starting";
         string serverIP = Model::SERVER_DEFAULT_IP;
         int serverPort = Model::SERVER_DEFAULT_PORT;
         string myIP = Model::CLIENT_DEFAULT_IP;
@@ -42,6 +43,8 @@ int main(int argv, char* argc[]) {
             }
             i += 2;
         }
+        LOG(INFO) << "Client started with parameters:\nServer IP: " << serverIP << "\nServer port: " << serverPort <<
+        "\nClient port: " << myPort;
 
         Model model;
         model.setServerInfo(serverIP, serverPort);
@@ -53,6 +56,7 @@ int main(int argv, char* argc[]) {
         controller.start();
         return 0;
     } else {
+        LOG(ERROR) << "Client started with wrong arguments";
         cout << "Wrong arguments!!!/n See acceptable possibilities using '-h' flag\n";
         return -1;
     }

@@ -23,6 +23,9 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
         case ChooseMenuOptionEvent::SHOW_CATEGORY_LIST :
             showCategoryList();
             break;
+        case ChooseMenuOptionEvent::CREATE_USER_ACCOUNT:
+            createAccount();
+            break;
         case ChooseMenuOptionEvent::CREATE_CATEGORY :
             if (getModel()->isRegistered()) {
                 createCategory();

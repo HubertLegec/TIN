@@ -59,7 +59,7 @@ Queue<std::shared_ptr<MessageWrapper>> *Controller::getSendQueue() {
 }
 
 void Controller::start() {
-    networkController = new NetworkController(&sendQueue, &receiveQueue, model->getMyPort());
+    //networkController = new NetworkController(&sendQueue, &receiveQueue, model->getMyPort());
     state = MAIN_MENU;
     view->showMainMenu(model->getNotifications());
     while(running){
@@ -78,7 +78,7 @@ void Controller::start() {
 void Controller::exit() {
     LOG(INFO) << "exit";
     receiveQueue.push(shared_ptr<SimpleMessage>(new SimpleMessage(MessageType::CLIENT_CLOSE_APP, model->getUserId())));
-    networkController->stop();
+    //networkController->stop();
     running = false;
 }
 
@@ -86,6 +86,7 @@ void Controller::sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip,
     sendQueue.push(std::shared_ptr<MessageWrapper>(new MessageWrapper(msg, ip, port)));
 }
 
+/*
 void Controller::moveThreadWork() {
     while (running) {
         shared_ptr<SimpleMessage> msg;
@@ -94,4 +95,4 @@ void Controller::moveThreadWork() {
         eventsToServe.push(event);
     }
 
-}
+}*/
