@@ -11,6 +11,7 @@
 #include "../../networkMessage/headers/NeighboursInfoMessage.h"
 #include "../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../networkMessage/headers/UserManagementMessage.h"
+#include "../../networkMessage/headers/CategoryListMessage.h"
 
 
 void NetworkController::prepareSendThread() {
@@ -112,6 +113,10 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
             oarchive(*getMessage); // Write the data to the archive
         }
             break;
+        case MessageType::CATEGORY_LIST : {
+            CategoryListMessage *categoryListMessage = dynamic_cast<CategoryListMessage *>(&*msg);
+            oarchive(*categoryListMessage); // Write the data to the archive
+        }
         case MessageType::CREATE_CATEGORY :
         case MessageType::DESTROY_CATEGORY :
         case MessageType::JOIN_CATEGORY :
@@ -141,6 +146,10 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
         case MessageType::DELETE_USER_ACCOUNT: {
             UserManagementMessage *userMenagMessage = dynamic_cast<UserManagementMessage *>(&*msg);
             oarchive(*userMenagMessage);
+        }
+            break;
+        default: {
+            LOG(ERROR) << "[SND] Wrong type of MessageType: " << msg->getMessageType();
         }
             break;
     }
@@ -229,7 +238,7 @@ void NetworkController::createReceiveThread() {
         int senderSockfd = accept(receiveSockfd, (struct sockaddr *) &peer_name, &socklen);
         if (senderSockfd == -1) {
             //TODO błąd do obsłużenia
-            LOG(INFO) << "[REC] Error during accept connection. Retrying... ";
+            LOG(INFO) << "[REC] Error during accept connection. I skip this connection... ";
             continue;
         }
         LOG(INFO) << "[REC] Aceepted connection from sockfd: " << senderSockfd;
@@ -256,9 +265,8 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
 //    buffer[i] = NULL;
     LOG(INFO) << "[REC] Msg before transform: " << buffer;
     close(senderSockfd);
-    //TODO dodać do kolejki
     SimpleMessage tempMsg;
-    LOG(INFO) << "Start reserialize";
+    LOG(INFO) << "Start reserialize...";
     std::stringstream tempString(getStringFromChar(i, buffer));
     std::stringstream ss(getStringFromChar(i, buffer));
     cereal::BinaryInputArchive iTempArchive(tempString); // Create an input archive
@@ -271,6 +279,14 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
             iarchive(*getMessage); // Write the data to the archive
             std::shared_ptr<GetMessage> msg(getMessage);
             LOG(INFO) << "[REC] MSG: " << getMessage->toString();
+            receiveQueue->push(msg);
+        }
+            break;
+        case MessageType::CATEGORY_LIST : {
+            CategoryListMessage *categoryListMessage = new CategoryListMessage();
+            iarchive(*categoryListMessage); // Write the data to the archive
+            std::shared_ptr<GetMessage> msg(categoryListMessage);
+            LOG(INFO) << "[REC] MSG: " << categoryListMessage->toString();
             receiveQueue->push(msg);
         }
             break;
@@ -312,12 +328,17 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
         }
             break;
         case MessageType::CREATE_USER_ACCOUNT:
+        case MessageType::CLIENT_CLOSE_APP:
         case MessageType::DELETE_USER_ACCOUNT: {
             UserManagementMessage *userMenagMessage = new UserManagementMessage();
             iarchive(*userMenagMessage);
             std::shared_ptr<UserManagementMessage> msg(userMenagMessage);
             LOG(INFO) << "[REC] MSG: " << userMenagMessage->toString();
             receiveQueue->push(msg);
+        }
+            break;
+        default: {
+            LOG(ERROR) << "[REC] Wrong type of MessageType: " << tempMsg.getMessageType();
         }
             break;
     }
