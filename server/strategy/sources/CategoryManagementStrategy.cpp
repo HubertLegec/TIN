@@ -15,7 +15,6 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
     ServerInfoMessage *returnMessage = new ServerInfoMessage();
     returnMessage->setSenderID(SERVER_ID);
-    returnMessage->setExtraInfo(senderID);
     returnMessage->setType(SERVER_INFO);
 
     if (messageType == UNDEFINED) {
@@ -53,6 +52,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setInfo(e.what());
         }
 
+        returnMessage->setExtraInfo(categoryID);
         long ownerID = model->getCategoryOwner(categoryID)->getID();
 
         if (ownerID != senderID) {
@@ -91,11 +91,14 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         }
     } else if (messageType == JOIN_CATEGORY) {
         long categoryID = categoryManagementMessage->getCategoryID();
+        returnMessage->setExtraInfo(categoryID);
         auto memberToAdd = model->getUser(senderID);
 
         try {
-            model->getCategory(categoryID)->addMember(memberToAdd);
+            auto category = model->getCategory(categoryID);
+            category->addMember(memberToAdd);
             LOG(INFO) << "Added user " << senderID << " to category " << categoryID;
+            returnMessage->setInfo(category->getName());
             returnMessage->setServerInfoMessageType(USER_ADDED);
         } catch (out_of_range &exception) {
             LOG(DEBUG) << "Failed to add user " << senderID << " to category " << categoryID
@@ -110,6 +113,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         }
     } else if (messageType == LEFT_CATEGORY) {
         long categoryID = categoryManagementMessage->getCategoryID();
+        returnMessage->setExtraInfo(categoryID);
 
         try {
             model->getCategory(categoryID)->removeMember(senderID);
@@ -128,6 +132,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         }
     } else if (messageType == ACTIVATE_CATEGORY) {
         long categoryID = categoryManagementMessage->getCategoryID();
+        returnMessage->setExtraInfo(categoryID);
 
         try {
             model->getCategory(categoryID)->setActivated();
@@ -144,6 +149,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         }
     } else if (messageType == DEACTIVATE_CATEGORY) {
         long categoryID = categoryManagementMessage->getCategoryID();
+        returnMessage->setExtraInfo(categoryID);
 
         try {
             model->getCategory(categoryManagementMessage->getCategoryID())->setDeactivated();
