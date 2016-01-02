@@ -8,6 +8,7 @@
 #include "../logger/easylogging++.h"
 #include "../networkMessage/headers/UserManagementMessage.h"
 #include "../networkMessage/headers/SimpleMessage.h"
+#include "../networkMessage/headers/CategoryListMessage.h"
 
 INITIALIZE_EASYLOGGINGPP
 TEST(Queue, creating_test) {
@@ -16,8 +17,13 @@ TEST(Queue, creating_test) {
     Queue<std::shared_ptr<MessageWrapper>> sQueue;
     Queue<std::shared_ptr<SimpleMessage>> rQueue;
 //    SimpleMessage msg(MessageType::DEACTIVATE_CATEGORY, 1);
-    UserManagementMessage msg(MessageType::CREATE_USER_ACCOUNT, "127.0.1.1", 3499, "Simple category");
-    std::shared_ptr<SimpleMessage> p2(&msg);
+//    UserManagementMessage msg(MessageType::CREATE_USER_ACCOUNT, "127.0.1.1", 3499, "Simple category");
+
+    CategoryListMessage *msg = new CategoryListMessage();
+    msg->addCategory(0, "Dzik");
+    msg->setType(MessageType::CATEGORY_LIST);
+
+    std::shared_ptr<CategoryListMessage> p2(msg);
     MessageWrapper *wrapper = new MessageWrapper(p2, "127.0.1.1", 3499);
     Queue<std::shared_ptr<MessageWrapper>> sQueue1;
     std::shared_ptr<MessageWrapper> p1(wrapper);

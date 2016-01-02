@@ -117,6 +117,7 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
             CategoryListMessage *categoryListMessage = dynamic_cast<CategoryListMessage *>(&*msg);
             oarchive(*categoryListMessage); // Write the data to the archive
         }
+            break;
         case MessageType::CREATE_CATEGORY :
         case MessageType::DESTROY_CATEGORY :
         case MessageType::JOIN_CATEGORY :
