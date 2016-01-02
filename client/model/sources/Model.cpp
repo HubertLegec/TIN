@@ -191,3 +191,11 @@ std::map<long, std::string> Model::getCategories() const {
 
     return result;
 }
+
+bool Model::isMyCategory(long categoryID) const {
+    if (categories.find(categoryID) == categories.end()) {
+        return false;
+    } else {
+        return true;
+    }
+}

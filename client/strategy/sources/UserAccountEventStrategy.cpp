@@ -18,7 +18,7 @@ UserAccountEventStrategy::UserAccountEventStrategy(Controller *controller) : Bas
 }
 
 void UserAccountEventStrategy::serveEvent(BasicEvent *event) {
-    LOG(INFO) << "CUserAccountEventStrategy::serveEvent:\n" << event->toString();
+    LOG(INFO) << "UserAccountEventStrategy::serveEvent:\n" << event->toString();
 
     UserAccountEvent *userAccountEvent = dynamic_cast<UserAccountEvent *>(event);
 

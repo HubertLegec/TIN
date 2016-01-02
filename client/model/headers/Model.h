@@ -99,6 +99,8 @@ public:
     int getMyPort() const;
 
     bool isRegistered() const;
+
+    bool isMyCategory(long categoryID) const;
 };
 
 

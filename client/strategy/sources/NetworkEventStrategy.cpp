@@ -118,8 +118,16 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
 void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processRingMessage:\n" << message.toString();
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
-    getModel()->addMessageToInbox(msg);
-    getModel()->addNotification("You have a new message!\nCheck your inbox.");
+    if (getModel()->isMyCategory(msg.getCategoryId())) {
+        getModel()->addMessageToInbox(msg);
+        getModel()->addNotification("You have a new message!\nCheck your inbox.");
+    } else {
+        stringstream ss;
+        ss << "Your message from " << getModel()->getCategoryName(msg.getCategoryId()) << " category has been read ";
+        ss << "by all your followers!";
+        getModel()->addNotification(ss.str());
+    }
+
 }
 
 std::map<long, std::string> NetworkEventStrategy::filterCategories(

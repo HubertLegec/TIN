@@ -60,7 +60,7 @@ set(CLIENT_SOURCE_FILES client/main.cpp
         ${CLIENT_EVENT_SOURCES}
         ${CLIENT_STRATEGY_SOURCES}
         ${CLIENT_CONTROLLER_SOURCES}
-        ${CLIENT_NETWORK_MODULE_SOURCES})
+        ${CLIENT_NETWORK_MODULE_SOURCES} clientEvents/sources/NewMessageEvent.cpp clientEvents/headers/NewMessageEvent.h client/strategy/sources/NewMessageEventStrategy.cpp client/strategy/headers/NewMessageEventStrategy.h)
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 target_link_libraries(RING_CLIENT ${CMAKE_THREAD_LIBS_INIT})
 

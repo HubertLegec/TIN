@@ -9,7 +9,7 @@ using namespace std;
 
 ConfirmMessageEvent::ConfirmMessageEvent() : BasicEvent() { }
 
-ConfirmMessageEvent::ConfirmMessageEvent(long messageIndex) {
+ConfirmMessageEvent::ConfirmMessageEvent(long messageIndex) : BasicEvent() {
     this->messageIndex = messageIndex;
 }
 

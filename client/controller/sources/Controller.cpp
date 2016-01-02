@@ -11,6 +11,7 @@
 #include "../../strategy/headers/ChooseMenuOptionEventStrategy.h"
 #include "../../strategy/headers/CategoryAccessEventStrategy.h"
 #include "../../strategy/headers/UserAccountEventStrategy.h"
+#include "../../strategy/headers/NewMessageEventStrategy.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ void Controller::initStrategyMap() {
     strategyMap["CHOOSE_MENU_OPTION_EVENT"] = new ChooseMenuOptionEventStrategy(this);
     strategyMap["CATEGORY_ACCESS_EVENT"] = new CategoryAccessEventStrategy(this);
     strategyMap["USER_ACCOUNT_EVENT"] = new UserAccountEventStrategy(this);
+    strategyMap["NEW_MESSAGE_EVENT"] = new NewMessageEventStrategy(this);
 }
 
 Model* Controller::getModel() {
@@ -96,7 +98,6 @@ void Controller::moveThreadWork() {
         shared_ptr<NetworkEvent> event(new NetworkEvent(msg));
         eventsToServe.push(event);
     }
-
 }
 
 void *Controller::threadStartHelper(void *param) {

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-UserAccountEvent::UserAccountEvent(UserAccountEvent::Type type, const std::string &userName) : type(type),
+UserAccountEvent::UserAccountEvent(UserAccountEvent::Type type, const std::string &userName) : BasicEvent(), type(type),
                                                                                                userName(userName) {
 
 }

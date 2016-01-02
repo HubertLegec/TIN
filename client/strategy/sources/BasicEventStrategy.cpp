@@ -4,6 +4,10 @@
 
 #include "../headers/BasicEventStrategy.h"
 
+void BasicEventStrategy::setController(Controller *controller) {
+    this->controller = controller;
+}
+
 View *BasicEventStrategy::getView() const {
     return controller->getView();
 }

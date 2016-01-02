@@ -7,20 +7,27 @@
 
 enum MessageType{
     UNDEFINED = 0,
+    //GetMessage
     GET = 1,
-
-    CREATE_CATEGORY = 2,
-    DESTROY_CATEGORY = 3,
-    CATEGORY_LIST = 4,
+    //CategoryListMessage
+            CATEGORY_LIST = 2,
+    //CategoryManagementMessage
+            CREATE_CATEGORY = 3,
+    DESTROY_CATEGORY = 4,
     JOIN_CATEGORY = 5,
     LEFT_CATEGORY = 6,
     ACTIVATE_CATEGORY = 7,
     DEACTIVATE_CATEGORY = 8,
+    //RingMessage
     RING_MESSAGE = 9,
+    //NeighboursInfoMessage
     NEIGHBOURS_SET = 10,
+    //ServerInfoMessage
     SERVER_INFO = 11,
+    //UserManagementMessage
     CREATE_USER_ACCOUNT = 12,
     DELETE_USER_ACCOUNT = 13,
+    //to na razie nie jest przesyłane przez siec, korzystam tylko w kliencie z tego
     CLIENT_CLOSE_APP = 14
 };
 
