@@ -22,6 +22,8 @@ public:
     GetMessage();
     GetMessage(long senderID, GetMessageType request);
 
+    GetMessage(long senderID, GetMessageType request, long categoryID);
+
     GetMessageType getRequestType() const;
     void setRequestType(GetMessageType requestType);
 

@@ -35,3 +35,8 @@ int BasicEventStrategy::getMyPort() const {
 void BasicEventStrategy::sendMessage(std::shared_ptr<MessageWrapper> ptr) const {
     controller->getSendQueue()->push(ptr);
 }
+
+void BasicEventStrategy::showMainMenu() const {
+    getView()->showMainMenu(getModel()->getNotifications());
+    getModel()->clearNotificationList();
+}

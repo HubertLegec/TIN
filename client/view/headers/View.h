@@ -25,7 +25,7 @@ public:
 
         std::shared_ptr<std::vector<std::string>> notifications;
         std::shared_ptr<std::map<long, std::string>> categories;
-
+        std::string info;
     };
 
     View(Controller* controller);
@@ -47,6 +47,10 @@ public:
     void showSignOutCategorySubMenu(std::map<long, std::string> myCategories);
     void showRegisterNewUserSubMenu();
 
+    void showInfo(const std::string &info);
+
+    void sendMessageInCategorySubMenu(std::map<long, std::string> myCategories);
+
 private:
     static const int ID_WIDTH = 21; //Max long type decimal digits number + 1.
 
@@ -62,6 +66,10 @@ private:
     static void *showSignOutCategorySubMenuThread(void *);
 
     static void *showRegisterNewUserSubMenuThread(void *);
+
+    static void *showInfoThread(void *);
+
+    static void *sendMessageInCategorySubMenuThread(void *);
 
     static void readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool passwordConfirmation = true);
     static bool getUserConfirmation();

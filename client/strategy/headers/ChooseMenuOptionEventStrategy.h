@@ -22,6 +22,8 @@ private:
 
     void createAccount() const;
 
+    void sendRingMessage() const;
+
     void refresh() const;
 
 public:

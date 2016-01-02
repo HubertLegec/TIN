@@ -29,6 +29,8 @@ protected:
 
     void sendMessage(std::shared_ptr<MessageWrapper> ptr) const;
 
+    void showMainMenu() const;
+
     Controller* controller;
 public:
     BasicEventStrategy() : controller(nullptr) { }

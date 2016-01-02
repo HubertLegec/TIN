@@ -3,6 +3,7 @@
 //
 
 #include "../headers/Model.h"
+#include "../../../logger/easylogging++.h"
 
 using namespace std;
 
@@ -161,18 +162,17 @@ bool Model::isRegistered() const {
     }
 }
 
-std::map<long, std::string> Model::getActiveCategories() const {
+std::map<long, string> Model::getActiveCategories() const {
     map<long, string> result;
     for (auto c : categories) {
         if (c.second.isActive()) {
             result.insert(pair<long, string>(c.first, c.second.getName()));
         }
     }
-
     return result;
 }
 
-std::map<long, std::string> Model::getInactiveCategories() const {
+std::map<long, string> Model::getInactiveCategories() const {
     map<long, string> result;
     for (auto c : categories) {
         if (!c.second.isActive()) {
@@ -183,7 +183,7 @@ std::map<long, std::string> Model::getInactiveCategories() const {
     return result;
 }
 
-std::map<long, std::string> Model::getCategories() const {
+std::map<long, string> Model::getCategories() const {
     map<long, string> result;
     for (auto c : categories) {
         result.insert(pair<long, string>(c.first, c.second.getName()));

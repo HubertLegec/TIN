@@ -17,6 +17,13 @@ GetMessage::GetMessage(long senderID, GetMessageType request) : SimpleMessage(Me
     this->size = SimpleMessage::getMessageSize() + sizeof(requestType) + sizeof(categoryID);
 }
 
+GetMessage::GetMessage(long senderID, GetMessageType request, long categoryID) : SimpleMessage(MessageType::GET,
+                                                                                               senderID),
+                                                                                 requestType(request),
+                                                                                 categoryID(categoryID) {
+    this->size = SimpleMessage::getMessageSize() + sizeof(requestType) + sizeof(categoryID);
+}
+
 void GetMessage::setRequestType(GetMessageType requestType) {
     this->requestType = requestType;
 }

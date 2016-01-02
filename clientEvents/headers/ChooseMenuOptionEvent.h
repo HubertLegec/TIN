@@ -19,6 +19,7 @@ public:
         JOIN_CATEGORY = 'j',
         SIGN_OUT_CATEGORY = 'o',
         LEAVE_CATEGORY = 'l',
+        SEND_MESSAGE = 'm',
         QUIT = 'q',
         REFRESH = 0
     };

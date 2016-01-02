@@ -12,6 +12,7 @@
 #include "../../strategy/headers/CategoryAccessEventStrategy.h"
 #include "../../strategy/headers/UserAccountEventStrategy.h"
 #include "../../strategy/headers/NewMessageEventStrategy.h"
+#include "../../../networkMessage/headers/UserManagementMessage.h"
 
 using namespace std;
 
@@ -81,6 +82,8 @@ void Controller::start() {
 
 void Controller::exit() {
     LOG(INFO) << "exit";
+    sendQueue.push(shared_ptr<UserManagementMessage>(
+            new UserManagementMessage(model->getUserId(), MessageType::CLIENT_CLOSE_APP)));
     receiveQueue.push(shared_ptr<SimpleMessage>(new SimpleMessage(MessageType::CLIENT_CLOSE_APP, model->getUserId())));
     networkController->stop();
     running = false;

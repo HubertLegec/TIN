@@ -6,6 +6,7 @@
 #include "../../../clientEvents/headers/ChooseMenuOptionEvent.h"
 #include "../../../clientEvents/headers/CategoryAccessEvent.h"
 #include "../../../clientEvents/headers/UserAccountEvent.h"
+#include "../../../clientEvents/headers/NewMessageEvent.h"
 #include <iomanip>
 
 using namespace std;
@@ -67,6 +68,18 @@ void View::showSignOutCategorySubMenu(map<long, string> categories) {
 void View::showRegisterNewUserSubMenu() {
     pthread_join(viewThread, NULL);
     pthread_create(&viewThread, NULL, showRegisterNewUserSubMenuThread, &threadData);
+}
+
+void View::sendMessageInCategorySubMenu(std::map<long, std::string> myCategories) {
+    pthread_join(viewThread, NULL);
+    *threadData.categories = myCategories;
+    pthread_create(&viewThread, NULL, sendMessageInCategorySubMenuThread, &threadData);
+}
+
+void View::showInfo(const std::string &info) {
+    pthread_join(viewThread, NULL);
+    threadData.info = info;
+    pthread_create(&viewThread, NULL, showInfoThread, &threadData);
 }
 
 void View::readCategoryAccessData(string &categoryName, string &userName, string &userPassword, bool confirmPassword)
@@ -144,6 +157,7 @@ void* View::showMainMenuThread(void * arg)
     cout << "[j] join category" << endl;
     cout << "[o] sign out category" << endl;
     cout << "[l] leave category" << endl;
+    cout << "[m] send message in category" << endl;
     cout << "[q] quit" << endl;
 
     if (!(*threadData->notifications).empty()) {
@@ -192,14 +206,18 @@ void* View::showMainMenuThread(void * arg)
         case 'l':
             event = ChooseMenuOptionEvent::LEAVE_CATEGORY;
             break;
+        case 'm':
+            event = ChooseMenuOptionEvent::SEND_MESSAGE;
+            break;
         case 'q':
             event = ChooseMenuOptionEvent::QUIT;
             break;
     }
 
-    if(((ChooseMenuOptionEvent)event).getOptionChosen()== ChooseMenuOptionEvent::QUIT)
-        if(getUserConfirmation()==false)
+    if(((ChooseMenuOptionEvent)event).getOptionChosen()== ChooseMenuOptionEvent::QUIT) if (getUserConfirmation() ==
+                                                                                           false) {
             return 0;
+    }
 
     threadData->controller->getEventsToServe()->push(
             shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(event)));
@@ -212,10 +230,10 @@ void* View::showCreateCategorySubMenuThread(void * arg)
 
     string categoryName;
 
-
     cout << "Creating category:" << endl;
     cout << "Category name: ";
-    cin >> categoryName;
+    cin.ignore();
+    getline(cin, categoryName);
     cout << endl << "Create category? [y/n] " << endl;
 
     char decision;
@@ -407,8 +425,43 @@ void *View::showRegisterNewUserSubMenuThread(void *arg) {
             shared_ptr<UserAccountEvent>(new UserAccountEvent(UserAccountEvent::CREATE, userName)));
 }
 
+void *View::showInfoThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
+    cout << "*****" << endl;
+    cout << threadData->info << endl;
+    cout << "*****" << endl;
+}
 
+void *View::sendMessageInCategorySubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
+    long categoryID;
+    cout << "Send message in one of your categories:" << endl;
+    cout << "Your categories: " << endl;
 
+    cout << setiosflags(ios::left);
+
+    cout << setw(ID_WIDTH) << "id" << "name" << endl;
+    cout << setw(ID_WIDTH) << "----" << "----" << endl;
+
+    for (auto category : *threadData->categories) {
+        cout << setw(ID_WIDTH) << setiosflags(ios::left) << category.first << category.second <<
+        endl;
+    }
+
+    resetiosflags(ios::left);
+
+    cout << "Type category id:";
+    cin >> categoryID;
+
+    string message;
+
+    cout << endl << "Type message:\n";
+    cin.ignore();
+    getline(cin, message);
+
+    threadData->controller->getEventsToServe()->push(
+            shared_ptr<NewMessageEvent>(new NewMessageEvent(categoryID, message)));
+}
 
 

@@ -23,6 +23,5 @@ void NewMessageEventStrategy::serveEvent(BasicEvent *event) {
     shared_ptr<MessageWrapper> msg = shared_ptr<MessageWrapper>(
             new MessageWrapper(ringMsg, neighbour.getIP(), neighbour.getPort()));
     sendMessage(msg);
-    getView()->showMainMenu(getModel()->getNotifications());
-    getModel()->clearNotificationList();
+    showMainMenu();
 }

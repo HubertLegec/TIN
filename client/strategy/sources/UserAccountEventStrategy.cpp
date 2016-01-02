@@ -25,13 +25,11 @@ void UserAccountEventStrategy::serveEvent(BasicEvent *event) {
     switch (userAccountEvent->getType()) {
         case UserAccountEvent::CREATE :
             createAccount(userAccountEvent->getUserName());
-            getView()->showMainMenu(getModel()->getNotifications());
-            getModel()->clearNotificationList();
+            showMainMenu();
             break;
         case UserAccountEvent::DELETE :
             deleteAccount();
-            getView()->showMainMenu(getModel()->getNotifications());
-            getModel()->clearNotificationList();
+            showMainMenu();
             break;
     }
 }

@@ -9,6 +9,12 @@ INITIALIZE_EASYLOGGINGPP
 
 int main(int argv, char* argc[]) {
     START_EASYLOGGINGPP(argv, argc);
+    el::Configurations defaultConf;
+    defaultConf.setToDefault();
+    defaultConf.setGlobally(el::ConfigurationType::Filename, "/tmp/logs/ringClient.log");
+    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
+    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+    el::Loggers::reconfigureLogger("default", defaultConf);
 
     if (argv == 2 && strcmp("-h", argc[1]) == 0) {
         LOG(INFO) << "Client help";

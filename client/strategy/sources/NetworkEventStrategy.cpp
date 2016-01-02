@@ -11,6 +11,7 @@
 #include "../../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../../../networkMessage/headers/NeighboursInfoMessage.h"
+#include "../../../networkMessage/headers/GetMessage.h"
 
 using namespace std;
 
@@ -49,13 +50,13 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
         case ServerInfoMessageType::CATEGORY_CREATED :
             getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
             getModel()->addNotification("New category created!");
-            getView()->showMainMenu(getModel()->getNotifications());
-            getModel()->clearNotificationList();
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_REMOVED :
             getModel()->removeCategoryAndData(msg.getExtraInfo());
             getModel()->addNotification("One of your category removed!");
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::USER_CREATED :
@@ -66,26 +67,33 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
 
         case ServerInfoMessageType::CATEGORY_JOINED :
             getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
+            sendMessage(shared_ptr<GetMessage>(
+                    new GetMessage(getModel()->getUserId(), GetMessageType::NEIGHBOURS, msg.getExtraInfo())));
             getModel()->addNotification("You have successfully joined the category!");
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_LEFT :
             getModel()->removeCategoryAndData(msg.getExtraInfo());
             getModel()->addNotification("You have successfully left the category!");
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_ACTIVATED :
             getModel()->setCategoryActive(msg.getExtraInfo(), true);
             getModel()->addNotification("Category is active again!");
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_DEACTIVATED :
             getModel()->setCategoryActive(msg.getExtraInfo(), false);
             getModel()->addNotification("Category deactivated!");
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::FAIL :
             getModel()->addNotification(msg.getInfo());
+            showMainMenu();
             break;
     }
 }
@@ -95,8 +103,7 @@ void NetworkEventStrategy::processCategoryList(SimpleMessage &message) const {
     CategoryListMessage& msg = dynamic_cast<CategoryListMessage&>(message);
     if (controller->getState() == Controller::CATEGORY_LIST) {
         getView()->showCategoryList(msg.getCategories());
-        getView()->showMainMenu(getModel()->getNotifications());
-        getModel()->clearNotificationList();
+        showMainMenu();
     } else if (controller->getState() == Controller::SIGN_UP) {
         getView()->showSignUpCategorySubMenu(filterCategories(msg.getCategories()));
     }

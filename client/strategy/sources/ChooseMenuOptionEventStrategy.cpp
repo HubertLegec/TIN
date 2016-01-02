@@ -72,6 +72,12 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
                 createAccount();
             }
             break;
+        case ChooseMenuOptionEvent::SEND_MESSAGE :
+            if (getModel()->isRegistered()) {
+                sendRingMessage();
+            } else {
+                createAccount();
+            }
         case ChooseMenuOptionEvent::REFRESH :
             refresh();
             break;
@@ -80,29 +86,44 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
 
 
 void ChooseMenuOptionEventStrategy::showCategoryList() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList:\n" << "userID: " << getModel()->getUserId();
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList\n";
     shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
     controller->setState(Controller::CATEGORY_LIST);
     controller->sendMessage(toSend, getServerIP(), getServerPort());
 }
 
 void ChooseMenuOptionEventStrategy::createCategory() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::createCategory\n";
     getView()->showCreateCategorySubMenu();
 }
 
 void ChooseMenuOptionEventStrategy::deleteCategory() const {
-    getView()->showDeleteCategorySubMenu(getModel()->getMyCategories());
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::deleteCategory\n";
+    if (getModel()->getMyCategories().size() == 0) {
+        getView()->showInfo("You have no categories to delete!");
+        showMainMenu();
+    } else {
+        getView()->showDeleteCategorySubMenu(getModel()->getMyCategories());
+    }
 }
 
 void ChooseMenuOptionEventStrategy::joinCategory() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::joinCategory\n";
     getView()->showJoinCategorySubMenu(getModel()->getInactiveCategories());
 }
 
 void ChooseMenuOptionEventStrategy::leaveCategory() const {
-    getView()->showLeaveCategorySubMenu(getModel()->getActiveCategories());
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::leaveCategory\n";
+    if (getModel()->getActiveCategories().size() == 0) {
+        getView()->showInfo("You have no categories to leave!");
+        showMainMenu();
+    } else {
+        getView()->showLeaveCategorySubMenu(getModel()->getActiveCategories());
+    }
 }
 
 void ChooseMenuOptionEventStrategy::signUpCategory() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::signUpCategory\n";
     controller->setState(Controller::SIGN_UP);
     shared_ptr<GetMessage> ptr = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
     controller->getSendQueue()->push(
@@ -110,14 +131,31 @@ void ChooseMenuOptionEventStrategy::signUpCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::signOutCategory() const {
-    getView()->showSignOutCategorySubMenu(getModel()->getJoinedCategories());
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::signOutCategory\n";
+    if (getModel()->getJoinedCategories().size() == 0) {
+        getView()->showInfo("You have no categories to sign out!");
+        showMainMenu();
+    } else {
+        getView()->showSignOutCategorySubMenu(getModel()->getJoinedCategories());
+    }
 }
 
 void ChooseMenuOptionEventStrategy::createAccount() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::createAccount\n";
     getView()->showRegisterNewUserSubMenu();
 }
 
 void ChooseMenuOptionEventStrategy::refresh() const {
-    getView()->showMainMenu(getModel()->getNotifications());
-    getModel()->clearNotificationList();
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::refresh\n";
+    showMainMenu();
 };
+
+void ChooseMenuOptionEventStrategy::sendRingMessage() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::sendRingMessage\n";
+    if (getModel()->getMyCategories().size() == 0) {
+        getView()->showInfo("You have no categories to send message!");
+        showMainMenu();
+    } else {
+        getView()->sendMessageInCategorySubMenu(getModel()->getMyCategories());
+    }
+}
