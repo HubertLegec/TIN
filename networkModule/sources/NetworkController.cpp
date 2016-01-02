@@ -8,13 +8,12 @@
 
 
 void NetworkController::prepareSendThread() {
-    LOG(INFO) << "Preparing Send thread";
+    LOG(INFO) << "[SND] Start sending thread";
     createThread(sendSystemThread, startSendThread);
 }
 
 void NetworkController::createThread(pthread_t *thread, void *(*function)(void *)) {
-    LOG(INFO) << "Creating thread for " << function;
-    int rc;
+//    int rc;
     pthread_create(thread, NULL, function, ((void *) pointer));
 //    LOG(INFO) << "Joining thread";
 //    rc = pthread_join(*thread, NULL);
@@ -25,19 +24,18 @@ void NetworkController::createThread(pthread_t *thread, void *(*function)(void *
 }
 
 void *NetworkController::startSendThread(void *param) {
-    LOG(INFO) << "function: startSendThread";
     NetworkController *obj = (NetworkController *) param;
     obj->createSendThread();
 }
 
 void NetworkController::createSendThread() {
-    LOG(INFO) << "Starting sending messages";
+    LOG(INFO) << "[SND] Starting process of sending messages";
     while (true) {
         std::shared_ptr<MessageWrapper> msg = sendQueue->pop();
-        LOG(INFO) << "I get msg to send: " << msg->getMessage()->toString();
+        LOG(INFO) << "[SND] I get msg to send: " << msg->getMessage()->toString();
         prepareConncetionWithReceiver(msg);
         if (!sendMsg(msg->getMessage())) {
-            LOG(ERROR) << "Couldnt send msg";
+            LOG(ERROR) << "[SND] Couldnt send msg";
             break;
         }
     }
@@ -45,7 +43,7 @@ void NetworkController::createSendThread() {
 }
 
 struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg) {
-    LOG(INFO) << "Creating connection with receiver. Hostname: " << msg->getIP() << " Port: " << msg->getPort();
+    LOG(INFO) << "[SND] Creating connection with receiver. Hostname: " << msg->getIP() << " Port: " << msg->getPort();
 
     hostent *hp;
     struct in_addr ipv4addr;
@@ -54,9 +52,9 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
 
     inet_pton(AF_INET, msg->getIP().c_str(), &ipv4addr);
     hp = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
-    LOG(INFO) << "Receiver running at host NAME: " << hp->h_name;
+    LOG(INFO) << "[SND] Receiver running at host NAME: " << hp->h_name;
     bcopy(hp->h_addr, &(receiver.sin_addr), hp->h_length);
-    LOG(INFO) << "Receiver INET ADDRESS is: " << inet_ntoa(receiver.sin_addr);
+    LOG(INFO) << "[SND] Receiver INET ADDRESS is: " << inet_ntoa(receiver.sin_addr);
 
     receiver.sin_family = AF_INET;
     receiver.sin_port = htons(msg->getPort());
@@ -68,10 +66,10 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
     sockaddr_in from;
     socklen_t fromlen = sizeof(from);
     getpeername(sendSockfd, (struct sockaddr *) &from, &fromlen);
-    LOG(INFO) << "Connected to TCPServer1: " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
+    LOG(INFO) << "[SND] Connected to TCPServer1: " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
     hp = gethostbyaddr((char *) &from.sin_addr.s_addr,
                        sizeof(from.sin_addr.s_addr), AF_INET);
-    LOG(INFO) << "Name is : " << hp->h_name;
+    LOG(INFO) << "[SND] Name is : " << hp->h_name;
 
 }
 
@@ -80,20 +78,19 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     const char *serializedMsg = serializeMsg(msg);
     int len = strlen(serializedMsg);
     int sentBytes = 0;
-    LOG(INFO) << "Sending msg: " << serializedMsg << " with length: " << len << std::endl;
-    LOG(INFO) << "msg: " << msg->toString();
+    LOG(INFO) << "[SND] Sending msg: " << serializedMsg << " with length: " << len << std::endl;
+    LOG(INFO) << "[SND] msg: " << msg->toString();
     sentBytes = send(sendSockfd, serializedMsg, len, 0);
 //    sentBytes = write(sendSockfd, serializedMsg, len);
-    LOG(INFO) << "Sent: " << sentBytes << " bytes";
-    if (sentBytes == len) {
-        close(sendSockfd);
-    }
+    LOG(INFO) << "[SND] Sent: " << sentBytes << " bytes";
     int trialCounter = 1;
-//    while (trialCounter < 40000 && close(sendSockfd) != 0) {
-//        LOG(INFO) << "Something went wrong during closing connection. Retrying..." << trialCounter++;
-//    }
+    if (sentBytes == len) {
+        while (trialCounter < 4 && close(sendSockfd) != 0) {
+            LOG(INFO) << "[SND] Something went wrong during closing connection. Retrying..." << trialCounter++;
+        }
+    }
     if (trialCounter > 3) {
-        LOG(ERROR) << "Something went wrong during closing connection.";
+        LOG(ERROR) << "[SND] Something went wrong during closing connection.";
         return false;
     }
     return true;
@@ -122,37 +119,34 @@ const char *NetworkController::getcharFromString(std::string string) {
 }
 
 void NetworkController::prepareReceiveThread() {
-    LOG(INFO) << "Starting preparing receive thread";
-    if (prepareListeningSocket() == NULL)
-//        exit(1);
-        //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
-        LOG(INFO) << "Listen  with sockfd: " << receiveSockfd;
+    LOG(INFO) << "[REC] Starting preparing receive thread";
+    prepareListeningSocket();
+    //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
+    LOG(INFO) << "[REC] Listen  with sockfd: " << receiveSockfd;
     listen(receiveSockfd, 10000);
     pthread_t thread;
     receiveSystemThread = &thread;
     createThread(receiveSystemThread, startReceiveThread);
 }
 
-struct addrinfo *NetworkController::prepareListeningSocket() {
-    LOG(INFO) << "Starting preparing socket";
-    int sockfd;
-    struct addrinfo hints, *servinfo, *p;
+void NetworkController::prepareListeningSocket() {
+    LOG(INFO) << "[REC] Starting preparing socket";
+    struct addrinfo hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
-    LOG(INFO) << "Getting my own address";
+    LOG(INFO) << "[REC] Getting my own address";
     struct sockaddr_in server;
     hostent *hp;
     char hostname[128];
     gethostname(hostname, sizeof(hostname));
-    printf("----TCP/Server running at host NAME: %s\n", hostname);
+    LOG(INFO) << "[REC] TCP/Server running at host NAME: " << hostname;
     hp = gethostbyname(hostname);
     bcopy(hp->h_addr, &(server.sin_addr), hp->h_length);
-    printf("    (TCP/Server INET ADDRESS is: %s )\n", inet_ntoa(server.sin_addr));
+    LOG(INFO) << "[REC] TCP/Server INET ADDRESS is: " << inet_ntoa(server.sin_addr);
 
-    LOG(INFO) << "Searching my own address";
-    LOG(INFO) << "Trying to get socket";
+    LOG(INFO) << "[REC] Trying to get socket";
     if ((receiveSockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        LOG(ERROR) << "Problem with creating socket";
+        LOG(ERROR) << "[REC] Problem with creating socket";
 //            continue;
     }
     server.sin_family = AF_INET;
@@ -161,27 +155,26 @@ struct addrinfo *NetworkController::prepareListeningSocket() {
     int length = sizeof(server);
     if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
         close(receiveSockfd);
-        LOG(ERROR) << "Not bind.";
+        LOG(ERROR) << "[REC] Not bind.";
 //            continue;
     }
     socklen_t length1 = sizeof(server);
     getsockname(receiveSockfd, (struct sockaddr *) &server, &length1);
-    printf("Server Port is: %d\n", ntohs(server.sin_port));
+    LOG(INFO) << "[REC] Server Port is: " << ntohs(server.sin_port);
 
 
 }
 
 void *NetworkController::startReceiveThread(void *param) {
-    LOG(INFO) << "Start receive thread";
+    LOG(INFO) << "[REC] Start receive thread";
     NetworkController *obj = (NetworkController *) param;
-    LOG(INFO) << "Start function";
     obj->createReceiveThread();
     pthread_exit(NULL);
 
 }
 
 void NetworkController::createReceiveThread() {
-    LOG(INFO) << "Receiving connection with sockfd: " << receiveSockfd;
+    LOG(INFO) << "[REC] Receiving connection with sockfd: " << receiveSockfd;
     //TODO do obsłużenia mechanizm zamykania wątków
     while (true) {
 
@@ -191,15 +184,11 @@ void NetworkController::createReceiveThread() {
         int senderSockfd = accept(receiveSockfd, (struct sockaddr *) &peer_name, &socklen);
         if (senderSockfd == -1) {
             //TODO błąd do obsłużenia
-//            LOG(INFO) << "I couldnt connect with receiver";
+            LOG(INFO) << "[REC] Error during accept connection. Retrying... ";
             continue;
-//            break;
         }
-        LOG(INFO) << "Aceepted connection" << senderSockfd;
-        LOG(INFO) << "I get correct msg. Processing...";
-        int currentSenderPort = 0;
-//        char *hostname = getIpAndAddress(&peer_name, hostname, 100 * sizeof(char), currentSenderPort);
-//        std::string currentSenderHostname(hostname);
+        LOG(INFO) << "[REC] Aceepted connection from sockfd: " << senderSockfd;
+        LOG(INFO) << "[REC] I get correct msg. Processing...";
         receiveMsg(senderSockfd, peer_name);
 
     }
@@ -211,16 +200,16 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
 //    LOG(INFO) << "Serving " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
     hostent *hp;
     hp = gethostbyaddr((char *) &from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
-    LOG(INFO) << "Name is : " << hp->h_name;
+    LOG(INFO) << "[REC] Name is : " << hp->h_name;
     char *buffer = new char[1000];
     int msgLength = 0;
     int i = 0;
     while ((msgLength = recv(senderSockfd, buffer, sizeof(buffer), 0)) > 0) {
         i += msgLength;
     }
-    LOG(INFO) << "I get: " << i << " bytes";
+    LOG(INFO) << "[REC] I get: " << i << " bytes";
 //    buffer[i] = NULL;
-    LOG(INFO) << "Msg before transform: " << buffer;
+    LOG(INFO) << "[REC] Msg before transform: " << buffer;
     close(senderSockfd);
     //TODO dodać do kolejki
     SimpleMessage receivedMsg;
@@ -229,26 +218,24 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
     cereal::BinaryInputArchive iarchive(ss); // Create an input archive
     iarchive(receivedMsg);
     std::shared_ptr<SimpleMessage> msg(&receivedMsg);
-    LOG(INFO) << "Succes, i get msg: " << msg->toString();
+    LOG(INFO) << "[REC] MSG: " << msg->toString();
     receiveQueue->push(msg);
 }
 
 std::string NetworkController::getStringFromChar(int length, const char *tab) {
-    int size = ((size / 16) + 1) * 16;
+    int size = ((length / 16) + 1) * 16;
+    LOG(INFO) << "[REC] length: " << size;
     std::string result;
-    result.resize(16);
+    result.resize(size);
     result[0] = tab[0];
     for (int i = 1; i < size; ++i) {
         if ((i % 4) == 0 && (i / 4) < length) {
-//            std::cout << "bit: " << i;
             result[(i / 4) * 4] = tab[i / 4];
         }
         else {
-//            std::cout << "bit 0: " << i;
             result[i] = 0;
         }
     }
-    LOG(INFO) << "MSG: " << result;
     return result;
 }
 

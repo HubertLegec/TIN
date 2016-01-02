@@ -28,8 +28,6 @@ private:
     pthread_t *sendSystemThread;
     pthread_t *receiveSystemThread;
     struct addrinfo *ownAddress;
-//    const sockaddr *localAddress;
-    const char *myIP;
     const char *myPort;
     NetworkController *pointer;
 
@@ -53,7 +51,7 @@ private:
 
     const char *getcharFromString(std::string string);
 
-    struct addrinfo *prepareListeningSocket();
+    void prepareListeningSocket();
 
     const char *serializeMsg(std::shared_ptr<SimpleMessage> msg);
 
@@ -65,11 +63,10 @@ public:
     NetworkController() { };
 
     NetworkController(Queue<std::shared_ptr<MessageWrapper>> *sendQueue,
-                      Queue<std::shared_ptr<SimpleMessage>> *receiveQueue, std::string ip, int port)
+                      Queue<std::shared_ptr<SimpleMessage>> *receiveQueue, int port)
             : sendQueue(sendQueue),
               receiveQueue(receiveQueue),
               sendSockfd(0), receiveSockfd(0) {
-        myIP = ip.c_str();
         std::string s = std::to_string(port);
         myPort = s.c_str();
         pointer = this;
