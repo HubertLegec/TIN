@@ -23,7 +23,7 @@ void CategoryAccessEventStrategy::serveEvent(BasicEvent *event) {
     CategoryAccessEvent *categoryAccessEvent = dynamic_cast<CategoryAccessEvent *>(event);
     switch (categoryAccessEvent->getType()) {
         case CategoryAccessEvent::CREATE_CATEGORY :
-            createCategory(categoryAccessEvent->getName());
+            createCategory(categoryAccessEvent->getCategoryName());
             break;
         case CategoryAccessEvent::DELETE_CATEGORY :
             deleteCategory(categoryAccessEvent->getCategoryID());
