@@ -165,9 +165,7 @@ void* View::showMainMenuThread(void * arg)
 
 
     cout << ">";
-    cin.clear();
-    cin.sync();
-    typed = cin.get();
+    cin >> typed;
 
     switch (typed) {
         case 'a':
@@ -233,7 +231,7 @@ void* View::showDeleteCategorySubMenuThread(void * arg)
     ThreadData * threadData = (ThreadData*)arg;
 
 
-    cout << "Deleting catefory:" << endl;
+    cout << "Deleting category:" << endl;
     cout << "Your categories:" << endl;
 
     cout << setiosflags(ios::left);

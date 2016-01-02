@@ -13,17 +13,17 @@ Model::Model() {
 }
 
 void Model::addJoinedCategory(long id, const string &name) {
-    categoryNameIdMapping[name] = id;
-    categories[id] = CategoryInfo(name);
+    categoryNameIdMapping.insert(pair<string, long>(name, id));
+    categories.insert(pair<long, CategoryInfo>(id, CategoryInfo(name)));
 }
 
 void Model::addMessageToCategory(long categoryId, const string &message) {
-    categories[categoryId].addMessage(message);
+    categories.at(categoryId).addMessage(message);
 }
 
 void Model::addMyCategory(long id, const string &name) {
-    categoryNameIdMapping[name] = id;
-    categories[id] = CategoryInfo(name, true);
+    categoryNameIdMapping.insert(pair<string, long>(name, id));
+    categories.insert(pair<long, CategoryInfo>(id, CategoryInfo(name, true)));
 }
 
 vector<string> Model::getCategoryMessages(long categoryId) {
@@ -51,7 +51,7 @@ const ConnectionInfo &Model::getRightNeighbour(long categoryId) {
 }
 
 void Model::updateRightNeighbour(long categoryId, const ConnectionInfo &info) {
-    categories[categoryId].updateRightNeighbour(info);
+    categories.at(categoryId).updateRightNeighbour(info);
 }
 
 const ConnectionInfo &Model::getServerInfo() const {
@@ -79,13 +79,13 @@ void Model::setUserName(const string &userName) {
 }
 
 void Model::removeCategoryAndData(long id) {
-    categoryNameIdMapping.erase(categories[id].getName());
+    categoryNameIdMapping.erase(categories.at(id).getName());
     categories.erase(id);
 }
 
 map<long, string> Model::getMyCategories() const {
     map<long, string> result;
-    for (pair<long, CategoryInfo> p : categories) {
+    for (auto p : categories) {
         if(p.second.isOwner()){
             result.insert(pair<long, string>(p.first, p.second.getName()));
         }
@@ -95,7 +95,7 @@ map<long, string> Model::getMyCategories() const {
 
 map<long, string> Model::getJoinedCategories() const {
     map<long, string> result;
-    for (pair<long, CategoryInfo> p : categories) {
+    for (auto p : categories) {
         if(!p.second.isOwner()){
             result.insert(pair<long, string>(p.first, p.second.getName()));
         }
@@ -122,7 +122,7 @@ vector<RingMessage> Model::getInboxMessages() const {
 void Model::markMessageAsRead(long messageIndex) {
     RingMessage msg = inbox[messageIndex];
     inbox.erase(inbox.begin() + messageIndex);
-    categories[msg.getCategoryId()].addMessage(msg.getMsgText());
+    categories.at(msg.getCategoryId()).addMessage(msg.getMsgText());
 }
 
 void Model::addNotification(const string &notification) {
