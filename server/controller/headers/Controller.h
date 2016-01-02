@@ -96,6 +96,8 @@ public:
     }
 
     void run();
+
+    string getMessageType(shared_ptr<SimpleMessage> shared_ptr);
 };
 
 
