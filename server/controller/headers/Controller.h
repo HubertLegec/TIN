@@ -49,6 +49,8 @@ public:
 
     Controller(shared_ptr<Model> model, string ip, int port);
 
+    ~Controller();
+
     shared_ptr<Model> getModel() const {
         return model;
     }

@@ -2,24 +2,36 @@
 #include "../logger/easylogging++.h"
 #include "../networkMessage/headers/SimpleMessage.h"
 #include "controller/headers/Controller.h"
-#include "../networkMessage/headers/CategoryManagementMessage.h"
-#include "../networkMessage/headers/UserManagementMessage.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
-INITIALIZE_EASYLOGGINGPP
+Controller *controller = nullptr;
+
+void handler(int signal) {
+    if (controller != nullptr)
+        delete controller;
+
+    LOG(INFO) << "Server stopped by signal " << signal;
+    exit(signal);
+}
 
 int main(int argv, char *argc[]) {
     START_EASYLOGGINGPP(argv, argc);
     LOG(INFO) << "Server started";
 
-    try {
-        Controller c;
+    signal(SIGINT, handler);
+    signal(SIGTERM, handler);
 
-        c.run();
+    try {
+        controller = new Controller();
+        controller->run();
     } catch (exception &e) {
-        LOG(ERROR) << "Server stopped working. Exception log: " << e.what();
+        delete controller;
+        LOG(FATAL) << "Server stopped working. Exception log: " << e.what();
     }
 
+    delete controller;
     return 0;
 }

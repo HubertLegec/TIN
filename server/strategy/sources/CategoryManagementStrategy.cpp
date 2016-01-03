@@ -47,7 +47,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         case MessageType::DESTROY_CATEGORY: {
             long categoryID = categoryManagementMessage->getCategoryID();
             returnMessage->setExtraInfo(categoryID);
-            
+
             long ownerID;
             try {
                 ownerID = model->getCategoryOwner(categoryID)->getID();

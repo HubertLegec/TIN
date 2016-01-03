@@ -24,6 +24,10 @@ Controller::Controller(shared_ptr<Model> model, string ip, int port) : model(mod
     networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
 }
 
+Controller::~Controller() {
+//    networkController->stop();
+}
+
 void Controller::initStrategyMap() {
     strategyMap[IncomingMessageType::CATEGORY_MANAGEMENT] = new CategoryManagementStrategy(this);
     strategyMap[IncomingMessageType::GET_MESSAGE] = new GetMessageStrategy(this);
