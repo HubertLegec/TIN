@@ -14,6 +14,7 @@ int main(int argv, char* argc[]) {
     defaultConf.setGlobally(el::ConfigurationType::Filename, "/tmp/logs/ringClient.log");
     defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
     defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000"); //something about 20MB
     el::Loggers::reconfigureLogger("default", defaultConf);
 
     if (argv == 2 && strcmp("-h", argc[1]) == 0) {
@@ -36,13 +37,13 @@ int main(int argv, char* argc[]) {
         int i = 1;
         while (i < argv) {
             if (strcmp(argc[i], "-ip") == 0) {
-                serverIP = string(argc[i + 1]);
-            } else if (strcmp(argc[i], "-port") == 0) {
-                serverPort = atoi(argc[i + 1]);
-            } else if (strcmp(argc[i], "-sip") == 0) {
                 myIP = string(argc[i + 1]);
-            } else if (strcmp(argc[i], "-sport") == 0) {
+            } else if (strcmp(argc[i], "-port") == 0) {
                 myPort = atoi(argc[i + 1]);
+            } else if (strcmp(argc[i], "-sip") == 0) {
+                serverIP = string(argc[i + 1]);
+            } else if (strcmp(argc[i], "-sport") == 0) {
+                serverPort = atoi(argc[i + 1]);
             } else {
                 cout << "Wrong arguments!!!/n See acceptable possibilities using '-h' flag\n";
                 return -1;
