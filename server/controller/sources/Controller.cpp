@@ -69,19 +69,17 @@ void Controller::run() {
     IncomingMessageType type;
 
     while (true) {
-        while (!incomingMessages.isEmpty()) {
-            incomingMessage = incomingMessages.pop();
-            type = getMessageType(incomingMessage);
+        incomingMessage = incomingMessages.pop();
+        type = getMessageType(incomingMessage);
+        if (type == IncomingMessageType::UNKNOWN) {
+            LOG(ERROR) << "Bad type of incomming message";
+        } else {
             try {
                 strategyMap.at(type)->serveEvent(incomingMessage.get());
-            } catch (out_of_range &e) {
-                LOG(DEBUG) << "Bad type of incomming message";
             } catch (exception &e) {
                 LOG(DEBUG) << "Exception log: " << e.what();
             }
         }
-
-        usleep(INTERVAL_TIME);
     }
 };
 

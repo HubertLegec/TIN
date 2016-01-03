@@ -28,7 +28,6 @@ class Controller {
 private:
     const static int DEFAULT_PORT = 8888;
     const string DEFAULT_IP = "127.0.1.1";
-    const static unsigned INTERVAL_TIME = 200;
     int myPort;
     string myIP;
     map<IncomingMessageType, BasicEventStrategy *> strategyMap;

@@ -45,9 +45,12 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             break;
 
         case MessageType::DESTROY_CATEGORY: {
-            long categoryID;
+            long categoryID = categoryManagementMessage->getCategoryID();
+            returnMessage->setExtraInfo(categoryID);
+            
+            long ownerID;
             try {
-                categoryID = categoryManagementMessage->getCategoryID();
+                ownerID = model->getCategoryOwner(categoryID)->getID();
             } catch (out_of_range &e) {
                 LOG(DEBUG) << "Couldn't find specified category";
                 returnMessage->setServerInfoMessageType(FAIL);
@@ -57,9 +60,6 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo(e.what());
             }
-
-            returnMessage->setExtraInfo(categoryID);
-            long ownerID = model->getCategoryOwner(categoryID)->getID();
 
             if (ownerID != senderID) {
                 LOG(DEBUG) << "Failed to destroy category. User " << senderID << " is not an owner of category " <<
