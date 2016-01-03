@@ -65,14 +65,15 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->addNotification("User account created!");
             break;
 
-        case ServerInfoMessageType::CATEGORY_JOINED :
+        case ServerInfoMessageType::CATEGORY_JOINED : {
             getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
-            sendMessage(shared_ptr<GetMessage>(
-                    new GetMessage(getModel()->getUserId(), GetMessageType::NEIGHBOURS, msg.getExtraInfo())));
+            shared_ptr<GetMessage> getMessage = make_shared<GetMessage>(getModel()->getUserId(),
+                                                                        GetMessageType::NEIGHBOURS, msg.getExtraInfo());
+            sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(getMessage, getServerIP(), getServerPort())));
             getModel()->addNotification("You have successfully joined the category!");
             showMainMenu();
             break;
-
+        }
         case ServerInfoMessageType::CATEGORY_LEFT :
             getModel()->removeCategoryAndData(msg.getExtraInfo());
             getModel()->addNotification("You have successfully left the category!");
