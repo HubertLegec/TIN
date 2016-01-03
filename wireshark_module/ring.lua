@@ -26,8 +26,8 @@ local message_type_names = {
     [9] = "RING_MESSAGE",
     [10] = "NEIGHBOURS_SET",
     [11] = "SERVER_INFO",
-	[12] = "CREATE_USER_ACCOUNT",
-	[13] = "DELETE_USER_ACCOUNT",
+    [12] = "CREATE_USER_ACCOUNT",
+    [13] = "DELETE_USER_ACCOUNT",
     [14] = "CLIENT_CLOSE_APP"
 }
 
@@ -179,7 +179,7 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 
 		tree:add_le(ring_fields.get_message_category_id, tvbuf:range(inner_offset, 8))
 		
-	elseif msg_type == 2 or msg_type == 3 or msg_type == 5 or msg_type == 6 or msg_type == 7 or msg_type == 8 then
+	elseif msg_type == 3 or msg_type == 4 or msg_type == 5 or msg_type == 6 or msg_type == 7 or msg_type == 8 then
 		
 		tree:add_le(ring_fields.category_management_message_category_id, tvbuf:range(inner_offset, 8))
 		inner_offset = inner_offset + 8
@@ -190,7 +190,7 @@ dissectRING = function (tvbuf, pktinfo, root, offset)
 		inner_offset = inner_offset  + category_name:len()
 
 
-	elseif msg_type == 4 then
+	elseif msg_type == 2 then
 
 		local map_size = tvbuf:range(inner_offset, 8):le_int64():tonumber(); inner_offset = inner_offset + 8
 		local start_offset = inner_offset
