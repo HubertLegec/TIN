@@ -32,6 +32,7 @@ protected:
 
     friend class cereal::access;
 public:
+    static const long UNDEFINED_ID = -1;
     SimpleMessage();
     SimpleMessage(MessageType type, long senderID);
     SimpleMessage& operator=(const SimpleMessage& other);

@@ -27,8 +27,9 @@ enum MessageType{
     //UserManagementMessage
     CREATE_USER_ACCOUNT = 12,
     DELETE_USER_ACCOUNT = 13,
-    //to na razie nie jest przesyłane przez siec, korzystam tylko w kliencie z tego
-    CLIENT_CLOSE_APP = 14
+    CLIENT_CLOSE_APP = 14,
+    //this type isn't sent via the Net, NetworkController put it to receive queue, to inform about problems
+            NETWORK_CONTROLLER_ERROR_MESSAGE = 15
 };
 
 enum GetMessageType{
