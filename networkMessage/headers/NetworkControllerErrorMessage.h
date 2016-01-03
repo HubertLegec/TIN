@@ -8,9 +8,7 @@
 #include "SimpleMessage.h"
 
 class NetworkControllerErrorMessage : public SimpleMessage {
-private:
-    ErrorCode code;
-    std::string info;
+
 public:
     enum ErrorCode {
         UNDEFINED = 0,
@@ -31,6 +29,9 @@ public:
     void setInfo(const std::string &info);
 
     virtual std::string toString() const;
+private:
+    ErrorCode code;
+    std::string info;
 };
 
 

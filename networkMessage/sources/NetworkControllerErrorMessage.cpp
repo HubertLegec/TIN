@@ -28,7 +28,7 @@ void NetworkControllerErrorMessage::setErrorCode(ErrorCode code) {
     this->code = code;
 }
 
-ErrorCode NetworkControllerErrorMessage::getErrorCode() const {
+NetworkControllerErrorMessage::ErrorCode NetworkControllerErrorMessage::getErrorCode() const {
     return code;
 }
 
