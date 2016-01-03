@@ -7,7 +7,7 @@ class ErrorMessageStrategy : public BasicEventStrategy {
 public:
     ErrorMessageStrategy() : ErrorMessageStrategy() { }
 
-    ErrorMessageStrategy(Controller *controller) : ErrorMessageStrategy(controller) { }
+    ErrorMessageStrategy(Controller *controller) : BasicEventStrategy(controller) { }
 
     virtual void serveEvent(SimpleMessage *message) const;
 };
