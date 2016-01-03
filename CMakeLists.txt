@@ -33,6 +33,7 @@ set(CLIENT_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/RingMessage.cpp
         networkMessage/sources/GetMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp
+        networkMessage/sources/NetworkControllerErrorMessage.cpp
         networkMessage/sources/UserManagementMessage.cpp)
 set(CLIENT_EVENT_SOURCES clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
@@ -94,6 +95,7 @@ set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp
         networkMessage/sources/RingMessage.cpp
         networkMessage/sources/UserManagementMessage.cpp
+        networkMessage/sources/NetworkControllerErrorMessage.cpp
         networkMessage/headers/UserManagementMessage.h
         networkModule/sources/MessageWrapper.cpp
         networkModule/sources/NetworkController.cpp)

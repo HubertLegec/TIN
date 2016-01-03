@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include "../../networkMessage/headers/SimpleMessage.h"
+#include "../../networkMessage/headers/NetworkControllerErrorMessage.h"
 #include <pthread.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -59,6 +60,9 @@ private:
     static void *startReceiveThread(void *param);
 
     static void *startSendThread(void *param);
+
+    std::shared_ptr<SimpleMessage> prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode errorCode,
+                                                   std::string info);
 
 public:
     NetworkController() { };

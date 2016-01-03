@@ -12,6 +12,7 @@
 #include "../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../networkMessage/headers/UserManagementMessage.h"
 #include "../../networkMessage/headers/CategoryListMessage.h"
+#include "../../networkMessage/headers/NetworkControllerErrorMessage.h"
 
 
 void NetworkController::prepareSendThread() {
@@ -34,6 +35,7 @@ void *NetworkController::startSendThread(void *param) {
     NetworkController *obj = (NetworkController *) param;
     obj->createSendThread();
 }
+
 
 void NetworkController::createSendThread() {
     LOG(INFO) << "[SND] Starting process of sending messages";
@@ -84,6 +86,8 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     //TODO do dorobienia obsługa wysyłania niepełnej wiadomości
     int length = 0;
     const char *serializedMsg = serializeMsg(msg, length);
+    if (serializedMsg == NULL)
+        return false;
     int len = strlen(serializedMsg);
     int sentBytes = 0;
     LOG(INFO) << "[SND] Sending msg: " << serializedMsg << " with length: " << length << std::endl;
@@ -97,6 +101,7 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
             LOG(INFO) << "[SND] Something went wrong during closing connection. Retrying..." << trialCounter++;
         }
     }
+    sendSockfd = -1;
     if (trialCounter > 4) {
         LOG(ERROR) << "[SND] Something went wrong during closing connection.";
         return false;
@@ -151,8 +156,8 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
             break;
         default: {
             LOG(ERROR) << "[SND] Wrong type of MessageType: " << msg->getMessageType();
+            return NULL;
         }
-            break;
     }
     length = (ss.str().length());
     return getcharFromString(ss.str());
@@ -164,7 +169,6 @@ const char *NetworkController::getcharFromString(std::string string) {
     for (int i = 0; i < string.length(); ++i) {
         result[i] = '\0';
     }
-    int j = 0;
     for (int i = 0; i < string.length(); ++i) {
         if (((int) string[i]) != 0) {
             result[i] = string[i];
@@ -185,7 +189,6 @@ void NetworkController::prepareReceiveThread() {
 }
 
 void NetworkController::prepareListeningSocket() {
-    LOG(INFO) << "[REC] Starting preparing socket";
     struct addrinfo hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
@@ -194,15 +197,18 @@ void NetworkController::prepareListeningSocket() {
     hostent *hp;
     char hostname[128];
     gethostname(hostname, sizeof(hostname));
-    LOG(INFO) << "[REC] TCP/Server running at host NAME: " << hostname;
+//    LOG(INFO) << "[REC] TCP/Server running at host NAME: " << hostname;
     hp = gethostbyname(hostname);
     bcopy(hp->h_addr, &(server.sin_addr), hp->h_length);
     LOG(INFO) << "[REC] TCP/Server INET ADDRESS is: " << inet_ntoa(server.sin_addr);
 
-    LOG(INFO) << "[REC] Trying to get socket";
+    LOG(INFO) << "[REC] Trying to get listening socket";
     if ((receiveSockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        LOG(ERROR) << "[REC] Problem with creating socket";
-//            continue;
+        LOG(ERROR) << "[REC] Problem with creating listening socket. Closing application...";
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::CANT_CONNECT_TO_SERVER,
+                                           "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
+        stop();
+        exit(1);
     }
     server.sin_family = AF_INET;
     server.sin_port = htons(atoi(myPort));
@@ -210,9 +216,12 @@ void NetworkController::prepareListeningSocket() {
     int length = sizeof(server);
     if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
         close(receiveSockfd);
+        receiveSockfd = -1;
         LOG(ERROR) << "[REC] Not bind. Probably your port is already used.";
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::CANT_CONNECT_TO_SERVER,
+                                           "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
+        stop();
         exit(1);
-//            continue;
     }
     socklen_t length1 = sizeof(server);
     getsockname(receiveSockfd, (struct sockaddr *) &server, &length1);
@@ -225,7 +234,6 @@ void *NetworkController::startReceiveThread(void *param) {
     LOG(INFO) << "[REC] Start receive thread";
     NetworkController *obj = (NetworkController *) param;
     obj->createReceiveThread();
-    pthread_exit(NULL);
 
 }
 
@@ -248,7 +256,6 @@ void NetworkController::createReceiveThread() {
         receiveMsg(senderSockfd, peer_name);
 
     }
-//    pthread_exit(NULL);
 }
 
 
@@ -264,9 +271,9 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
         i += msgLength;
     }
     LOG(INFO) << "[REC] I get: " << i << " bytes";
-//    buffer[i] = NULL;
     LOG(INFO) << "[REC] Msg before transform: " << buffer;
     close(senderSockfd);
+    senderSockfd = -1;
     SimpleMessage tempMsg;
     LOG(INFO) << "Start reserialize...";
     std::stringstream tempString(getStringFromChar(i, buffer));
@@ -365,6 +372,24 @@ std::string NetworkController::getStringFromChar(int length1, const char *tab) {
 
 
 void NetworkController::stop() {
+    if (sendSockfd >= 0) {
+        LOG(INFO) << "[SND] Closing connection...";
+        close(sendSockfd);
+    }
+    if (receiveSockfd >= 0) {
+        LOG(INFO) << "[REC] Closing connection...";
+        close(receiveSockfd);
+    }
+    LOG(INFO) << "[SND] Removing sending thread...";
     pthread_cancel(*sendSystemThread);
+    LOG(INFO) << "[SND] Removing receiving thread...";
     pthread_cancel(*receiveSystemThread);
+}
+
+std::shared_ptr<SimpleMessage> NetworkController::prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode errorCode,
+                                                                  std::string info) {
+    NetworkControllerErrorMessage *errorMsg = new NetworkControllerErrorMessage();
+    errorMsg->setErrorCode(errorCode);
+    errorMsg->setInfo(info);
+    return std::shared_ptr<NetworkControllerErrorMessage>(errorMsg);
 }
