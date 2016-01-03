@@ -48,24 +48,29 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
     ServerInfoMessage& msg = dynamic_cast<ServerInfoMessage&>(message);
     switch (msg.getInfoType()){
         case ServerInfoMessageType::CATEGORY_CREATED :
+            controller->incrementServerResponseNo();
             getModel()->addMyCategory(msg.getExtraInfo(), msg.getInfo());
             getModel()->addNotification("New category created!");
             showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_REMOVED :
+            controller->incrementServerResponseNo();
             getModel()->removeCategoryAndData(msg.getExtraInfo());
             getModel()->addNotification("One of your category removed!");
             showMainMenu();
             break;
 
         case ServerInfoMessageType::USER_CREATED :
+            controller->incrementServerResponseNo();
             getModel()->setUserName(msg.getInfo());
             getModel()->setUserId(msg.getExtraInfo());
             getModel()->addNotification("User account created!");
+            showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_JOINED : {
+            controller->incrementServerResponseNo();
             getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
             shared_ptr<GetMessage> getMessage = make_shared<GetMessage>(getModel()->getUserId(),
                                                                         GetMessageType::NEIGHBOURS, msg.getExtraInfo());
@@ -75,6 +80,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             break;
         }
         case ServerInfoMessageType::CATEGORY_LEFT :
+            controller->incrementServerResponseNo();
             getModel()->removeCategoryAndData(msg.getExtraInfo());
             getModel()->addNotification("You have successfully left the category!");
             showMainMenu();

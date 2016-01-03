@@ -21,15 +21,14 @@ void UserAccountEventStrategy::serveEvent(BasicEvent *event) {
     LOG(INFO) << "UserAccountEventStrategy::serveEvent:\n" << event->toString();
 
     UserAccountEvent *userAccountEvent = dynamic_cast<UserAccountEvent *>(event);
+    controller->createTimeoutThread();
 
     switch (userAccountEvent->getType()) {
         case UserAccountEvent::CREATE :
             createAccount(userAccountEvent->getUserName());
-            showMainMenu();
             break;
         case UserAccountEvent::DELETE :
             deleteAccount();
-            showMainMenu();
             break;
     }
 }

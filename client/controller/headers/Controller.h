@@ -24,12 +24,13 @@ public:
     enum State {
         MAIN_MENU = 0,
         SIGN_UP = 1,
-        CATEGORY_LIST = 2
+        CATEGORY_LIST = 2,
     };
 private:
     Model* model;
     View* view;
     NetworkController *networkController;
+
     Queue<std::shared_ptr<BasicEvent>> eventsToServe;
     Queue<std::shared_ptr<MessageWrapper>> sendQueue;
     Queue<std::shared_ptr<SimpleMessage>> receiveQueue;
@@ -38,11 +39,17 @@ private:
 
     State state;
     bool running = true;
+
+    pthread_mutex_t	serverResponseMutex	= PTHREAD_MUTEX_INITIALIZER;
+    long serverResponseNo = 0;
+
     void* controllerWork();
 
     static void *threadStartHelper(void *param);
+    static void *timeoutThread(void *param);
 
     void moveThreadWork();
+    long getServerResponseNo();
 public:
     Controller(Model* model);
 
@@ -62,7 +69,10 @@ public:
 
     Queue<std::shared_ptr<MessageWrapper>> *getSendQueue();
 
+    void createTimeoutThread();
     void sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port);
+    void incrementServerResponseNo();
+
 
 };
 

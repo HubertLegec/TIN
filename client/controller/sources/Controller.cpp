@@ -110,3 +110,37 @@ void *Controller::threadStartHelper(void *param) {
     Controller *c = (Controller *) param;
     c->moveThreadWork();
 }
+
+void Controller::incrementServerResponseNo()
+{
+    pthread_mutex_lock(&serverResponseMutex);
+    serverResponseNo++;
+    pthread_mutex_unlock(&serverResponseMutex);
+}
+long Controller::getServerResponseNo()
+{
+    long returnVal;
+    pthread_mutex_lock(&serverResponseMutex);
+    returnVal = serverResponseNo;
+    pthread_mutex_unlock(&serverResponseMutex);
+    return returnVal;
+}
+
+void * Controller::timeoutThread(void *param)
+{
+    Controller * c = (Controller*) param;
+
+    long responseNo = c->getServerResponseNo();
+    usleep(1000000);
+    if(responseNo == c->getServerResponseNo())
+    {
+        c->getView()->showInfo("Timeout, failed to receive response from server.");
+        c->getView()->showMainMenu(c->model->getNotifications());
+    }
+}
+
+void Controller::createTimeoutThread()
+{
+    pthread_t t;
+    pthread_create(&t,nullptr,timeoutThread,(void*)this);
+}

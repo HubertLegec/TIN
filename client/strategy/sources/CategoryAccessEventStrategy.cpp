@@ -21,6 +21,7 @@ void CategoryAccessEventStrategy::serveEvent(BasicEvent *event) {
     LOG(INFO) << "CategoryAccessEventStrategy::serveEvent:\n" << event->toString();
 
     CategoryAccessEvent *categoryAccessEvent = dynamic_cast<CategoryAccessEvent *>(event);
+    controller->createTimeoutThread();
     switch (categoryAccessEvent->getType()) {
         case CategoryAccessEvent::CREATE_CATEGORY :
             createCategory(categoryAccessEvent->getCategoryName());
