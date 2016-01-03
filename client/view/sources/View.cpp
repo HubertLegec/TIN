@@ -147,6 +147,7 @@ void* View::showMainMenuThread(void * arg)
 {
     ThreadData * threadData = (ThreadData*)arg;
 
+    cout << "****************************" << endl;
     cout << "Welcome to #RING!" << endl;
     cout << "choose action:" << endl;
     cout << "[a] create user account" << endl;

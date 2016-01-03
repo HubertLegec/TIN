@@ -14,20 +14,21 @@ local debug = false
 
 --Enumerations used to identify messages.
 local message_type_names = {
-[0] = "UNDEFINED",
-[1] = "GET",
-[2] = "CREATE_CATEGORY",
-[3] = "DESTROY_CATEGORY",
-[4] = "CATEGORY_LIST",
-[5] = "JOIN_CATEGORY",
-[6] = "LEFT_CATEGORY",
-[7] = "SIGN_UP_CATEGORY",
-[8] = "SIGN_OUT_CATEGORY",
-[9] = "RING_MESSAGE",
-[10]=  "NEIGHBOURS_SET",
-[11]=  "SERVER_INFO",
+    [0] = "UNDEFINED",
+    [1] = "GET",
+    [2] = "CATEGORY_LIST",
+    [3] = "CREATE_CATEGORY",
+    [4] = "DESTROY_CATEGORY",
+    [5] = "JOIN_CATEGORY",
+    [6] = "LEFT_CATEGORY",
+    [7] = "SIGN_UP_CATEGORY",
+    [8] = "SIGN_OUT_CATEGORY",
+    [9] = "RING_MESSAGE",
+    [10] = "NEIGHBOURS_SET",
+    [11] = "SERVER_INFO",
 	[12] = "CREATE_USER_ACCOUNT",
 	[13] = "DELETE_USER_ACCOUNT",
+    [14] = "CLIENT_CLOSE_APP"
 }
 
 local get_message_type_names = {
