@@ -5,28 +5,13 @@
 #include "../../strategy/headers/UserManagementStrategy.h"
 #include "../../strategy/headers/ErrorMessageStrategy.h"
 
-Controller::Controller() : model(new Model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
-    initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
-}
-
-Controller::Controller(shared_ptr<Model> model) : model(model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
-    initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
-}
-
-Controller::Controller(shared_ptr<Model> model, int port) : model(model), myIP(DEFAULT_IP), myPort(port) {
-    initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
-}
-
-Controller::Controller(shared_ptr<Model> model, string ip, int port) : model(model), myIP(ip), myPort(port) {
+Controller::Controller(string ip, int port) : model(new Model), myIP(ip), myPort(port) {
     initStrategyMap();
     networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
 }
 
 Controller::~Controller() {
-//    networkController->stop();
+    cleanUp();
 }
 
 void Controller::initStrategyMap() {
@@ -117,4 +102,8 @@ IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message
         default:
             return IncomingMessageType::UNKNOWN;
     }
+}
+
+void Controller::cleanUp() {
+    networkController->stop();
 }

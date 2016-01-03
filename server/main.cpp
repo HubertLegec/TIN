@@ -2,19 +2,15 @@
 #include "../logger/easylogging++.h"
 #include "../networkMessage/headers/SimpleMessage.h"
 #include "controller/headers/Controller.h"
+#include "Server.h"
 
 INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
-Controller *controller = nullptr;
-
 void handler(int signal) {
-    if (controller != nullptr)
-        delete controller;
-
-    LOG(INFO) << "Server stopped by signal " << signal;
-    exit(signal);
+    Server::getServerPtr()->cleanUp();
+    LOG(FATAL) << "Server stopped by signal " << signal;
 }
 
 int main(int argv, char *argc[]) {
@@ -25,13 +21,10 @@ int main(int argv, char *argc[]) {
     signal(SIGTERM, handler);
 
     try {
-        controller = new Controller();
-        controller->run();
+        Server::getServerPtr()->start();
     } catch (exception &e) {
-        delete controller;
         LOG(FATAL) << "Server stopped working. Exception log: " << e.what();
     }
 
-    delete controller;
     return 0;
 }

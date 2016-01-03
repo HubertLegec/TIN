@@ -27,8 +27,6 @@ enum IncomingMessageType {
 
 class Controller {
 private:
-    const static int DEFAULT_PORT = 8888;
-    const string DEFAULT_IP = "127.0.1.1";
     int myPort;
     string myIP;
     map<IncomingMessageType, BasicEventStrategy *> strategyMap;
@@ -42,13 +40,7 @@ private:
     void initStrategyMap();
 
 public:
-    Controller();
-
-    Controller(shared_ptr<Model> model);
-
-    Controller(shared_ptr<Model> model, int port);
-
-    Controller(shared_ptr<Model> model, string ip, int port);
+    Controller(string ip, int port);
 
     ~Controller();
 
@@ -107,6 +99,8 @@ public:
     }
 
     void run();
+
+    void cleanUp();
 };
 
 
