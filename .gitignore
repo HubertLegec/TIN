@@ -4,6 +4,17 @@
 *.o
 *.obj
 
+#Compiled files from cmake
+CMakeCache.txt
+Makefile
+RING_SERVER
+cmake_install.cmake
+gtest-build
+gtest-download
+gtest-src
+logs
+CMakeFiles
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -29,3 +40,6 @@
 
 # CLion files
 .idea
+
+#other
+.gitignore~
