@@ -210,7 +210,8 @@ void NetworkController::prepareListeningSocket() {
     int length = sizeof(server);
     if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
         close(receiveSockfd);
-        LOG(ERROR) << "[REC] Not bind.";
+        LOG(ERROR) << "[REC] Not bind. Probably your port is already used.";
+        exit(1);
 //            continue;
     }
     socklen_t length1 = sizeof(server);
