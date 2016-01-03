@@ -25,9 +25,9 @@ Controller::Controller(shared_ptr<Model> model, string ip, int port) : model(mod
 }
 
 void Controller::initStrategyMap() {
-    strategyMap["CATEGORY_MANAGEMENT"] = new CategoryManagementStrategy(this);
-    strategyMap["GET_MESSAGE"] = new GetMessageStrategy(this);
-    strategyMap["USER_MANAGEMENT"] = new UserManagementStrategy(this);
+    strategyMap[IncomingMessageType::CATEGORY_MANAGEMENT] = new CategoryManagementStrategy(this);
+    strategyMap[IncomingMessageType::GET_MESSAGE] = new GetMessageStrategy(this);
+    strategyMap[IncomingMessageType::USER_MANAGEMENT] = new UserManagementStrategy(this);
 }
 
 void Controller::sendMessage(ServerInfoMessage *message) {
@@ -66,11 +66,12 @@ void Controller::sendMessage(SimpleMessage *message, string IP, int port) {
 
 void Controller::run() {
     shared_ptr<SimpleMessage> incomingMessage;
+    IncomingMessageType type;
 
     while (true) {
         while (!incomingMessages.isEmpty()) {
             incomingMessage = incomingMessages.pop();
-            string type = getMessageType(incomingMessage);
+            type = getMessageType(incomingMessage);
             try {
                 strategyMap.at(type)->serveEvent(incomingMessage.get());
             } catch (out_of_range &e) {
@@ -86,11 +87,11 @@ void Controller::run() {
 
 #pragma clang diagnostic popvoid
 
-string Controller::getMessageType(shared_ptr<SimpleMessage> message) {
+IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message) {
     auto messageType = message->getMessageType();
     switch (messageType) {
         case GET:
-            return "GET_MESSAGE";
+            return IncomingMessageType::GET_MESSAGE;
 
         case CREATE_CATEGORY:
         case DESTROY_CATEGORY:
@@ -99,14 +100,14 @@ string Controller::getMessageType(shared_ptr<SimpleMessage> message) {
         case LEFT_CATEGORY:
         case ACTIVATE_CATEGORY:
         case DEACTIVATE_CATEGORY:
-            return "CATEGORY_MANAGEMENT";
+            return IncomingMessageType::CATEGORY_MANAGEMENT;
 
         case CREATE_USER_ACCOUNT:
         case DELETE_USER_ACCOUNT:
         case CLIENT_CLOSE_APP:;
-            return "USER_MANAGEMENT";
+            return IncomingMessageType::USER_MANAGEMENT;
 
         default:
-            return "UNDEFINED";
+            return IncomingMessageType::UNKNOWN;
     }
 }

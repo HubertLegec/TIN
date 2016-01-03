@@ -17,6 +17,13 @@ enum {
     SERVER_ID = 0
 };
 
+enum IncomingMessageType {
+    CATEGORY_MANAGEMENT,
+    GET_MESSAGE,
+    USER_MANAGEMENT,
+    UNKNOWN
+};
+
 class Controller {
 private:
     const static int DEFAULT_PORT = 8888;
@@ -24,11 +31,13 @@ private:
     const static unsigned INTERVAL_TIME = 200;
     int myPort;
     string myIP;
-    map<string, BasicEventStrategy *> strategyMap;
+    map<IncomingMessageType, BasicEventStrategy *> strategyMap;
     Queue<shared_ptr<SimpleMessage> > incomingMessages;
     Queue<shared_ptr<MessageWrapper> > outgoingMessages;
     shared_ptr<Model> model;
     shared_ptr<NetworkController> networkController;
+
+    IncomingMessageType getMessageType(shared_ptr<SimpleMessage> shared_ptr);
 
     void initStrategyMap();
 
@@ -91,13 +100,11 @@ public:
         return outgoingMessages;
     }
 
-    const map<string, BasicEventStrategy *> &getStrategyMap() const {
+    const map<IncomingMessageType, BasicEventStrategy *> &getStrategyMap() const {
         return strategyMap;
     }
 
     void run();
-
-    string getMessageType(shared_ptr<SimpleMessage> shared_ptr);
 };
 
 
