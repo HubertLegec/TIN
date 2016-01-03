@@ -29,7 +29,7 @@ enum MessageType{
     DELETE_USER_ACCOUNT = 13,
     CLIENT_CLOSE_APP = 14,
     //this type isn't sent via the Net, NetworkController put it to receive queue, to inform about problems
-            NETWORK_CONTROLLER_ERROR_MESSAGE = 15
+    NETWORK_CONTROLLER_ERROR_MESSAGE = 15
 };
 
 enum GetMessageType{

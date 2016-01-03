@@ -21,6 +21,7 @@ enum IncomingMessageType {
     CATEGORY_MANAGEMENT,
     GET_MESSAGE,
     USER_MANAGEMENT,
+    ERROR_MESSAGE,
     UNKNOWN
 };
 

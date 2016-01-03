@@ -85,7 +85,7 @@ set(SERVER_SOURCE_FILES server/main.cpp
         server/model/sources/CategoryMember.cpp
         server/model/headers/CategoryMember.h
         server/strategy/sources/UserManagementStrategy.cpp
-        server/strategy/headers/UserManagementStrategy.h)
+        server/strategy/headers/UserManagementStrategy.h server/strategy/sources/ErrorMessageStrategy.cpp server/strategy/headers/ErrorMessageStrategy.h)
 
 set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp

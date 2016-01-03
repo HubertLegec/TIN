@@ -3,6 +3,7 @@
 #include "../../strategy/headers/GetMessageStrategy.h"
 #include "../../../logger/easylogging++.h"
 #include "../../strategy/headers/UserManagementStrategy.h"
+#include "../../strategy/headers/ErrorMessageStrategy.h"
 
 Controller::Controller() : model(new Model), myIP(DEFAULT_IP), myPort(DEFAULT_PORT) {
     initStrategyMap();
@@ -32,6 +33,7 @@ void Controller::initStrategyMap() {
     strategyMap[IncomingMessageType::CATEGORY_MANAGEMENT] = new CategoryManagementStrategy(this);
     strategyMap[IncomingMessageType::GET_MESSAGE] = new GetMessageStrategy(this);
     strategyMap[IncomingMessageType::USER_MANAGEMENT] = new UserManagementStrategy(this);
+    strategyMap[IncomingMessageType::ERROR_MESSAGE] = new ErrorMessageStrategy(this);
 }
 
 void Controller::sendMessage(ServerInfoMessage *message) {
@@ -108,6 +110,9 @@ IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message
         case DELETE_USER_ACCOUNT:
         case CLIENT_CLOSE_APP:;
             return IncomingMessageType::USER_MANAGEMENT;
+
+        case NETWORK_CONTROLLER_ERROR_MESSAGE:
+            return ERROR_MESSAGE;
 
         default:
             return IncomingMessageType::UNKNOWN;

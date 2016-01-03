@@ -24,6 +24,8 @@ int main(int argv, char *argc[]) {
     signal(SIGINT, handler);
     signal(SIGTERM, handler);
 
+    LOG(FATAL) << "DUPA";
+
     try {
         controller = new Controller();
         controller->run();
