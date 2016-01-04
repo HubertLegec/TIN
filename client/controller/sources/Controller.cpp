@@ -131,19 +131,23 @@ long Controller::getServerResponseNo()
 
 void * Controller::timeoutThread(void *param)
 {
-    Controller * c = (Controller*) param;
+    std::pair<Controller*,long> * arg =  (std::pair<Controller*,long> *) param;
+    Controller* c = arg->first;
+    long responseNo = arg->second;
 
-    long responseNo = c->getServerResponseNo();
-    usleep(1000000);
+    usleep(2000000);
     if(responseNo == c->getServerResponseNo())
     {
         c->getView()->showInfo("Timeout, failed to receive response from server.");
         c->getView()->showMainMenu(c->model->getNotifications());
     }
+
+    delete arg;
 }
 
 void Controller::createTimeoutThread()
 {
     pthread_t t;
-    pthread_create(&t,nullptr,timeoutThread,(void*)this);
+    std::pair<Controller*,long> * arg = new std::pair<Controller*,long>(this,getServerResponseNo());
+    pthread_create(&t,nullptr,timeoutThread,arg);
 }
