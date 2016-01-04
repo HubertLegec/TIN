@@ -13,7 +13,6 @@ void Category::addMember(shared_ptr<User> member) {
     shared_ptr<CategoryMember> newMember(new CategoryMember(member));
     auto first = members;
     auto last = members->getLeftNeighbour();
-    newMember->setStatus(UNCONFIRMED);
 
     first->setLeftNeighbour(newMember);
     newMember->setRightNeighbour(first);
@@ -23,7 +22,7 @@ void Category::addMember(shared_ptr<User> member) {
 }
 
 shared_ptr<CategoryMember> Category::findMember(long id) {
-    if(members->getUser()->getID() == id)
+    if (members->getUser()->getID() == id)
         return members;
 
     for (auto categoryMember = members;
@@ -45,4 +44,24 @@ void Category::removeMember(long id) {
 
     left_neighbour->setRightNeighbour(right_neighbour);
     right_neighbour->setLeftNeighbour(left_neighbour);
+}
+
+void Category::addNewMember(shared_ptr<User> user) {
+    if (isUnconfirmed(user->getID()) || findMember(user->getID()))
+        throw runtime_error("Member, you wanted to add, already exists in the category!");
+
+    unconfirmedUsers[user->getID()] = user;
+}
+
+bool Category::isUnconfirmed(long userID) {
+    return unconfirmedUsers.find(userID) != unconfirmedUsers.end();
+}
+
+void Category::rejectMember(long userID) {
+    unconfirmedUsers.erase(userID);
+}
+
+void Category::acceptNewUser(long userID) {
+    addMember(unconfirmedUsers.at(userID));
+    unconfirmedUsers.erase(userID);
 }

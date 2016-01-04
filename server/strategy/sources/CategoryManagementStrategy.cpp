@@ -120,7 +120,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             try {
                 auto category = model->getCategory(categoryID);
                 auto owner = category->getOwner();
-                category->addMember(userToAdd);
+                category->addNewMember(userToAdd);
                 LOG(INFO) << "Added user " << senderID << " to category " << categoryID;
 
                 returnMessage->setInfo(category->getName());
@@ -134,14 +134,6 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 newMemberMessage->setExtraInfo(categoryID);
                 newMemberMessage->setInfo(userToAdd->getName() + " " + userToAdd->getIP());
                 controller->sendMessage(newMemberMessage, owner->getID());
-
-                auto newMember = category->findMember(userToAdd->getID());
-                auto leftNeighbourID = newMember->getLeftNeighbour()->getUser()->getID();
-                auto rightNeighbourID = newMember->getRightNeighbour()->getUser()->getID();
-
-                sendNeighbours(categoryID, newMember->getUser()->getID());
-                sendNeighbours(categoryID, leftNeighbourID);
-                sendNeighbours(categoryID, rightNeighbourID);
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Failed to add user " << senderID << " to category " << categoryID
                 << ". Couldn't find the category";
@@ -203,15 +195,9 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     LOG(INFO) << "Category " << categoryID << " activated";
                 } else {
                     auto member = category->findMember(senderID);
-                    if (member->getStatus() == UNCONFIRMED) {
                         returnMessage->setServerInfoMessageType(FAIL);
                         returnMessage->setInfo("You are unconfirmed. You can't become online!");
                         controller->sendMessage(returnMessage, senderID);
-                    } else {
-                        member->setStatus(ONLINE);
-                        controller->sendMessage(returnMessage, senderID);
-                        LOG(INFO) << "User " << senderID << " deactivated";
-                    }
                 }
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Couldn't activate category " << categoryID << ". Couldn't find category";
@@ -241,15 +227,9 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     LOG(INFO) << "Category " << categoryID << " deactivated";
                 } else {
                     auto member = category->findMember(senderID);
-                    if (member->getStatus() == UNCONFIRMED) {
-                        returnMessage->setServerInfoMessageType(FAIL);
-                        returnMessage->setInfo("You are unconfirmed. You can't become offline!");
-                        controller->sendMessage(returnMessage, senderID);
-                    } else {
                         member->setStatus(OFFLINE);
                         controller->sendMessage(returnMessage, senderID);
                         LOG(INFO) << "User " << senderID << " deactivated";
-                    }
                 }
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Couldn't deactivate category " << categoryID << ". Couldn't find category";
@@ -280,17 +260,16 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     returnMessage->setInfo("User is not an owner of category " + categoryID);
                     controller->sendMessage(returnMessage, senderID);
                 } else {
-                    auto member = category->findMember(memberID);
-                    if (member->getStatus() != UNCONFIRMED) {
+                    if (category->isUnconfirmed(memberID)) {
                         returnMessage->setServerInfoMessageType(FAIL);
-                        returnMessage->setInfo("Member is already confirmed");
+                        returnMessage->setInfo("Member is already confirmed or didn't join the category");
                         controller->sendMessage(returnMessage, senderID);
                     } else {
                         returnMessage->setServerInfoMessageType(OK);
                         returnMessage->setInfo("Activated user " + categoryID);
                         controller->sendMessage(returnMessage, senderID);
 
-                        member->setStatus(ONLINE);
+                        category->acceptNewUser(memberID);
 
                         ServerInfoMessage *activatedMessage = new ServerInfoMessage();
                         activatedMessage->setType(SERVER_INFO);
@@ -298,6 +277,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                         activatedMessage->setExtraInfo(categoryID);
                         controller->sendMessage(activatedMessage, memberID);
 
+                        auto member = category->findMember(memberID);
                         auto leftNeighbourID = member->getLeftNeighbour()->getUser()->getID();
                         auto rightNeighbourID = member->getRightNeighbour()->getUser()->getID();
 
@@ -336,10 +316,9 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     returnMessage->setInfo("User is not an owner of category " + categoryID);
                     controller->sendMessage(returnMessage, senderID);
                 } else {
-                    auto member = category->findMember(memberID);
-                    if (member->getStatus() != UNCONFIRMED) {
+                    if (category->isUnconfirmed(memberID)) {
                         returnMessage->setServerInfoMessageType(FAIL);
-                        returnMessage->setInfo("Member is already confirmed");
+                        returnMessage->setInfo("Member is already confirmed or didn't join the category");
                         controller->sendMessage(returnMessage, senderID);
                     } else {
                         returnMessage->setServerInfoMessageType(OK);
@@ -352,7 +331,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                         rejectedMessage->setExtraInfo(categoryID);
                         controller->sendMessage(rejectedMessage, memberID);
 
-                        category->removeMember(memberID);
+                        category->rejectMember(memberID);
                     }
                 }
 
@@ -390,10 +369,10 @@ void CategoryManagementStrategy::sendNeighbours(long categoryID, long memberID) 
     shared_ptr<CategoryMember> rightMember;
 
     while ((leftMember = member->getLeftNeighbour())->getUser()->getID() != memberID ||
-           leftMember->getStatus() == OFFLINE || rightMember->getStatus() == UNCONFIRMED);
+           leftMember->getStatus() == OFFLINE);
 
     while ((rightMember = member->getRightNeighbour())->getUser()->getID() != memberID ||
-           rightMember->getStatus() == OFFLINE || rightMember->getStatus() == UNCONFIRMED);
+           rightMember->getStatus() == OFFLINE);
 
     auto leftNeighbour = leftMember->getUser();
     auto rightNeighbour = rightMember->getUser();

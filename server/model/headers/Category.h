@@ -6,6 +6,8 @@
 #include <list>
 #include "User.h"
 #include "CategoryMember.h"
+#include <list>
+#include <map>
 
 using namespace std;
 
@@ -16,6 +18,7 @@ private:
     const string name;
     const shared_ptr<User> owner;
     shared_ptr<CategoryMember> members;
+    map<long, shared_ptr<User> > unconfirmedUsers;
 
 public:
     Category(long id, const shared_ptr<User> creator, const string new_name) : id(id), owner(creator), name(new_name),
@@ -41,11 +44,17 @@ public:
         return activated;
     }
 
+    void acceptNewUser(long userID);
+
+    void addNewMember(shared_ptr<User> user);
+
+    bool isUnconfirmed(long userID);
+
     void addMember(shared_ptr<User> member);
 
     void removeMember(long id);
 
-    void leaveCategory(long id);
+    void rejectMember(long userID);
 
     const string &getName() const {
         return name;
