@@ -149,7 +149,8 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
         }
             break;
         case MessageType::CREATE_USER_ACCOUNT:
-        case MessageType::DELETE_USER_ACCOUNT: {
+        case MessageType::DELETE_USER_ACCOUNT:
+        case MessageType::CLIENT_CLOSE_APP: {
             UserManagementMessage *userMenagMessage = dynamic_cast<UserManagementMessage *>(&*msg);
             oarchive(*userMenagMessage);
         }

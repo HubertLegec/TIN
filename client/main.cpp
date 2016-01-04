@@ -28,7 +28,6 @@ int main(int argv, char* argc[]) {
         cout << "Some or all of these parameters can be omitted. Default parameters will be set then.\n";
         return 0;
     } else if (argv % 2 != 0) {
-        LOG(INFO) << "starting";
         string serverIP = Model::SERVER_DEFAULT_IP;
         int serverPort = Model::SERVER_DEFAULT_PORT;
         string myIP = Model::CLIENT_DEFAULT_IP;

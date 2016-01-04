@@ -82,10 +82,13 @@ void Controller::start() {
 
 void Controller::exit() {
     LOG(INFO) << "exit";
-    shared_ptr<UserManagementMessage> msg = shared_ptr<UserManagementMessage>(
-            new UserManagementMessage(model->getUserId(), MessageType::CLIENT_CLOSE_APP));
-    sendQueue.push(shared_ptr<MessageWrapper>(
-            new MessageWrapper(msg, model->getServerInfo().getIP(), model->getServerInfo().getPort())));
+    //if user is registered send info about app close to server
+    if (model->isRegistered()) {
+        shared_ptr<UserManagementMessage> msg = shared_ptr<UserManagementMessage>(
+                new UserManagementMessage(model->getUserId(), MessageType::CLIENT_CLOSE_APP));
+        sendQueue.push(shared_ptr<MessageWrapper>(
+                new MessageWrapper(msg, model->getServerInfo().getIP(), model->getServerInfo().getPort())));
+    }
     receiveQueue.push(shared_ptr<SimpleMessage>(new SimpleMessage(MessageType::CLIENT_CLOSE_APP, model->getUserId())));
     networkController->stop();
     running = false;
