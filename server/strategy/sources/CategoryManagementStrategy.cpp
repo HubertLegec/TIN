@@ -334,6 +334,12 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                         returnMessage->setInfo("Refected user " + categoryID);
                         controller->sendMessage(returnMessage, senderID);
 
+                        ServerInfoMessage *rejectedMessage = new ServerInfoMessage();
+                        rejectedMessage->setType(SERVER_INFO);
+                        rejectedMessage->setServerInfoMessageType(MEMBER_REJECTED);
+                        rejectedMessage->setExtraInfo(categoryID);
+                        controller->sendMessage(rejectedMessage, memberID);
+
                         category->removeMember(memberID);
                     }
                 }
