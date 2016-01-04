@@ -12,7 +12,9 @@ public:
 
     CategoryManagementStrategy(Controller *controller) : BasicEventStrategy(controller) { }
 
-    virtual void serveEvent(SimpleMessage *message) const ;
+    virtual void serveEvent(SimpleMessage *message) const;
+
+    void sendNeighbours(long categoryID, long memberID) const;
 };
 
 

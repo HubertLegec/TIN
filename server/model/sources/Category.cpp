@@ -22,6 +22,9 @@ void Category::addMember(shared_ptr<User> member) {
 }
 
 shared_ptr<CategoryMember> Category::findMember(long id) {
+    if(members->getUser()->getID() == id)
+        return members;
+
     for (auto categoryMember = members;
          categoryMember->getRightNeighbour() != members; categoryMember = categoryMember->getRightNeighbour()) {
         if (categoryMember->getUser()->getID() == id) {
@@ -29,8 +32,8 @@ shared_ptr<CategoryMember> Category::findMember(long id) {
         }
     }
 
-    return shared_ptr<CategoryMember>(nullptr);
-//    throw out_of_range("Couldn't find specified user in the category!");
+//    return shared_ptr<CategoryMember>();
+    throw out_of_range("Couldn't find specified user in the category!");
 }
 
 void Category::removeMember(long id) {
