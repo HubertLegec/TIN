@@ -33,7 +33,7 @@ const char *getcharFromString(std::string string) {
         }
     }
     result[string.length()] = -2;
-    print(string.length() + 1, result);
+    //print(string.length() + 1, result);
     return result;
 }
 
@@ -63,8 +63,8 @@ std::string getStringFromChar(const char *tab) {
 ////            std::cout << "result length: " << result.length() << std::endl;
 //        }
     }
-    for (int i = 0; i < result.length(); i++)
-        std::cout << "Result: " << i << " : " << ((int) result[i]) << std::endl;
+    //for (int i = 0; i < result.length(); i++)
+    //    std::cout << "Result: " << i << " : " << ((int) result[i]) << std::endl;
     return result;
 }
 
@@ -198,6 +198,7 @@ TEST(CategoryListMessage, serialization_test) {
 
 TEST(CategoryManagementMessage, serialization_test) {
     CategoryManagementMessage msg(1, MessageType::CREATE_CATEGORY, "Simple Category");
+    msg.setExtraInfo(444);
 
     std::stringstream ss; // any stream can be used
 
@@ -219,6 +220,7 @@ TEST(CategoryManagementMessage, serialization_test) {
     ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
     EXPECT_EQ(msg.getCategoryID(), testMsg.getCategoryID());
     EXPECT_TRUE(msg.getCategoryName() == testMsg.getCategoryName());
+    EXPECT_EQ(msg.getExtraInfo(), testMsg.getExtraInfo());
 
     std::stringstream ss2;
 

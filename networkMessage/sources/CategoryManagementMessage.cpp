@@ -8,22 +8,29 @@
 using namespace std;
 
 CategoryManagementMessage::CategoryManagementMessage() : SimpleMessage() {
-    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long);
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);
 }
 
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID)
                                                     : SimpleMessage(type, senderID){
     this->categoryID = categoryID;
-
-    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long);
+    this->extraInfo = UNDEFINED_ID;
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);
 }
 
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, const string &categoryName)
         : SimpleMessage(type, senderID) {
     this->categoryID = UNDEFINED_ID;
     this->categoryName = categoryName;
+    this->extraInfo = UNDEFINED_ID;
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long) + categoryName.size();
+}
 
-    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(long) + categoryName.size();
+CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID,
+                                                     long extraInfo) : SimpleMessage(type, senderID) {
+    this->categoryID = categoryID;
+    this->extraInfo = extraInfo;
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);
 }
 
 const string &CategoryManagementMessage::getCategoryName() const {
@@ -36,6 +43,10 @@ long CategoryManagementMessage::getCategoryID() const {
 
 long CategoryManagementMessage::getExtraInfo() const {
     return extraInfo;
+}
+
+void CategoryManagementMessage::setExtraInfo(long extraInfo) {
+    this->extraInfo = extraInfo;
 }
 
 string CategoryManagementMessage::toString() const {

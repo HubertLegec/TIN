@@ -31,14 +31,19 @@ public:
     //this constructor should be used to create new category
     CategoryManagementMessage(long senderID, MessageType type, const std::string &categoryName);
 
+    //this constructor should be used to confirm or reject user who want to join to category
+    CategoryManagementMessage(long senderID, MessageType type, long categoryID, long extraInfo);
+
     const std::string &getCategoryName() const;
     long getCategoryID() const;
+
+    void setExtraInfo(long extraInfo);
     long getExtraInfo() const;
 
     virtual std::string toString() const;
     template<class Archive>
     void serialize(Archive & archive){
-        archive(this->type, this->size, this->senderID, this->categoryID, this->categoryName);
+        archive(this->type, this->size, this->senderID, this->categoryID, this->categoryName, this->extraInfo);
     }
 };
 
