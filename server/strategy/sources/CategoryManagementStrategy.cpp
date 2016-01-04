@@ -185,20 +185,28 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setExtraInfo(categoryID);
 
             try {
-                model->getCategory(categoryID)->setActivated();
-                LOG(INFO) << "Category " << categoryID << " activated";
+                auto owner = model->getCategory(categoryID)->getOwner();
                 returnMessage->setServerInfoMessageType(CATEGORY_ACTIVATED);
+                if (senderID == owner->getID()) {
+                    model->getCategory(categoryID)->setActivated();
+                    sendForAllMembers(categoryID, returnMessage);
+                    LOG(INFO) << "Category " << categoryID << " activated";
+                } else {
+                    controller->sendMessage(returnMessage, senderID);
+                    LOG(INFO) << "User " << senderID << " activated";
+                }
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Couldn't activate category " << categoryID << ". Couldn't find category";
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo("Couldn't find category");
+                controller->sendMessage(returnMessage, senderID);
             } catch (exception &exception) {
                 LOG(DEBUG) << "Couldn't activate category " << categoryID << ". Exception log: " << exception.what();
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo(exception.what());
+                controller->sendMessage(returnMessage, senderID);
             }
         }
-            controller->sendMessage(returnMessage, senderID);
             break;
 
         case MessageType::DEACTIVATE_CATEGORY: {
@@ -206,21 +214,30 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setExtraInfo(categoryID);
 
             try {
-                model->getCategory(categoryManagementMessage->getCategoryID())->setDeactivated();
-                LOG(INFO) << "Category " << categoryID << " deactivated";
+                auto owner = model->getCategory(categoryID)->getOwner();
                 returnMessage->setServerInfoMessageType(CATEGORY_DEACTIVATED);
+                if (senderID == owner->getID()) {
+                    model->getCategory(categoryID)->setActivated();
+                    sendForAllMembers(categoryID, returnMessage);
+                    LOG(INFO) << "Category " << categoryID << " deactivated";
+                } else {
+                    controller->sendMessage(returnMessage, senderID);
+                    LOG(INFO) << "User " << senderID << " deactivated";
+                }
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Couldn't deactivate category " << categoryID << ". Couldn't find category";
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo("Couldn't find category");
+                controller->sendMessage(returnMessage, senderID);
+
             } catch (exception &exception) {
                 LOG(DEBUG) << "Couldn't deactivate category " << categoryID << ". Exception log: " <<
                 exception.what();
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo(exception.what());
+                controller->sendMessage(returnMessage, senderID);
             }
         }
-            controller->sendMessage(returnMessage, senderID);
             break;
 
         default: {
@@ -236,8 +253,18 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 void CategoryManagementStrategy::sendNeighbours(long categoryID, long memberID) const {
     auto category = controller->getModel()->getCategory(categoryID);
     auto member = category->findMember(memberID);
-    auto leftNeighbour = member->getLeftNeighbour()->getUser();
-    auto rightNeighbour = member->getRightNeighbour()->getUser();
+
+    shared_ptr<CategoryMember> leftMember;
+    shared_ptr<CategoryMember> rightMember;
+
+    while ((leftMember = member->getLeftNeighbour())->getUser()->getID() != memberID ||
+           leftMember->getStatus() == OFFLINE);
+
+    while ((rightMember = member->getRightNeighbour())->getUser()->getID() != memberID ||
+           rightMember->getStatus() == OFFLINE);
+
+    auto leftNeighbour = leftMember->getUser();
+    auto rightNeighbour = rightMember->getUser();
 
     NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(categoryID,
                                                                    leftNeighbour->getName(),
@@ -250,4 +277,14 @@ void CategoryManagementStrategy::sendNeighbours(long categoryID, long memberID) 
     infoMessage->setSenderID(SERVER_ID);
 
     controller->sendMessage(infoMessage, memberID);
+}
+
+void CategoryManagementStrategy::sendForAllMembers(long categoryID, SimpleMessage *message) const {
+    auto members = controller->getModel()->getCategory(categoryID)->getMembers();
+    controller->sendMessage(message, members->getUser()->getID());
+
+    for (auto categoryMember = members;
+         categoryMember->getRightNeighbour() != members; categoryMember = categoryMember->getRightNeighbour()) {
+        controller->sendMessage(message, categoryMember->getUser()->getID());
+    }
 }

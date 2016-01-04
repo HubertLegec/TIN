@@ -15,6 +15,8 @@ public:
     virtual void serveEvent(SimpleMessage *message) const;
 
     void sendNeighbours(long categoryID, long memberID) const;
+
+    void sendForAllMembers(long categoryID, SimpleMessage* message) const;
 };
 
 
