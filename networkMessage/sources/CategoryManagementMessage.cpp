@@ -34,6 +34,10 @@ long CategoryManagementMessage::getCategoryID() const {
     return categoryID;
 }
 
+long CategoryManagementMessage::getExtraInfo() const {
+    return extraInfo;
+}
+
 string CategoryManagementMessage::toString() const {
     stringstream ss;
     ss << "CategoryManagementMessage[type:" << type << "; ";

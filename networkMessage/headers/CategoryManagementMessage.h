@@ -18,6 +18,7 @@
 class CategoryManagementMessage : public SimpleMessage {
 private:
     long categoryID;
+    long extraInfo;
     std::string categoryName;
 public:
     const static int UNDEFINED_ID = -1;
@@ -32,6 +33,7 @@ public:
 
     const std::string &getCategoryName() const;
     long getCategoryID() const;
+    long getExtraInfo() const;
 
     virtual std::string toString() const;
     template<class Archive>

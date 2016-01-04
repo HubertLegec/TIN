@@ -115,20 +115,29 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
         case MessageType::JOIN_CATEGORY: {
             long categoryID = categoryManagementMessage->getCategoryID();
             returnMessage->setExtraInfo(categoryID);
-            auto memberToAdd = model->getUser(senderID);
+            auto userToAdd = model->getUser(senderID);
 
             try {
                 auto category = model->getCategory(categoryID);
-                category->addMember(memberToAdd);
+                auto owner = category->getOwner();
+                category->addMember(userToAdd);
                 LOG(INFO) << "Added user " << senderID << " to category " << categoryID;
-
-                auto newMember = category->findMember(memberToAdd->getID());
-                auto leftNeighbourID = newMember->getLeftNeighbour()->getUser()->getID();
-                auto rightNeighbourID = newMember->getRightNeighbour()->getUser()->getID();
 
                 returnMessage->setInfo(category->getName());
                 returnMessage->setServerInfoMessageType(CATEGORY_JOINED);
                 controller->sendMessage(returnMessage, senderID);
+
+                ServerInfoMessage *newMemberMessage = new ServerInfoMessage();
+                newMemberMessage->setSenderID(SERVER_ID);
+                newMemberMessage->setType(SERVER_INFO);
+                newMemberMessage->setServerInfoMessageType(NEW_CATEGORY_MEMBER);
+                newMemberMessage->setExtraInfo(categoryID);
+                newMemberMessage->setInfo(userToAdd->getName() + " " + userToAdd->getIP());
+                controller->sendMessage(newMemberMessage, owner->getID());
+
+                auto newMember = category->findMember(userToAdd->getID());
+                auto leftNeighbourID = newMember->getLeftNeighbour()->getUser()->getID();
+                auto rightNeighbourID = newMember->getRightNeighbour()->getUser()->getID();
 
                 sendNeighbours(categoryID, newMember->getUser()->getID());
                 sendNeighbours(categoryID, leftNeighbourID);
@@ -185,13 +194,16 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setExtraInfo(categoryID);
 
             try {
-                auto owner = model->getCategory(categoryID)->getOwner();
+                auto category = model->getCategory(categoryID);
+                auto owner = category->getOwner();
                 returnMessage->setServerInfoMessageType(CATEGORY_ACTIVATED);
                 if (senderID == owner->getID()) {
-                    model->getCategory(categoryID)->setActivated();
+                    category->setActivated();
                     sendForAllMembers(categoryID, returnMessage);
                     LOG(INFO) << "Category " << categoryID << " activated";
                 } else {
+                    auto member = category->findMember(senderID);
+                    member->setStatus(ONLINE);
                     controller->sendMessage(returnMessage, senderID);
                     LOG(INFO) << "User " << senderID << " activated";
                 }
@@ -214,13 +226,16 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             returnMessage->setExtraInfo(categoryID);
 
             try {
-                auto owner = model->getCategory(categoryID)->getOwner();
+                auto category = model->getCategory(categoryID);
+                auto owner = category->getOwner();
                 returnMessage->setServerInfoMessageType(CATEGORY_DEACTIVATED);
                 if (senderID == owner->getID()) {
-                    model->getCategory(categoryID)->setActivated();
+                    category->setActivated();
                     sendForAllMembers(categoryID, returnMessage);
                     LOG(INFO) << "Category " << categoryID << " deactivated";
                 } else {
+                    auto member = category->findMember(senderID);
+                    member->setStatus(OFFLINE);
                     controller->sendMessage(returnMessage, senderID);
                     LOG(INFO) << "User " << senderID << " deactivated";
                 }
@@ -232,6 +247,105 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
             } catch (exception &exception) {
                 LOG(DEBUG) << "Couldn't deactivate category " << categoryID << ". Exception log: " <<
+                exception.what();
+                returnMessage->setServerInfoMessageType(FAIL);
+                returnMessage->setInfo(exception.what());
+                controller->sendMessage(returnMessage, senderID);
+            }
+        }
+            break;
+
+        case NEW_MEMBER_CONFIRM: {
+            long categoryID = categoryManagementMessage->getCategoryID();
+            long memberID = categoryManagementMessage->getExtraInfo();
+            returnMessage->setExtraInfo(categoryID);
+
+            try {
+                auto category = model->getCategory(categoryID);
+                auto owner = category->getOwner();
+                if (owner->getID() != senderID) {
+                    returnMessage->setServerInfoMessageType(FAIL);
+                    returnMessage->setInfo("User is not an owner of category " + categoryID);
+                    controller->sendMessage(returnMessage, senderID);
+                } else {
+                    auto member = category->findMember(memberID);
+                    if (member->getStatus() != UNCONFIRMED) {
+                        returnMessage->setServerInfoMessageType(FAIL);
+                        returnMessage->setInfo("Member is already confirmed");
+                        controller->sendMessage(returnMessage, senderID);
+                    } else {
+                        returnMessage->setServerInfoMessageType(OK);
+                        returnMessage->setInfo("Activated user " + categoryID);
+                        controller->sendMessage(returnMessage, senderID);
+
+                        member->setStatus(ONLINE);
+
+                        ServerInfoMessage *activatedMessage = new ServerInfoMessage();
+                        activatedMessage->setType(SERVER_INFO);
+                        activatedMessage->setServerInfoMessageType(MEMBER_CONFIRMED);
+                        activatedMessage->setExtraInfo(categoryID);
+                        controller->sendMessage(activatedMessage, memberID);
+
+                        auto leftNeighbourID = member->getLeftNeighbour()->getUser()->getID();
+                        auto rightNeighbourID = member->getRightNeighbour()->getUser()->getID();
+
+                        sendNeighbours(categoryID, member->getUser()->getID());
+                        sendNeighbours(categoryID, leftNeighbourID);
+                        sendNeighbours(categoryID, rightNeighbourID);
+                    }
+                }
+
+            } catch (out_of_range &exception) {
+                LOG(DEBUG) << "Couldn't confirm new member. Couldn't find category " << categoryID;
+                returnMessage->setServerInfoMessageType(FAIL);
+                returnMessage->setInfo("Couldn't find category");
+                controller->sendMessage(returnMessage, senderID);
+
+            } catch (exception &exception) {
+                LOG(DEBUG) << "Couldn't confirm new member " << categoryID << ". Exception log: " <<
+                exception.what();
+                returnMessage->setServerInfoMessageType(FAIL);
+                returnMessage->setInfo(exception.what());
+                controller->sendMessage(returnMessage, senderID);
+            }
+        }
+            break;
+
+        case NEW_MEMBER_REJECT: {
+            long categoryID = categoryManagementMessage->getCategoryID();
+            long memberID = categoryManagementMessage->getExtraInfo();
+            returnMessage->setExtraInfo(categoryID);
+
+            try {
+                auto category = model->getCategory(categoryID);
+                auto owner = category->getOwner();
+                if (owner->getID() != senderID) {
+                    returnMessage->setServerInfoMessageType(FAIL);
+                    returnMessage->setInfo("User is not an owner of category " + categoryID);
+                    controller->sendMessage(returnMessage, senderID);
+                } else {
+                    auto member = category->findMember(memberID);
+                    if (member->getStatus() != UNCONFIRMED) {
+                        returnMessage->setServerInfoMessageType(FAIL);
+                        returnMessage->setInfo("Member is already confirmed");
+                        controller->sendMessage(returnMessage, senderID);
+                    } else {
+                        returnMessage->setServerInfoMessageType(OK);
+                        returnMessage->setInfo("Refected user " + categoryID);
+                        controller->sendMessage(returnMessage, senderID);
+
+                        category->removeMember(memberID);
+                    }
+                }
+
+            } catch (out_of_range &exception) {
+                LOG(DEBUG) << "Couldn't refect new member. Couldn't find category " << categoryID;
+                returnMessage->setServerInfoMessageType(FAIL);
+                returnMessage->setInfo("Couldn't find category");
+                controller->sendMessage(returnMessage, senderID);
+
+            } catch (exception &exception) {
+                LOG(DEBUG) << "Couldn't reject new member " << categoryID << ". Exception log: " <<
                 exception.what();
                 returnMessage->setServerInfoMessageType(FAIL);
                 returnMessage->setInfo(exception.what());
@@ -258,10 +372,10 @@ void CategoryManagementStrategy::sendNeighbours(long categoryID, long memberID) 
     shared_ptr<CategoryMember> rightMember;
 
     while ((leftMember = member->getLeftNeighbour())->getUser()->getID() != memberID ||
-           leftMember->getStatus() == OFFLINE);
+           leftMember->getStatus() == OFFLINE || rightMember->getStatus() == UNCONFIRMED);
 
     while ((rightMember = member->getRightNeighbour())->getUser()->getID() != memberID ||
-           rightMember->getStatus() == OFFLINE);
+           rightMember->getStatus() == OFFLINE || rightMember->getStatus() == UNCONFIRMED);
 
     auto leftNeighbour = leftMember->getUser();
     auto rightNeighbour = rightMember->getUser();

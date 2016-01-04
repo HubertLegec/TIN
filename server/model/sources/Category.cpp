@@ -13,6 +13,7 @@ void Category::addMember(shared_ptr<User> member) {
     shared_ptr<CategoryMember> newMember(new CategoryMember(member));
     auto first = members;
     auto last = members->getLeftNeighbour();
+    newMember->setStatus(UNCONFIRMED);
 
     first->setLeftNeighbour(newMember);
     newMember->setRightNeighbour(first);

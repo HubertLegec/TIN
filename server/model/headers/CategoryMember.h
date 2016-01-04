@@ -5,7 +5,7 @@
 #include "User.h"
 
 enum Status {
-    ONLINE, OFFLINE
+    ONLINE, OFFLINE, UNCONFIRMED
 };
 
 class CategoryMember {

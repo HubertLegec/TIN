@@ -29,7 +29,9 @@ enum MessageType{
     DELETE_USER_ACCOUNT = 13,
     CLIENT_CLOSE_APP = 14,
     //this type isn't sent via the Net, NetworkController put it to receive queue, to inform about problems
-    NETWORK_CONTROLLER_ERROR_MESSAGE = 15
+    NETWORK_CONTROLLER_ERROR_MESSAGE = 15,
+    NEW_MEMBER_CONFIRM = 16,
+    NEW_MEMBER_REJECT = 17
 };
 
 enum GetMessageType{
@@ -48,6 +50,9 @@ enum ServerInfoMessageType{
     CATEGORY_ACTIVATED = 7,
     CATEGORY_DEACTIVATED = 8,
     USER_CREATED = 9,
-    USER_DELETED = 10
+    USER_DELETED = 10,
+    NEW_CATEGORY_MEMBER = 11,
+    MEMBER_CONFIRMED = 12,
+    MEMBER_REJECTED = 13
 };
 #endif //RING_MESSAGETYPE_H
