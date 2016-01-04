@@ -89,6 +89,7 @@ void ChooseMenuOptionEventStrategy::showCategoryList() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList\n";
     shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
     controller->setState(Controller::CATEGORY_LIST);
+    controller->createTimeoutThread();
     controller->sendMessage(toSend, getServerIP(), getServerPort());
 }
 
@@ -125,6 +126,7 @@ void ChooseMenuOptionEventStrategy::leaveCategory() const {
 void ChooseMenuOptionEventStrategy::signUpCategory() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::signUpCategory\n";
     controller->setState(Controller::SIGN_UP);
+    controller->createTimeoutThread();
     shared_ptr<GetMessage> ptr = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
     controller->getSendQueue()->push(
             shared_ptr<MessageWrapper>(new MessageWrapper(ptr, getServerIP(), getServerPort())));

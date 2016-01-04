@@ -87,12 +87,14 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             break;
 
         case ServerInfoMessageType::CATEGORY_ACTIVATED :
+            controller->incrementServerResponseNo();
             getModel()->setCategoryActive(msg.getExtraInfo(), true);
             getModel()->addNotification("Category is active again!");
             showMainMenu();
             break;
 
         case ServerInfoMessageType::CATEGORY_DEACTIVATED :
+            controller->incrementServerResponseNo();
             getModel()->setCategoryActive(msg.getExtraInfo(), false);
             getModel()->addNotification("Category deactivated!");
             showMainMenu();
@@ -109,9 +111,11 @@ void NetworkEventStrategy::processCategoryList(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processCategoryList:\n" << message.toString();
     CategoryListMessage& msg = dynamic_cast<CategoryListMessage&>(message);
     if (controller->getState() == Controller::CATEGORY_LIST) {
+        controller->incrementServerResponseNo();
         getView()->showCategoryList(msg.getCategories());
         showMainMenu();
     } else if (controller->getState() == Controller::SIGN_UP) {
+        controller->incrementServerResponseNo();
         getView()->showSignUpCategorySubMenu(filterCategories(msg.getCategories()));
     }
 }
