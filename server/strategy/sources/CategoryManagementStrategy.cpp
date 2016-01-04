@@ -203,9 +203,15 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     LOG(INFO) << "Category " << categoryID << " activated";
                 } else {
                     auto member = category->findMember(senderID);
-                    member->setStatus(ONLINE);
-                    controller->sendMessage(returnMessage, senderID);
-                    LOG(INFO) << "User " << senderID << " activated";
+                    if (member->getStatus() == UNCONFIRMED) {
+                        returnMessage->setServerInfoMessageType(FAIL);
+                        returnMessage->setInfo("You are unconfirmed. You can't become online!");
+                        controller->sendMessage(returnMessage, senderID);
+                    } else {
+                        member->setStatus(ONLINE);
+                        controller->sendMessage(returnMessage, senderID);
+                        LOG(INFO) << "User " << senderID << " deactivated";
+                    }
                 }
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Couldn't activate category " << categoryID << ". Couldn't find category";
@@ -235,9 +241,15 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                     LOG(INFO) << "Category " << categoryID << " deactivated";
                 } else {
                     auto member = category->findMember(senderID);
-                    member->setStatus(OFFLINE);
-                    controller->sendMessage(returnMessage, senderID);
-                    LOG(INFO) << "User " << senderID << " deactivated";
+                    if (member->getStatus() == UNCONFIRMED) {
+                        returnMessage->setServerInfoMessageType(FAIL);
+                        returnMessage->setInfo("You are unconfirmed. You can't become offline!");
+                        controller->sendMessage(returnMessage, senderID);
+                    } else {
+                        member->setStatus(OFFLINE);
+                        controller->sendMessage(returnMessage, senderID);
+                        LOG(INFO) << "User " << senderID << " deactivated";
+                    }
                 }
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Couldn't deactivate category " << categoryID << ". Couldn't find category";
