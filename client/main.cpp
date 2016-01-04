@@ -8,23 +8,15 @@ using namespace std;
 INITIALIZE_EASYLOGGINGPP
 
 int main(int argv, char* argc[]) {
-    START_EASYLOGGINGPP(argv, argc);
-    el::Configurations defaultConf;
-    defaultConf.setToDefault();
-    defaultConf.setGlobally(el::ConfigurationType::Filename, "/tmp/logs/ringClient.log");
-    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
-    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
-    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000"); //something about 20MB
-    el::Loggers::reconfigureLogger("default", defaultConf);
 
     if (argv == 2 && strcmp("-h", argc[1]) == 0) {
-        LOG(INFO) << "Client help";
         cout << "******* RING help *******\n";
         cout << "'-h' - help\n";
         cout << "'-ip [param]' - set client ip\n";
         cout << "'-port [param]' - set client port\n";
         cout << "'-sip [param]' - set server ip\n";
         cout << "'-sport [param]' - set server port\n";
+        cout << "'-logFile [param]' - absolute path to log file\n";
         cout << "Some or all of these parameters can be omitted. Default parameters will be set then.\n";
         return 0;
     } else if (argv % 2 != 0) {
@@ -32,6 +24,7 @@ int main(int argv, char* argc[]) {
         int serverPort = Model::SERVER_DEFAULT_PORT;
         string myIP = Model::CLIENT_DEFAULT_IP;
         int myPort = Model::CLIENT_DEFAULT_PORT;
+        string logFile = "/tmp/logs/ringClient.log";
 
         int i = 1;
         while (i < argv) {
@@ -43,12 +36,23 @@ int main(int argv, char* argc[]) {
                 serverIP = string(argc[i + 1]);
             } else if (strcmp(argc[i], "-sport") == 0) {
                 serverPort = atoi(argc[i + 1]);
+            } else if (strcmp(argc[i], "-logFile") == 0) {
+                logFile = string(argc[i + 1]);
             } else {
                 cout << "Wrong arguments!!!/n See acceptable possibilities using '-h' flag\n";
                 return -1;
             }
             i += 2;
         }
+
+        START_EASYLOGGINGPP(argv, argc);
+        el::Configurations defaultConf;
+        defaultConf.setToDefault();
+        defaultConf.setGlobally(el::ConfigurationType::Filename, logFile.c_str());
+        defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
+        defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+        defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000"); //something about 20MB
+        el::Loggers::reconfigureLogger("default", defaultConf);
         LOG(INFO) << "Client started with parameters:\nServer IP: " << serverIP << "\nServer port: " << serverPort <<
         "\nClient port: " << myPort;
 
@@ -62,7 +66,6 @@ int main(int argv, char* argc[]) {
         controller.start();
         return 0;
     } else {
-        LOG(ERROR) << "Client started with wrong arguments";
         cout << "Wrong arguments!!!/n See acceptable possibilities using '-h' flag\n";
         return -1;
     }

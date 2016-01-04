@@ -36,7 +36,7 @@ long CategoryManagementMessage::getCategoryID() const {
 
 string CategoryManagementMessage::toString() const {
     stringstream ss;
-    ss << "CategoryListMessage[type:" << type << "; ";
+    ss << "CategoryManagementMessage[type:" << type << "; ";
     ss << "size:" << size << "; ";
     ss << "senderID:" << senderID << ";\n";
     ss << "categoryName:" << categoryName << "; ";

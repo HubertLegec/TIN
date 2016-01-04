@@ -108,7 +108,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 category->addMember(memberToAdd);
                 LOG(INFO) << "Added user " << senderID << " to category " << categoryID;
                 returnMessage->setInfo(category->getName());
-                returnMessage->setServerInfoMessageType(USER_ADDED);
+                returnMessage->setServerInfoMessageType(CATEGORY_JOINED);
             } catch (out_of_range &exception) {
                 LOG(DEBUG) << "Failed to add user " << senderID << " to category " << categoryID
                 << ". Couldn't find the category";
