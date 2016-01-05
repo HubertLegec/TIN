@@ -1,8 +1,12 @@
 #ifndef RING_CATEGORYMANAGEMENTSTRATEGY_H
 #define RING_CATEGORYMANAGEMENTSTRATEGY_H
 
-
 #include "BasicEventStrategy.h"
+#include "../../model/headers/CategoryMember.h"
+
+#include <string>
+
+using namespace std;
 
 class CategoryManagementStrategy : public BasicEventStrategy {
 private:
@@ -13,10 +17,6 @@ public:
     CategoryManagementStrategy(Controller *controller) : BasicEventStrategy(controller) { }
 
     virtual void serveEvent(SimpleMessage *message) const;
-
-    void sendNeighbours(long categoryID, long memberID) const;
-
-    void sendForAllMembers(long categoryID, SimpleMessage* message) const;
 };
 
 

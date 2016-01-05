@@ -6,7 +6,6 @@
 #include <list>
 #include "User.h"
 #include "CategoryMember.h"
-#include <list>
 #include <map>
 
 using namespace std;
@@ -27,6 +26,8 @@ public:
         members->setLeftNeighbour(members);
         members->setRightNeighbour(members);
     }
+
+    ~Category();
 
     long getID() {
         return id;
@@ -50,7 +51,7 @@ public:
 
     bool isUnconfirmed(long userID);
 
-    void addMember(shared_ptr<User> member);
+    void addMember(shared_ptr<User> user);
 
     void removeMember(long id);
 

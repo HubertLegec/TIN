@@ -1,16 +1,13 @@
 #include "../headers/Category.h"
 
-void Category::addMember(shared_ptr<User> member) {
-    if (*owner == member)
-        throw runtime_error("Member, you wanted to add, is an owner of the category!");
-
-    for (auto categoryMember = members;
-         categoryMember->getRightNeighbour() != members; categoryMember = categoryMember->getRightNeighbour()) {
-        if (*categoryMember->getUser() == member)
+void Category::addMember(shared_ptr<User> user) {
+    auto categoryMember = members;
+    do {
+        if (categoryMember->getUser()->getID() == user->getID())
             throw runtime_error("Member, you wanted to add, already exists in the category!");
-    }
+    } while((categoryMember = categoryMember->getLeftNeighbour()) != members);
 
-    shared_ptr<CategoryMember> newMember(new CategoryMember(member));
+    shared_ptr<CategoryMember> newMember(new CategoryMember(user));
     auto first = members;
     auto last = members->getLeftNeighbour();
 
@@ -22,18 +19,13 @@ void Category::addMember(shared_ptr<User> member) {
 }
 
 shared_ptr<CategoryMember> Category::findMember(long id) {
-    if (members->getUser()->getID() == id)
-        return members;
-
-    for (auto categoryMember = members;
-         categoryMember->getRightNeighbour() != members; categoryMember = categoryMember->getRightNeighbour()) {
-        if (categoryMember->getUser()->getID() == id) {
+    auto categoryMember = members;
+    do {
+        if (categoryMember->getUser()->getID() == id)
             return categoryMember;
-        }
-    }
+    } while((categoryMember = categoryMember->getLeftNeighbour()) != members);
 
-//    return shared_ptr<CategoryMember>();
-    throw out_of_range("Couldn't find specified user in the category!");
+    return shared_ptr<CategoryMember>();
 }
 
 void Category::removeMember(long id) {
@@ -44,6 +36,9 @@ void Category::removeMember(long id) {
 
     left_neighbour->setRightNeighbour(right_neighbour);
     right_neighbour->setLeftNeighbour(left_neighbour);
+
+    if (members == member)
+        members = member->getLeftNeighbour();
 }
 
 void Category::addNewMember(shared_ptr<User> user) {
@@ -64,4 +59,8 @@ void Category::rejectMember(long userID) {
 void Category::acceptNewUser(long userID) {
     addMember(unconfirmedUsers.at(userID));
     unconfirmedUsers.erase(userID);
+}
+
+Category::~Category() {
+    members->setLeftNeighbour(shared_ptr<CategoryMember>());
 }

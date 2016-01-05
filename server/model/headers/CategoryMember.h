@@ -12,7 +12,7 @@ class CategoryMember {
 private:
     const shared_ptr<User> user;
     shared_ptr<CategoryMember> left_neighbour;
-    shared_ptr<CategoryMember> right_neighbour;
+    weak_ptr<CategoryMember> right_neighbour;
     Status status;
 
 public:
@@ -37,7 +37,7 @@ public:
     }
 
     const shared_ptr<CategoryMember> getRightNeighbour() const {
-        return right_neighbour;
+        return right_neighbour.lock();
     }
 
     void setLeftNeighbour(const shared_ptr<CategoryMember> neighbour) {
@@ -46,6 +46,14 @@ public:
 
     void setRightNeighbour(const shared_ptr<CategoryMember> neighbour) {
         right_neighbour = neighbour;
+    }
+
+    bool operator==(const CategoryMember& other) {
+        return user->getID() == other.getUser()->getID();
+    }
+
+    bool operator!=(const CategoryMember& other) {
+        return user->getID() != other.getUser()->getID();
     }
 };
 

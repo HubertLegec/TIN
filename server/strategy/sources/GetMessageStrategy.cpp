@@ -9,7 +9,8 @@ using namespace std;
 
 void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
-    auto userID = getMessage->getSenderID();
+
+    auto senderID = getMessage->getSenderID();
     auto requestType = getMessage->getRequestType();
 
     switch (requestType) {
@@ -22,39 +23,21 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
                 returnMessage->addCategory(pair.first, pair.second->getName());
             }
 
-            LOG(INFO) << "Sent category list to user " << userID;
-            controller->sendMessage(returnMessage, userID);
+            LOG(INFO) << "Sent category list to user " << senderID;
+            controller->sendMessage(returnMessage, senderID);
         }
             break;
 
         case GetMessageType::NEIGHBOURS: {
             long categoryID = getMessage->getCategoryID();
-            long senderID = getMessage->getSenderID();
 
-            auto member = controller->getModel()->getCategory(categoryID)->findMember(senderID);
-            auto leftNeighbour = member->getLeftNeighbour()->getUser();
-            auto rightNeighbour = member->getRightNeighbour()->getUser();
-
-            NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(categoryID,
-                                                                           leftNeighbour->getName(),
-                                                                           leftNeighbour->getIP(),
-                                                                           leftNeighbour->getPort(),
-                                                                           rightNeighbour->getName(),
-                                                                           rightNeighbour->getIP(),
-                                                                           rightNeighbour->getPort());
-            infoMessage->setSenderID(SERVER_ID);
-            infoMessage->setType(NEIGHBOURS_SET);
-
-            LOG(INFO) << "Sent neighbours set to user " << userID;
-            controller->sendMessage(infoMessage, userID);
+            sendNeighbours(categoryID, senderID);
+            LOG(INFO) << "Sent neighbours set to user " << senderID;
         }
             break;
 
         default: {
-            ServerInfoMessage *returnMessage = new ServerInfoMessage(SERVER_ID, FAIL, "Bad message type received");
-            returnMessage->setType(SERVER_INFO);
-            LOG(DEBUG) << "Received bad message type from user " << userID;
-            controller->sendMessage(returnMessage);
+            sendMessage(senderID, FAIL, "Bad message type received");
         }
             break;
     }
