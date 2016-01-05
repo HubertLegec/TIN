@@ -186,16 +186,11 @@ std::map<long, string> Model::getCategories() const {
     for (auto c : categories) {
         result.insert(pair<long, string>(c.first, c.second.getName()));
     }
-
     return result;
 }
 
 bool Model::isMyCategory(long categoryID) const {
-    if (categories.at(categoryID).isOwner()) {
-        return true;
-    } else {
-        return false;
-    }
+    return categories.at(categoryID).isOwner() ? true : false;
 }
 
 void Model::confirmCategory(long categoryID) {
