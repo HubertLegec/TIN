@@ -106,15 +106,15 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->confirmCategory(msg.getExtraInfo());
             stringstream ss;
             ss << "Category " << getModel()->getCategoryName(msg.getExtraInfo()) <<
-            " : owner confirmed your attempt to join!";
+            " : owner confirmed your request to join!";
             getModel()->addNotification(ss.str());
             break;
         }
         case ServerInfoMessageType::MEMBER_REJECTED: {
-            getModel()->removeCategoryAndData(msg.getExtraInfo());
             stringstream ss2;
             ss2 << "Category " << getModel()->getCategoryName(msg.getExtraInfo()) <<
-            " : owner rejected your attempt to join!";
+            " : owner rejected your request to join!";
+            getModel()->removeCategoryAndData(msg.getExtraInfo());
             getModel()->addNotification(ss2.str());
             break;
         }
