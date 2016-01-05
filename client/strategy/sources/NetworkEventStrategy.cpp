@@ -11,7 +11,6 @@
 #include "../../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../../networkMessage/headers/CategoryListMessage.h"
 #include "../../../networkMessage/headers/NeighboursInfoMessage.h"
-#include "../../../networkMessage/headers/GetMessage.h"
 
 using namespace std;
 
@@ -75,10 +74,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
         case ServerInfoMessageType::CATEGORY_JOINED : {
             controller->incrementServerResponseNo();
             getModel()->addJoinedCategory(msg.getExtraInfo(), msg.getInfo());
-            shared_ptr<GetMessage> getMessage = make_shared<GetMessage>(getModel()->getUserId(),
-                                                                        GetMessageType::NEIGHBOURS, msg.getExtraInfo());
-            sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(getMessage, getServerIP(), getServerPort())));
-            getModel()->addNotification("You have successfully joined the category!");
+            getModel()->addNotification("Your request to join category waits for owner confirmation.");
             showMainMenu();
             break;
         }
@@ -122,6 +118,10 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->addNotification(ss2.str());
             break;
         }
+        case ServerInfoMessageType::USER_DELETED:
+            getModel()->removeUserAccount();
+            getModel()->addNotification("Your account has been removed successfully.");
+            showMainMenu();
         case ServerInfoMessageType::FAIL :
             getModel()->addNotification(msg.getInfo());
             showMainMenu();

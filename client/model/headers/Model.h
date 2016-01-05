@@ -111,6 +111,8 @@ public:
 
     std::vector<PendingUserInfo> getPendingUsers() const;
 
+    void removeUserAccount();
+
 };
 
 

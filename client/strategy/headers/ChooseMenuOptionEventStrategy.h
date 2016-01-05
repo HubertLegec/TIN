@@ -18,6 +18,8 @@ private:
     void signUpCategory() const;
     void signOutCategory() const;
     void createAccount() const;
+
+    void removeAccount() const;
     void sendRingMessage() const;
 
     void openInbox() const;

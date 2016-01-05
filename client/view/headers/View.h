@@ -9,21 +9,21 @@
 #include <map>
 #include <vector>
 #include "../../controller/headers/Controller.h"
+
 class Controller;
 
 class View {
 public:
 
-    struct ThreadData
-    {
-        ThreadData(Controller * controller_):
+    struct ThreadData {
+        ThreadData(Controller *controller_) :
                 controller(controller_),
                 notifications(new std::vector<std::string>()),
                 categories(new std::map<long, std::string>()),
                 messages(new std::vector<std::pair<std::string, std::string>>()),
                 pendingUsers(new std::vector<PendingUserInfo>) { }
 
-        Controller * controller;
+        Controller *controller;
 
         std::shared_ptr<std::vector<std::string>> notifications;
         std::shared_ptr<std::map<long, std::string>> categories;
@@ -32,10 +32,12 @@ public:
         std::string info;
     };
 
-    View(Controller* controller);
+    View(Controller *controller);
+
     ~View();
 
     void showCategoryList(std::map<long, std::string> categories);
+
     void showMainMenu(std::vector<std::string> notificationsList);
 
     void showCreateCategorySubMenu();
@@ -49,7 +51,10 @@ public:
     void showLeaveCategorySubMenu(std::map<long, std::string> myCategories);
 
     void showSignOutCategorySubMenu(std::map<long, std::string> myCategories);
+
     void showRegisterNewUserSubMenu();
+
+    void showRemoveUserSubMenu();
 
     void showInfo(const std::string &info);
 
@@ -62,18 +67,25 @@ public:
 private:
     static const int ID_WIDTH = 21; //Max long type decimal digits number + 1.
 
-    static void* showCategoryListThread(void*);
-    static void* showMainMenuThread(void*);
-    static void* showCreateCategorySubMenuThread(void*);
-    static void* showDeleteCategorySubMenuThread(void*);
+    static void *showCategoryListThread(void *);
+
+    static void *showMainMenuThread(void *);
+
+    static void *showCreateCategorySubMenuThread(void *);
+
+    static void *showDeleteCategorySubMenuThread(void *);
 
     static void *showSignUpCategorySubMenuThread(void *);
-    static void* showJoinCategorySubMenuThread(void*);
-    static void* showLeaveCategorySubMenuThread(void*);
+
+    static void *showJoinCategorySubMenuThread(void *);
+
+    static void *showLeaveCategorySubMenuThread(void *);
 
     static void *showSignOutCategorySubMenuThread(void *);
 
     static void *showRegisterNewUserSubMenuThread(void *);
+
+    static void *showRemoveUserSubMenuThread(void *);
 
     static void *showInfoThread(void *);
 
@@ -82,7 +94,10 @@ private:
     static void *showReadIncomingMessagesSubMenuThread(void *);
 
     static void *showPendingUsersSubMenuThread(void *);
-    static void readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool passwordConfirmation = true);
+
+    static void readCategoryAccessData(std::string &categoryName, std::string &userName, std::string &userPassword,
+                                       bool passwordConfirmation = true);
+
     static bool getUserConfirmation();
 
     ThreadData threadData;

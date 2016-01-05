@@ -30,6 +30,7 @@ enum MessageType{
     CLIENT_CLOSE_APP = 14,
     //this type isn't sent via the Net, NetworkController put it to receive queue, to inform about problems
     NETWORK_CONTROLLER_ERROR_MESSAGE = 15,
+    //CategoryManagementMessage
     NEW_MEMBER_CONFIRM = 16,
     NEW_MEMBER_REJECT = 17
 };

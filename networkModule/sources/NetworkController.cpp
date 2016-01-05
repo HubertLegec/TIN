@@ -128,7 +128,9 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
         case MessageType::JOIN_CATEGORY :
         case MessageType::LEFT_CATEGORY :
         case MessageType::ACTIVATE_CATEGORY :
-        case MessageType::DEACTIVATE_CATEGORY : {
+        case MessageType::DEACTIVATE_CATEGORY :
+        case MessageType::NEW_MEMBER_CONFIRM:
+        case MessageType::NEW_MEMBER_REJECT: {
             CategoryManagementMessage *categoryMessage = dynamic_cast<CategoryManagementMessage *>(&*msg);
             oarchive(*categoryMessage);
         }
@@ -305,7 +307,9 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
         case MessageType::JOIN_CATEGORY :
         case MessageType::LEFT_CATEGORY :
         case MessageType::ACTIVATE_CATEGORY :
-        case MessageType::DEACTIVATE_CATEGORY : {
+        case MessageType::DEACTIVATE_CATEGORY :
+        case MessageType::NEW_MEMBER_CONFIRM:
+        case MessageType::NEW_MEMBER_REJECT: {
             CategoryManagementMessage *categoryMessage = new CategoryManagementMessage();
             iarchive(*categoryMessage);
             std::shared_ptr<CategoryManagementMessage> msg(categoryMessage);

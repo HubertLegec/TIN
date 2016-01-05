@@ -21,35 +21,22 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
             controller->exit();
             break;
         case ChooseMenuOptionEvent::SHOW_CATEGORY_LIST :
-            if (getModel()->isRegistered()) {
-                showCategoryList();
-            } else {
-                createAccount();
-            }
+            showCategoryList();
             break;
         case ChooseMenuOptionEvent::CREATE_USER_ACCOUNT:
             createAccount();
             break;
+        case ChooseMenuOptionEvent::REMOVE_USER_ACCOUNT:
+            removeAccount();
+            break;
         case ChooseMenuOptionEvent::CREATE_CATEGORY :
-            if (getModel()->isRegistered()) {
-                createCategory();
-            } else {
-                createAccount();
-            }
+            createCategory();
             break;
         case ChooseMenuOptionEvent::DELETE_CATEGORY :
-            if (getModel()->isRegistered()) {
-                deleteCategory();
-            } else {
-                createAccount();
-            }
+            deleteCategory();
             break;
         case ChooseMenuOptionEvent::SIGN_UP_CATEGORY :
-            if (getModel()->isRegistered()) {
-                signUpCategory();
-            } else {
-                createAccount();
-            }
+            signUpCategory();
             break;
         case ChooseMenuOptionEvent::SIGN_OUT_CATEGORY :
             if (getModel()->isRegistered()) {
@@ -102,24 +89,36 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
 
 void ChooseMenuOptionEventStrategy::showCategoryList() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList\n";
-    shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
-    controller->setState(Controller::CATEGORY_LIST);
-    controller->createTimeoutThread();
-    controller->sendMessage(toSend, getServerIP(), getServerPort());
+    if (!getModel()->isRegistered()) {
+        createAccount();
+    } else {
+        shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
+        controller->setState(Controller::CATEGORY_LIST);
+        controller->createTimeoutThread();
+        controller->sendMessage(toSend, getServerIP(), getServerPort());
+    }
 }
 
 void ChooseMenuOptionEventStrategy::createCategory() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::createCategory\n";
-    getView()->showCreateCategorySubMenu();
+    if (getModel()->isRegistered()) {
+        getView()->showCreateCategorySubMenu();
+    } else {
+        createAccount();
+    }
 }
 
 void ChooseMenuOptionEventStrategy::deleteCategory() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::deleteCategory\n";
-    if (getModel()->getMyCategories().size() == 0) {
-        getView()->showInfo("You have no categories to delete!");
-        showMainMenu();
+    if (getModel()->isRegistered()) {
+        if (getModel()->getMyCategories().size() == 0) {
+            getView()->showInfo("You have no categories to delete!");
+            showMainMenu();
+        } else {
+            getView()->showDeleteCategorySubMenu(getModel()->getMyCategories());
+        }
     } else {
-        getView()->showDeleteCategorySubMenu(getModel()->getMyCategories());
+        createAccount();
     }
 }
 
@@ -144,11 +143,15 @@ void ChooseMenuOptionEventStrategy::leaveCategory() const {
 
 void ChooseMenuOptionEventStrategy::signUpCategory() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::signUpCategory\n";
-    controller->setState(Controller::SIGN_UP);
-    controller->createTimeoutThread();
-    shared_ptr<GetMessage> ptr = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
-    controller->getSendQueue()->push(
-            shared_ptr<MessageWrapper>(new MessageWrapper(ptr, getServerIP(), getServerPort())));
+    if (getModel()->isRegistered()) {
+        controller->setState(Controller::SIGN_UP);
+        controller->createTimeoutThread();
+        shared_ptr<GetMessage> ptr = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
+        controller->getSendQueue()->push(
+                shared_ptr<MessageWrapper>(new MessageWrapper(ptr, getServerIP(), getServerPort())));
+    } else {
+        createAccount();
+    }
 }
 
 void ChooseMenuOptionEventStrategy::signOutCategory() const {
@@ -164,6 +167,16 @@ void ChooseMenuOptionEventStrategy::signOutCategory() const {
 void ChooseMenuOptionEventStrategy::createAccount() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::createAccount\n";
     getView()->showRegisterNewUserSubMenu();
+}
+
+void ChooseMenuOptionEventStrategy::removeAccount() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::removeAccount\n";
+    if (getModel()->isRegistered()) {
+        getView()->showRemoveUserSubMenu();
+    } else {
+        getView()->showInfo("Your account hasn't been created yet.");
+        refresh();
+    }
 }
 
 void ChooseMenuOptionEventStrategy::refresh() const {

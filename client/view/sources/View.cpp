@@ -13,10 +13,10 @@
 
 using namespace std;
 
-View::View(Controller * controller) : threadData(controller),viewThread() {
+View::View(Controller *controller) : threadData(controller), viewThread() {
 }
 
-View::~View() { pthread_join(viewThread,NULL); }
+View::~View() { pthread_join(viewThread, NULL); }
 
 
 void View::showCategoryList(map<long, string> categories) {
@@ -52,13 +52,13 @@ void View::showSignUpCategorySubMenu(map<long, string> categories) {
 void View::showJoinCategorySubMenu(map<long, string> categories) {
     pthread_join(viewThread, NULL);
     *threadData.categories = categories;
-    pthread_create(&viewThread, NULL, showJoinCategorySubMenuThread,&threadData);
+    pthread_create(&viewThread, NULL, showJoinCategorySubMenuThread, &threadData);
 }
 
 void View::showLeaveCategorySubMenu(map<long, string> categories) {
     pthread_join(viewThread, NULL);
     *threadData.categories = categories;
-    pthread_create(&viewThread, NULL, showLeaveCategorySubMenuThread,&threadData);
+    pthread_create(&viewThread, NULL, showLeaveCategorySubMenuThread, &threadData);
 }
 
 void View::showSignOutCategorySubMenu(map<long, string> categories) {
@@ -96,31 +96,9 @@ void View::showInfo(const std::string &info) {
     pthread_create(&viewThread, NULL, showInfoThread, &threadData);
 }
 
-void View::readCategoryAccessData(string &categoryName, string &userName, string &userPassword, bool confirmPassword)
-{
-    string passwordConfirmation;
-
-    cout << "Type category name:";
-    cin >> categoryName;
-
-    cout << "Type user name:";
-    cin >> userName;
-
-    while(true) {
-        cout << "Type your password:";
-        cin >> userPassword;
-
-        if(!confirmPassword)
-            break;
-
-        cout << "Confirm Password:";
-        cin >> passwordConfirmation;
-
-        if (userPassword == passwordConfirmation)
-            break;
-        else
-            cout << "Passwords don't match!" << endl;
-    }
+void View::showRemoveUserSubMenu() {
+    pthread_join(viewThread, NULL);
+    pthread_create(&viewThread, NULL, showRemoveUserSubMenuThread, &threadData);
 }
 
 bool View::getUserConfirmation() {
@@ -137,9 +115,8 @@ bool View::getUserConfirmation() {
 }
 
 
-void* View::showCategoryListThread(void * arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showCategoryListThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
     int idWidth = 21; //Max long type decimal digits number + 1.
     cout << "Category list:" << endl;
@@ -157,14 +134,14 @@ void* View::showCategoryListThread(void * arg)
     resetiosflags(ios::left);
 }
 
-void* View::showMainMenuThread(void * arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showMainMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
     cout << "****************************" << endl;
     cout << "Welcome to #RING!" << endl;
     cout << "choose action:" << endl;
     cout << "[a] create user account" << endl;
+    cout << "[r] remove user account" << endl;
     cout << "[c] create category" << endl;
     cout << "[d] delete category" << endl;
     cout << "[s] show category list" << endl;
@@ -204,6 +181,9 @@ void* View::showMainMenuThread(void * arg)
         case 'a':
             event = ChooseMenuOptionEvent::CREATE_USER_ACCOUNT;
             break;
+        case 'r':
+            event = ChooseMenuOptionEvent::REMOVE_USER_ACCOUNT;
+            break;
         case 'c':
             event = ChooseMenuOptionEvent::CREATE_CATEGORY;
             break;
@@ -239,9 +219,9 @@ void* View::showMainMenuThread(void * arg)
             break;
     }
 
-    if(((ChooseMenuOptionEvent)event).getOptionChosen()== ChooseMenuOptionEvent::QUIT) if (getUserConfirmation() ==
-                                                                                           false) {
-            return 0;
+    if (((ChooseMenuOptionEvent) event).getOptionChosen() == ChooseMenuOptionEvent::QUIT) if (getUserConfirmation() ==
+                                                                                              false) {
+        return 0;
     }
 
     threadData->controller->getEventsToServe()->push(
@@ -249,9 +229,8 @@ void* View::showMainMenuThread(void * arg)
 }
 
 
-void* View::showCreateCategorySubMenuThread(void * arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showCreateCategorySubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
     string categoryName;
 
@@ -269,9 +248,8 @@ void* View::showCreateCategorySubMenuThread(void * arg)
     }
 }
 
-void* View::showDeleteCategorySubMenuThread(void * arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showDeleteCategorySubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
 
     cout << "Deleting category:" << endl;
@@ -303,9 +281,8 @@ void* View::showDeleteCategorySubMenuThread(void * arg)
     }
 }
 
-void *View::showSignUpCategorySubMenuThread(void *arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showSignUpCategorySubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
     cout << "Singing up category:" << endl;
@@ -336,9 +313,8 @@ void *View::showSignUpCategorySubMenuThread(void *arg)
     }
 }
 
-void* View::showJoinCategorySubMenuThread(void * arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showJoinCategorySubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
     cout << "Joining category:" << endl;
@@ -370,9 +346,8 @@ void* View::showJoinCategorySubMenuThread(void * arg)
     }
 }
 
-void* View::showLeaveCategorySubMenuThread(void * arg)
-{
-    ThreadData * threadData = (ThreadData*)arg;
+void *View::showLeaveCategorySubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
     cout << "Leaving category:" << endl;
@@ -406,7 +381,7 @@ void* View::showLeaveCategorySubMenuThread(void * arg)
 
 void *View::showSignOutCategorySubMenuThread(void *arg) {
 
-    ThreadData * threadData = (ThreadData*)arg;
+    ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
     cout << "Sign out category:" << endl;
@@ -565,4 +540,18 @@ void *View::showPendingUsersSubMenuThread(void *arg) {
 
     threadData->controller->getEventsToServe()->push(
             shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH)));
+}
+
+void *View::showRemoveUserSubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
+    cout << "This will remove all your messages, you will be removed from all categories you have signed up" << endl;
+    cout << "and all your categories will be deleted." << endl;
+    bool decision = getUserConfirmation();
+    if (decision) {
+        threadData->controller->getEventsToServe()->push(
+                shared_ptr<UserAccountEvent>(new UserAccountEvent(UserAccountEvent::DELETE, "")));
+    } else {
+        threadData->controller->getEventsToServe()->push(
+                shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH)));
+    }
 }

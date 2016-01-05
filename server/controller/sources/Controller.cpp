@@ -95,6 +95,8 @@ IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message
         case LEFT_CATEGORY:
         case ACTIVATE_CATEGORY:
         case DEACTIVATE_CATEGORY:
+        case NEW_MEMBER_CONFIRM:
+        case NEW_MEMBER_REJECT:
             return IncomingMessageType::CATEGORY_MANAGEMENT;
 
         case CREATE_USER_ACCOUNT:

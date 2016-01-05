@@ -230,3 +230,10 @@ std::vector<PendingUserInfo> Model::getPendingUsers() const {
     }
     return result;
 }
+
+void Model::removeUserAccount() {
+    categoryNameIdMapping.clear();
+    inbox.clear();
+    notifications.clear();
+    categories.clear();
+}
