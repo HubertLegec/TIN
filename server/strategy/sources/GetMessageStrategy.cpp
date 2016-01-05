@@ -22,7 +22,6 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
                 returnMessage->addCategory(pair.first, pair.second->getName());
             }
 
-            LOG(INFO) << "Sent category list to user " << senderID;
             controller->sendMessage(returnMessage, senderID);
         }
             break;

@@ -30,14 +30,16 @@ void BasicEventStrategy::sendMessage(long userID, long extraInfo, ServerInfoMess
 }
 
 void BasicEventStrategy::sendNeighbours(long categoryID, shared_ptr<CategoryMember> member) const {
-    shared_ptr<CategoryMember> leftMember;
-    shared_ptr<CategoryMember> rightMember;
+    auto leftMember = member->getLeftNeighbour();
+    auto rightMember = member->getRightNeighbour();
 
-    while (*(leftMember = member->getLeftNeighbour()) != *member ||
-           leftMember->getStatus() == OFFLINE);
+    while (leftMember != member && leftMember->getStatus() == OFFLINE) {
+        leftMember = leftMember->getLeftNeighbour();
+    }
 
-    while (*(rightMember = member->getRightNeighbour()) != *member ||
-           rightMember->getStatus() == OFFLINE);
+    while (rightMember != member && rightMember->getStatus() == OFFLINE) {
+        rightMember = rightMember->getLeftNeighbour();
+    }
 
     auto leftNeighbour = leftMember->getUser();
     auto rightNeighbour = rightMember->getUser();
@@ -72,9 +74,9 @@ void BasicEventStrategy::sendAllNeighbours(long categoryID, long memberID) const
     auto rightNeighbour = member->getRightNeighbour();
 
     sendNeighbours(categoryID, member);
-    if (*leftNeighbour != *member)
+    if (leftNeighbour != member)
         sendNeighbours(categoryID, leftNeighbour);
-    if (*rightNeighbour != *member)
+    if (rightNeighbour != member && rightNeighbour != leftNeighbour)
         sendNeighbours(categoryID, rightNeighbour);
 }
 

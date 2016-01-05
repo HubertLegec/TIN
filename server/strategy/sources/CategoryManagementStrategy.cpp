@@ -187,9 +187,10 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 if (owner->getID() != senderID) {
                     sendMessage(senderID, categoryID, FAIL, "User is not an owner of category " + categoryID);
                 } else {
-                    if (category->isUnconfirmed(memberID)) {
+                    if (!category->isUnconfirmed(memberID)) {
                         sendMessage(senderID, categoryID, FAIL,
                                     "Member is already confirmed or didn't join the category");
+
                     } else {
                         sendMessage(senderID, categoryID, OK, "Activated user " + categoryID);
                         category->acceptNewUser(memberID);
@@ -220,7 +221,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 if (owner->getID() != senderID) {
                     sendMessage(senderID, categoryID, FAIL, "User is not an owner of category " + categoryID);
                 } else {
-                    if (category->isUnconfirmed(memberID)) {
+                    if (!category->isUnconfirmed(memberID)) {
                         sendMessage(senderID, categoryID, FAIL,
                                     "Member is already confirmed or didn't join the category");
                     } else {
