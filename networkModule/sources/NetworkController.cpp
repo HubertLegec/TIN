@@ -55,10 +55,6 @@ void NetworkController::createSendThread() {
             LOG(ERROR) << "[SND] Couldnt send msg";
             continue;
         }
-        std::unique_lock<std::mutex> mlock(mutex_);
-        if (exitFlag == true)
-            break;
-        mlock.unlock();
     }
     pthread_exit(NULL);
 }
@@ -280,6 +276,7 @@ void NetworkController::createReceiveThread() {
         std::unique_lock<std::mutex> mlock(mutex_);
         if (exitFlag == true) {
             LOG(INFO) << "[REC] Closing receiving thread";
+            mlock.unlock();
             break;
         }
         mlock.unlock();
@@ -292,6 +289,7 @@ void NetworkController::createReceiveThread() {
         std::unique_lock<std::mutex> mlock1(mutex_);
         if (exitFlag == true) {
             LOG(INFO) << "[REC] Closing receiving thread";
+            mlock1.unlock();
             break;
         }
         mlock1.unlock();
@@ -421,13 +419,13 @@ std::string NetworkController::getStringFromChar(int length1, const char *tab) {
 
 void NetworkController::stop() {
     std::unique_lock<std::mutex> mlock(mutex_);
+    exitFlag = true;
+    mlock.unlock();
     SimpleMessage *exitMessage = new SimpleMessage(MessageType::EXIT, -1);
     std::shared_ptr<SimpleMessage> exitMsg = std::shared_ptr<SimpleMessage>(exitMessage);
     MessageWrapper *wrapper = new MessageWrapper(exitMsg, "", -1);
     std::shared_ptr<MessageWrapper> p1(wrapper);
     sendQueue->push(p1);
-    exitFlag = true;
-    mlock.unlock();
 }
 
 std::shared_ptr<SimpleMessage> NetworkController::prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode errorCode,
