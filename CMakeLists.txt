@@ -39,16 +39,21 @@ set(CLIENT_EVENT_SOURCES clientEvents/sources/CategoryAccessEvent.cpp
         clientEvents/sources/ChooseMenuOptionEvent.cpp
         clientEvents/sources/ConfirmMessageEvent.cpp
         clientEvents/sources/NetworkEvent.cpp
-        clientEvents/sources/UserAccountEvent.cpp)
+        clientEvents/sources/UserAccountEvent.cpp
+        clientEvents/sources/NewMessageEvent.cpp
+        clientEvents/sources/PendingUserEvent.cpp)
 set(CLIENT_STRATEGY_SOURCES client/strategy/sources/BasicEventStrategy.cpp
         client/strategy/sources/ChooseMenuOptionEventStrategy.cpp
         client/strategy/sources/ConfirmMessageEventStrategy.cpp
         client/strategy/sources/NetworkEventStrategy.cpp
         client/strategy/sources/CategoryAccessEventStrategy.cpp
-        client/strategy/sources/UserAccountEventStrategy.cpp)
+        client/strategy/sources/UserAccountEventStrategy.cpp
+        client/strategy/sources/NewMessageEventStrategy.cpp
+        client/strategy/sources/PendingUserEventStrategy.cpp)
 set(CLIENT_MODEL_SOURCES client/model/sources/Model.cpp
         client/model/sources/CategoryInfo.cpp
-        client/model/sources/ConnectionInfo.cpp)
+        client/model/sources/ConnectionInfo.cpp
+        client/model/sources/PendingUserInfo.cpp)
 set(CLIENT_VIEW_SOURCES client/view/sources/View.cpp)
 set(CLIENT_CONTROLLER_SOURCES client/controller/sources/Controller.cpp)
 set(CLIENT_NETWORK_MODULE_SOURCES networkModule/sources/NetworkController.cpp
@@ -61,7 +66,7 @@ set(CLIENT_SOURCE_FILES client/main.cpp
         ${CLIENT_EVENT_SOURCES}
         ${CLIENT_STRATEGY_SOURCES}
         ${CLIENT_CONTROLLER_SOURCES}
-        ${CLIENT_NETWORK_MODULE_SOURCES} clientEvents/sources/NewMessageEvent.cpp clientEvents/headers/NewMessageEvent.h client/strategy/sources/NewMessageEventStrategy.cpp client/strategy/headers/NewMessageEventStrategy.h networkMessage/sources/NetworkControllerErrorMessage.cpp networkMessage/headers/NetworkControllerErrorMessage.h)
+        ${CLIENT_NETWORK_MODULE_SOURCES})
 add_executable(RING_CLIENT ${CLIENT_SOURCE_FILES})
 target_link_libraries(RING_CLIENT ${CMAKE_THREAD_LIBS_INIT})
 
@@ -85,7 +90,11 @@ set(SERVER_SOURCE_FILES server/main.cpp
         server/model/sources/CategoryMember.cpp
         server/model/headers/CategoryMember.h
         server/strategy/sources/UserManagementStrategy.cpp
-        server/strategy/headers/UserManagementStrategy.h server/strategy/sources/ErrorMessageStrategy.cpp server/strategy/headers/ErrorMessageStrategy.h server/Server.cpp server/Server.h)
+        server/strategy/headers/UserManagementStrategy.h
+        server/strategy/sources/ErrorMessageStrategy.cpp
+        server/strategy/headers/ErrorMessageStrategy.h
+        server/Server.cpp
+        server/Server.h)
 
 set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp

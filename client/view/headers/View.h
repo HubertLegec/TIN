@@ -17,14 +17,18 @@ public:
     struct ThreadData
     {
         ThreadData(Controller * controller_):
-                 controller(controller_),
-                 notifications(new std::vector<std::string>()),
-                 categories(new std::map<long, std::string>()) {}
+                controller(controller_),
+                notifications(new std::vector<std::string>()),
+                categories(new std::map<long, std::string>()),
+                messages(new std::vector<std::pair<std::string, std::string>>()),
+                pendingUsers(new std::vector<PendingUserInfo>) { }
 
         Controller * controller;
 
         std::shared_ptr<std::vector<std::string>> notifications;
         std::shared_ptr<std::map<long, std::string>> categories;
+        std::shared_ptr<std::vector<std::pair<std::string, std::string>>> messages;
+        std::shared_ptr<std::vector<PendingUserInfo>> pendingUsers;
         std::string info;
     };
 
@@ -49,6 +53,10 @@ public:
 
     void showInfo(const std::string &info);
 
+    void showReadIncomingMessagesSubMenu(std::vector<std::pair<std::string, std::string>> messages);
+
+    void showPendingUsersSubMenu(std::vector<PendingUserInfo> pendingUsers);
+
     void sendMessageInCategorySubMenu(std::map<long, std::string> myCategories);
 
 private:
@@ -71,6 +79,9 @@ private:
 
     static void *sendMessageInCategorySubMenuThread(void *);
 
+    static void *showReadIncomingMessagesSubMenuThread(void *);
+
+    static void *showPendingUsersSubMenuThread(void *);
     static void readCategoryAccessData(std::string & categoryName, std::string & userName, std::string & userPassword, bool passwordConfirmation = true);
     static bool getUserConfirmation();
 

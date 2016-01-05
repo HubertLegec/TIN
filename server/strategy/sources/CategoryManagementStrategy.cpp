@@ -77,7 +77,8 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 category->addNewMember(userToAdd);
                 LOG(INFO) << "Added user " << senderID << " to category " << categoryID;
                 sendMessage(senderID, categoryID, CATEGORY_JOINED);
-                ServerInfoMessage *newMemberMessage = new ServerInfoMessage(SERVER_ID, NEW_CATEGORY_MEMBER,
+                //client needs userID, so it is send as sendrer id instead of SERVER_ID
+                ServerInfoMessage *newMemberMessage = new ServerInfoMessage(userToAdd->getID(), NEW_CATEGORY_MEMBER,
                                                                             userToAdd->getName() + " " +
                                                                             userToAdd->getIP());
                 newMemberMessage->setExtraInfo(categoryID);

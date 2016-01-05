@@ -15,7 +15,10 @@ Model::Model() {
 
 void Model::addJoinedCategory(long id, const string &name) {
     categoryNameIdMapping.insert(pair<string, long>(name, id));
-    categories.insert(pair<long, CategoryInfo>(id, CategoryInfo(name)));
+    CategoryInfo ci(name);
+    ci.setConfirmed(false);
+    ci.setActive(false);
+    categories.insert(pair<long, CategoryInfo>(id, ci));
 }
 
 void Model::addMessageToCategory(long categoryId, const string &message) {
@@ -24,7 +27,10 @@ void Model::addMessageToCategory(long categoryId, const string &message) {
 
 void Model::addMyCategory(long id, const string &name) {
     categoryNameIdMapping.insert(pair<string, long>(name, id));
-    categories.insert(pair<long, CategoryInfo>(id, CategoryInfo(name, true)));
+    CategoryInfo ci(name, true);
+    ci.setConfirmed(true);
+    ci.setActive(true);
+    categories.insert(pair<long, CategoryInfo>(id, ci));
 }
 
 vector<string> Model::getCategoryMessages(long categoryId) {
@@ -97,7 +103,7 @@ map<long, string> Model::getMyCategories() const {
 map<long, string> Model::getJoinedCategories() const {
     map<long, string> result;
     for (auto p : categories) {
-        if(!p.second.isOwner()){
+        if (!p.second.isOwner() && p.second.isConfirmed()) {
             result.insert(pair<long, string>(p.first, p.second.getName()));
         }
     }
@@ -198,4 +204,29 @@ bool Model::isMyCategory(long categoryID) const {
     } else {
         return true;
     }
+}
+
+void Model::confirmCategory(long categoryID) {
+    categories.at(categoryID).setConfirmed(true);
+    categories.at(categoryID).setActive(true);
+}
+
+void Model::addPendingUser(long categoryID, long userID, const std::string &userName) {
+    categories.at(categoryID).addPendingUser(userID, userName);
+}
+
+void Model::removePendingUser(long categoryID, long userID) {
+    categories.at(categoryID).removePendingUser(userID);
+}
+
+std::vector<PendingUserInfo> Model::getPendingUsers() const {
+    vector<PendingUserInfo> result;
+    for (auto c : categories) {
+        if (c.second.isOwner()) {
+            for (auto pendingUser : c.second.getPendingUsers()) {
+                result.push_back(PendingUserInfo(c.first, pendingUser.first, pendingUser.second, c.second.getName()));
+            }
+        }
+    }
+    return result;
 }

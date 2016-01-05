@@ -37,6 +37,9 @@ void NetworkEventStrategy::serveEvent(BasicEvent *event) {
         case MessageType::RING_MESSAGE :
             processRingMessage(*msg);
             break;
+        case MessageType::NETWORK_CONTROLLER_ERROR_MESSAGE:
+            processErrorMessage(*msg);
+            break;
         case MessageType::CLIENT_CLOSE_APP :
             //nothing to do, app will be closed
             break;
@@ -99,7 +102,26 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->addNotification("Category deactivated!");
             showMainMenu();
             break;
-
+        case ServerInfoMessageType::NEW_CATEGORY_MEMBER :
+            getModel()->addPendingUser(msg.getExtraInfo(), msg.getSenderID(), msg.getInfo());
+            getModel()->addNotification("User pending in one of your categories.");
+            break;
+        case ServerInfoMessageType::MEMBER_CONFIRMED: {
+            getModel()->confirmCategory(msg.getExtraInfo());
+            stringstream ss;
+            ss << "Category " << getModel()->getCategoryName(msg.getExtraInfo()) <<
+            " : owner confirmed your attempt to join!";
+            getModel()->addNotification(ss.str());
+            break;
+        }
+        case ServerInfoMessageType::MEMBER_REJECTED: {
+            getModel()->removeCategoryAndData(msg.getExtraInfo());
+            stringstream ss2;
+            ss2 << "Category " << getModel()->getCategoryName(msg.getExtraInfo()) <<
+            " : owner rejected your attempt to join!";
+            getModel()->addNotification(ss2.str());
+            break;
+        }
         case ServerInfoMessageType::FAIL :
             getModel()->addNotification(msg.getInfo());
             showMainMenu();
@@ -148,7 +170,13 @@ void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
         ss << "by all your followers!";
         getModel()->addNotification(ss.str());
     }
+}
 
+void NetworkEventStrategy::processErrorMessage(SimpleMessage &message) const {
+    LOG(INFO) << "NetworkEventStrategy::processRingMessage:\n" << message.toString();
+    NetworkControllerErrorMessage &msg = dynamic_cast<NetworkControllerErrorMessage &>(message);
+    getModel()->addNotification(msg.getInfo());
+    showMainMenu();
 }
 
 std::map<long, std::string> NetworkEventStrategy::filterCategories(

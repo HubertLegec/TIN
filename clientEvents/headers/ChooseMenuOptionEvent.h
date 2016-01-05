@@ -20,6 +20,8 @@ public:
         SIGN_OUT_CATEGORY = 'o',
         LEAVE_CATEGORY = 'l',
         SEND_MESSAGE = 'm',
+        OPEN_INBOX = 'i',
+        PENDING_USERS = 'p',
         QUIT = 'q',
         REFRESH = 0
     };

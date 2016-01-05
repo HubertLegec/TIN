@@ -2,6 +2,7 @@
 // Created by hubert on 19.12.15.
 //
 
+#include <map>
 #include "../headers/CategoryInfo.h"
 
 using namespace std;
@@ -52,4 +53,24 @@ vector<string> CategoryInfo::getMessages() const {
 
 const string &CategoryInfo::getName() const {
     return name;
+}
+
+bool CategoryInfo::isConfirmed() const {
+    return confirmed;
+}
+
+void CategoryInfo::setConfirmed(bool confirmed) {
+    this->confirmed = confirmed;
+}
+
+void CategoryInfo::addPendingUser(long userID, std::string userName) {
+    pendingUsers.insert(pair<long, string>(userID, userName));
+}
+
+void CategoryInfo::removePendingUser(long userID) {
+    pendingUsers.erase(userID);
+}
+
+std::map<long, string> CategoryInfo::getPendingUsers() const {
+    return pendingUsers;
 }

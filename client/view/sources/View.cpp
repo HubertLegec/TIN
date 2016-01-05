@@ -7,6 +7,8 @@
 #include "../../../clientEvents/headers/CategoryAccessEvent.h"
 #include "../../../clientEvents/headers/UserAccountEvent.h"
 #include "../../../clientEvents/headers/NewMessageEvent.h"
+#include "../../../clientEvents/headers/ConfirmMessageEvent.h"
+#include "../../../clientEvents/headers/PendingUserEvent.h"
 #include <iomanip>
 
 using namespace std;
@@ -74,6 +76,18 @@ void View::sendMessageInCategorySubMenu(std::map<long, std::string> myCategories
     pthread_join(viewThread, NULL);
     *threadData.categories = myCategories;
     pthread_create(&viewThread, NULL, sendMessageInCategorySubMenuThread, &threadData);
+}
+
+void View::showReadIncomingMessagesSubMenu(std::vector<std::pair<std::string, std::string>> messages) {
+    pthread_join(viewThread, NULL);
+    *threadData.messages = messages;
+    pthread_create(&viewThread, NULL, showReadIncomingMessagesSubMenuThread, &threadData);
+}
+
+void View::showPendingUsersSubMenu(std::vector<PendingUserInfo> pendingUsers) {
+    pthread_join(viewThread, NULL);
+    *threadData.pendingUsers = pendingUsers;
+    pthread_create(&viewThread, NULL, showPendingUsersSubMenuThread, &threadData);
 }
 
 void View::showInfo(const std::string &info) {
@@ -159,6 +173,8 @@ void* View::showMainMenuThread(void * arg)
     cout << "[o] sign out category" << endl;
     cout << "[l] leave category" << endl;
     cout << "[m] send message in category" << endl;
+    cout << "[i] open inbox" << endl;
+    cout << "[p] see users who want to join your category" << endl;
     cout << "[q] quit" << endl;
 
     if (!(*threadData->notifications).empty()) {
@@ -181,6 +197,8 @@ void* View::showMainMenuThread(void * arg)
 
     cout << ">";
     cin >> typed;
+
+    cout << endl;
 
     switch (typed) {
         case 'a':
@@ -209,6 +227,12 @@ void* View::showMainMenuThread(void * arg)
             break;
         case 'm':
             event = ChooseMenuOptionEvent::SEND_MESSAGE;
+            break;
+        case 'i':
+            event = ChooseMenuOptionEvent::OPEN_INBOX;
+            break;
+        case 'p':
+            event = ChooseMenuOptionEvent::PENDING_USERS;
             break;
         case 'q':
             event = ChooseMenuOptionEvent::QUIT;
@@ -465,4 +489,80 @@ void *View::sendMessageInCategorySubMenuThread(void *arg) {
             shared_ptr<NewMessageEvent>(new NewMessageEvent(categoryID, message)));
 }
 
+void *View::showReadIncomingMessagesSubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
 
+    cout << "Inbox:" << endl;
+    cout << "Here you can mark some messages as read." << endl;
+    cout << "[y] - yes" << endl << "[n] - no" << endl << "[other] - quit" << endl << endl;
+    int position = 0;
+    int markedCounter = 0;
+    for (auto message : *threadData->messages) {
+        cout << "-------------" << endl;
+        cout << "Category: " << message.first << endl;
+        cout << "---" << endl;
+        cout << message.second << endl << endl;
+        cout << "\tMark as read [y/n/other]? ";
+        char decision;
+        cin >> decision;
+        cout << endl;
+
+        switch (decision) {
+            case 'y': {
+                threadData->controller->getEventsToServe()->push(
+                        shared_ptr<ConfirmMessageEvent>(new ConfirmMessageEvent(position - markedCounter)));
+                position++;
+                markedCounter++;
+                break;
+            }
+            case 'n':
+                break;
+            default:
+                threadData->controller->getEventsToServe()->push(
+                        shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH)));
+                return nullptr;
+        }
+    }
+
+    cout << "Nothing to show." << endl;
+    threadData->controller->getEventsToServe()->push(
+            shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH)));
+}
+
+void *View::showPendingUsersSubMenuThread(void *arg) {
+    ThreadData *threadData = (ThreadData *) arg;
+    cout << "Users who want to join to your categories:" << endl;
+    cout << "You can agree or reject them." << endl;
+    cout << "[y] - yes" << endl << "[n] - no" << endl << "[other] - quit" << endl << endl;
+
+    for (auto pendingUser : *threadData->pendingUsers) {
+        cout << "-------------" << endl;
+        cout << "Category: " << pendingUser.getCategoryName() << endl;
+        cout << "User name: " << pendingUser.getUserName() << endl;
+        cout << "\tAccept user [y/n/other]? ";
+        char decision;
+        cin >> decision;
+        cout << endl;
+
+        switch (decision) {
+            case 'y': {
+                threadData->controller->getEventsToServe()->push(shared_ptr<PendingUserEvent>(
+                        new PendingUserEvent(pendingUser.getCategoryID(), pendingUser.getUserID(),
+                                             PendingUserEvent::ACCEPT)));
+                break;
+            }
+            case 'n':
+                threadData->controller->getEventsToServe()->push(shared_ptr<PendingUserEvent>(
+                        new PendingUserEvent(pendingUser.getCategoryID(), pendingUser.getUserID(),
+                                             PendingUserEvent::REJECT)));
+                break;
+            default:
+                threadData->controller->getEventsToServe()->push(
+                        shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH)));
+                return nullptr;
+        }
+    }
+
+    threadData->controller->getEventsToServe()->push(
+            shared_ptr<ChooseMenuOptionEvent>(new ChooseMenuOptionEvent(ChooseMenuOptionEvent::REFRESH)));
+}

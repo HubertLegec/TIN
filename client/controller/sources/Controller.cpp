@@ -12,6 +12,7 @@
 #include "../../strategy/headers/CategoryAccessEventStrategy.h"
 #include "../../strategy/headers/UserAccountEventStrategy.h"
 #include "../../strategy/headers/NewMessageEventStrategy.h"
+#include "../../strategy/headers/PendingUserEventStrategy.h"
 #include "../../../networkMessage/headers/UserManagementMessage.h"
 
 using namespace std;
@@ -35,6 +36,7 @@ void Controller::initStrategyMap() {
     strategyMap["CATEGORY_ACCESS_EVENT"] = new CategoryAccessEventStrategy(this);
     strategyMap["USER_ACCOUNT_EVENT"] = new UserAccountEventStrategy(this);
     strategyMap["NEW_MESSAGE_EVENT"] = new NewMessageEventStrategy(this);
+    strategyMap["PENDING_USER_EVENT"] = new PendingUserEventStrategy(this);
 }
 
 Model* Controller::getModel() {

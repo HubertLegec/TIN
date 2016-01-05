@@ -11,6 +11,7 @@
 #include <vector>
 #include "ConnectionInfo.h"
 #include "CategoryInfo.h"
+#include "PendingUserInfo.h"
 #include "../../../networkMessage/headers/RingMessage.h"
 
 class Model {
@@ -101,6 +102,15 @@ public:
     bool isRegistered() const;
 
     bool isMyCategory(long categoryID) const;
+
+    void confirmCategory(long categoryID);
+
+    void addPendingUser(long categoryID, long userID, const std::string &userName);
+
+    void removePendingUser(long categoryID, long userID);
+
+    std::vector<PendingUserInfo> getPendingUsers() const;
+
 };
 
 

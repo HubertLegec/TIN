@@ -26,6 +26,8 @@ private:
 
     void processRingMessage(SimpleMessage &message) const;
 
+    void processErrorMessage(SimpleMessage &message) const;
+
     /**
      * This method removes from map user categories and categories user joined
      */

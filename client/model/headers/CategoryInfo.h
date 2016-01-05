@@ -15,8 +15,10 @@ private:
     ConnectionInfo leftNeighbour;
     ConnectionInfo rightNeighbour;
     std::vector<std::string> messages;
+    std::map<long, std::string> pendingUsers;
     bool active;
     bool owner;
+    bool confirmed;
 public:
     CategoryInfo();
 
@@ -31,7 +33,17 @@ public:
     bool isOwner() const;
     void setActive(bool active);
     bool isActive() const;
+
+    void setConfirmed(bool confirmed);
+
+    bool isConfirmed() const;
     void addMessage(const std::string& message);
+
+    void addPendingUser(long userID, std::string userName);
+
+    void removePendingUser(long userID);
+
+    std::map<long, std::string> getPendingUsers() const;
     std::vector<std::string> getMessages() const;
 
     const std::string &getName() const;

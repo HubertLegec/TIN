@@ -78,6 +78,21 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
             } else {
                 createAccount();
             }
+            break;
+        case ChooseMenuOptionEvent::OPEN_INBOX :
+            if (getModel()->isRegistered()) {
+                openInbox();
+            } else {
+                createAccount();
+            }
+            break;
+        case ChooseMenuOptionEvent::PENDING_USERS :
+            if (getModel()->isRegistered()) {
+                pendingUsers();
+            } else {
+                createAccount();
+            }
+            break;
         case ChooseMenuOptionEvent::REFRESH :
             refresh();
             break;
@@ -110,7 +125,11 @@ void ChooseMenuOptionEventStrategy::deleteCategory() const {
 
 void ChooseMenuOptionEventStrategy::joinCategory() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::joinCategory\n";
-    getView()->showJoinCategorySubMenu(getModel()->getInactiveCategories());
+    if (getModel()->getInactiveCategories().size() == 0) {
+        getView()->showInfo("You have no inactive categories");
+    } else {
+        getView()->showJoinCategorySubMenu(getModel()->getInactiveCategories());
+    }
 }
 
 void ChooseMenuOptionEventStrategy::leaveCategory() const {
@@ -159,5 +178,30 @@ void ChooseMenuOptionEventStrategy::sendRingMessage() const {
         showMainMenu();
     } else {
         getView()->sendMessageInCategorySubMenu(getModel()->getMyCategories());
+    }
+}
+
+void ChooseMenuOptionEventStrategy::openInbox() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::openInbox\n";
+    if (getModel()->getInboxMessages().size() == 0) {
+        getView()->showInfo("Your inbox is empty. Check it later.");
+        showMainMenu();
+    } else {
+        vector<pair<string, string>> messages;
+        for (auto msg : getModel()->getInboxMessages()) {
+            messages.push_back(
+                    pair<string, string>(getModel()->getCategoryName(msg.getCategoryId()), msg.getMsgText()));
+        }
+        getView()->showReadIncomingMessagesSubMenu(messages);
+    }
+}
+
+void ChooseMenuOptionEventStrategy::pendingUsers() const {
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::pendingUsers\n";
+    if (getModel()->getPendingUsers().size() == 0) {
+        getView()->showInfo("Nobody wants to join to your category.");
+        showMainMenu();
+    } else {
+        getView()->showPendingUsersSubMenu(getModel()->getPendingUsers());
     }
 }
