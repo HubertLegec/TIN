@@ -53,14 +53,6 @@ void Model::updateLeftNeighbour(long categoryId, const ConnectionInfo& info) {
     categories.at(categoryId).updateLeftNeighbour(info);
 }
 
-const ConnectionInfo &Model::getRightNeighbour(long categoryId) {
-    return categories.at(categoryId).getRightNeighbour();
-}
-
-void Model::updateRightNeighbour(long categoryId, const ConnectionInfo &info) {
-    categories.at(categoryId).updateRightNeighbour(info);
-}
-
 const ConnectionInfo &Model::getServerInfo() const {
     return serverInfo;
 }
@@ -199,10 +191,10 @@ std::map<long, string> Model::getCategories() const {
 }
 
 bool Model::isMyCategory(long categoryID) const {
-    if (categories.find(categoryID) == categories.end()) {
-        return false;
-    } else {
+    if (categories.at(categoryID).isOwner()) {
         return true;
+    } else {
+        return false;
     }
 }
 
@@ -236,4 +228,39 @@ void Model::removeUserAccount() {
     inbox.clear();
     notifications.clear();
     categories.clear();
+}
+
+bool Model::isSomeoneInCategory(long categoryID) const {
+    ConnectionInfo lNeighbour = categories.at(categoryID).getLeftNeighbour();
+    if (myIP != lNeighbour.getIP() || myPort != lNeighbour.getPort()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+map<long, string> Model::getMyNonEmptyCategories() const {
+    map<long, string> result;
+    for (auto p : categories) {
+        if (p.second.isOwner() && isSomeoneInCategory(p.first) && p.second.isActive()) {
+            result.insert(pair<long, string>(p.first, p.second.getName()));
+        }
+    }
+    return result;
+}
+
+vector<string> Model::getMyEmptyAndNonActiveCategories() const {
+    vector<string> result;
+    for (auto p : categories) {
+        if (p.second.isOwner() && !p.second.isActive()) {
+            stringstream ss;
+            ss << p.second.getName() << " - category is inactive";
+            result.push_back(ss.str());
+        } else if (p.second.isOwner() && !isSomeoneInCategory(p.first)) {
+            stringstream ss;
+            ss << p.second.getName() << " - you haven't any followers in this category";
+            result.push_back(ss.str());
+        }
+    }
+    return result;
 }

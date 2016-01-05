@@ -13,7 +13,6 @@ class CategoryInfo {
 private:
     std::string name;
     ConnectionInfo leftNeighbour;
-    ConnectionInfo rightNeighbour;
     std::vector<std::string> messages;
     std::map<long, std::string> pendingUsers;
     bool active;
@@ -23,27 +22,31 @@ public:
     CategoryInfo();
 
     CategoryInfo(const std::string &name, bool owner = false);
-    void updateRightNeighbour(const ConnectionInfo& info);
 
-    const ConnectionInfo &getRightNeighbour() const;
-    void updateLeftNeighbour(const ConnectionInfo& info);
+    void updateLeftNeighbour(const ConnectionInfo &info);
 
     const ConnectionInfo &getLeftNeighbour() const;
+
     void setOwner(bool owner);
+
     bool isOwner() const;
+
     void setActive(bool active);
+
     bool isActive() const;
 
     void setConfirmed(bool confirmed);
 
     bool isConfirmed() const;
-    void addMessage(const std::string& message);
+
+    void addMessage(const std::string &message);
 
     void addPendingUser(long userID, std::string userName);
 
     void removePendingUser(long userID);
 
     std::map<long, std::string> getPendingUsers() const;
+
     std::vector<std::string> getMessages() const;
 
     const std::string &getName() const;

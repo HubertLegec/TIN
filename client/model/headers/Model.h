@@ -37,7 +37,7 @@ private:
     std::map<long, CategoryInfo> categories;
 
 public:
-    static constexpr const char* SERVER_DEFAULT_IP = "127.0.0.1";
+    static constexpr const char *SERVER_DEFAULT_IP = "127.0.0.1";
     static const int SERVER_DEFAULT_PORT = 8888;
     static constexpr const char *CLIENT_DEFAULT_IP = "127.0.0.1";
     static const int CLIENT_DEFAULT_PORT = 7777;
@@ -56,28 +56,33 @@ public:
     void setUserName(const std::string &userName);
 
     const std::string &getUserName() const;
+
     void setUserId(long userId);
+
     long getUserId() const;
 
     void addMessageToCategory(long categoryId, const std::string &message);
+
     std::vector<std::string> getCategoryMessages(long categoryId);
-    void updateLeftNeighbour(long categoryId, const ConnectionInfo& info);
-    void updateRightNeighbour(long categoryId, const ConnectionInfo& info);
+
+    void updateLeftNeighbour(long categoryId, const ConnectionInfo &info);
 
     const ConnectionInfo &getLeftNeighbour(long categoryId);
-
-    const ConnectionInfo &getRightNeighbour(long categoryId);
 
     void addMyCategory(long id, const std::string &name);
 
     void addJoinedCategory(long id, const std::string &name);
+
     void removeCategoryAndData(long id);
 
     std::map<long, std::string> getCategories() const;
+
     std::map<long, std::string> getMyCategories() const;
 
     std::map<long, std::string> getJoinedCategories() const;
+
     bool isCategoryActive(long categoryId) const;
+
     void setCategoryActive(long categoryId, bool active);
 
     std::map<long, std::string> getActiveCategories() const;
@@ -85,10 +90,15 @@ public:
     std::map<long, std::string> getInactiveCategories() const;
 
     void addMessageToInbox(const RingMessage &message);
+
     std::vector<RingMessage> getInboxMessages() const;
+
     void markMessageAsRead(long messageIndex);
-    void addNotification(const std::string& notification);
+
+    void addNotification(const std::string &notification);
+
     std::vector<std::string> getNotifications();
+
     void clearNotificationList();
 
     void setMyIP(const std::string &ip);
@@ -113,6 +123,11 @@ public:
 
     void removeUserAccount();
 
+    bool isSomeoneInCategory(long categoryID) const;
+
+    std::map<long, std::string> getMyNonEmptyCategories() const;
+
+    std::vector<std::string> getMyEmptyAndNonActiveCategories() const;
 };
 
 

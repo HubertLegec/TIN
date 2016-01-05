@@ -19,14 +19,6 @@ void CategoryInfo::updateLeftNeighbour(const ConnectionInfo& info) {
     leftNeighbour = info;
 }
 
-void CategoryInfo::updateRightNeighbour(const ConnectionInfo& info) {
-    rightNeighbour = info;
-}
-
-const ConnectionInfo &CategoryInfo::getRightNeighbour() const {
-    return rightNeighbour;
-}
-
 bool CategoryInfo::isOwner() const {
     return owner;
 }

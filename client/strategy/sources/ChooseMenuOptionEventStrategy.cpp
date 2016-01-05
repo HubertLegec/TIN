@@ -177,7 +177,20 @@ void ChooseMenuOptionEventStrategy::sendRingMessage() const {
             getView()->showInfo("You have no categories to send message!");
             showMainMenu();
         } else {
-            getView()->sendMessageInCategorySubMenu(getModel()->getMyCategories());
+            vector<string> inactiveAndEmpty = getModel()->getMyEmptyAndNonActiveCategories();
+            if (inactiveAndEmpty.size() > 0) {
+                stringstream ss;
+                for (auto c : inactiveAndEmpty) {
+                    ss << c << endl;
+                }
+                getView()->showInfo(ss.str());
+            }
+            map<long, string> categories = getModel()->getMyNonEmptyCategories();
+            if (categories.size() > 0) {
+                getView()->sendMessageInCategorySubMenu(categories);
+            } else {
+                getView()->showMainMenu(getModel()->getNotifications());
+            }
         }
     } else {
         createAccount();

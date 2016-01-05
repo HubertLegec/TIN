@@ -17,7 +17,7 @@
 
 using namespace std;
 
-Controller::Controller(Model* model) : model(model) {
+Controller::Controller(Model *model) : model(model) {
     initStrategyMap();
 }
 
@@ -25,13 +25,13 @@ Controller::~Controller() {
     delete networkController;
 }
 
-void Controller::setView(View* view) {
+void Controller::setView(View *view) {
     this->view = view;
 }
 
 void Controller::initStrategyMap() {
     strategyMap["NETWORK_EVENT"] = new NetworkEventStrategy(this);
-    strategyMap["CONFIRMATION_MESSAGE_EVENT"] = new ConfirmMessageEventStrategy(this);
+    strategyMap["CONFIRM_MESSAGE_EVENT"] = new ConfirmMessageEventStrategy(this);
     strategyMap["CHOOSE_MENU_OPTION_EVENT"] = new ChooseMenuOptionEventStrategy(this);
     strategyMap["CATEGORY_ACCESS_EVENT"] = new CategoryAccessEventStrategy(this);
     strategyMap["USER_ACCOUNT_EVENT"] = new UserAccountEventStrategy(this);
@@ -39,11 +39,11 @@ void Controller::initStrategyMap() {
     strategyMap["PENDING_USER_EVENT"] = new PendingUserEventStrategy(this);
 }
 
-Model* Controller::getModel() {
+Model *Controller::getModel() {
     return model;
 }
 
-View* Controller::getView() {
+View *Controller::getView() {
     return view;
 }
 
@@ -68,7 +68,7 @@ void Controller::start() {
     networkController = new NetworkController(&sendQueue, &receiveQueue, model->getMyPort());
     state = MAIN_MENU;
     view->showMainMenu(model->getNotifications());
-    while(running){
+    while (running) {
         std::shared_ptr<BasicEvent> event = eventsToServe.pop();
         LOG(INFO) << "EVENT: " << event.get()->toString();
         try {
@@ -116,14 +116,13 @@ void *Controller::threadStartHelper(void *param) {
     c->moveThreadWork();
 }
 
-void Controller::incrementServerResponseNo()
-{
+void Controller::incrementServerResponseNo() {
     pthread_mutex_lock(&serverResponseMutex);
     serverResponseNo++;
     pthread_mutex_unlock(&serverResponseMutex);
 }
-long Controller::getServerResponseNo()
-{
+
+long Controller::getServerResponseNo() {
     long returnVal;
     pthread_mutex_lock(&serverResponseMutex);
     returnVal = serverResponseNo;
@@ -131,15 +130,13 @@ long Controller::getServerResponseNo()
     return returnVal;
 }
 
-void * Controller::timeoutThread(void *param)
-{
-    std::pair<Controller*,long> * arg =  (std::pair<Controller*,long> *) param;
-    Controller* c = arg->first;
+void *Controller::timeoutThread(void *param) {
+    std::pair<Controller *, long> *arg = (std::pair<Controller *, long> *) param;
+    Controller *c = arg->first;
     long responseNo = arg->second;
 
     usleep(2000000);
-    if(responseNo == c->getServerResponseNo())
-    {
+    if (responseNo == c->getServerResponseNo()) {
         c->getView()->showInfo("Timeout, failed to receive response from server.");
         c->getView()->showMainMenu(c->model->getNotifications());
     }
@@ -147,9 +144,8 @@ void * Controller::timeoutThread(void *param)
     delete arg;
 }
 
-void Controller::createTimeoutThread()
-{
+void Controller::createTimeoutThread() {
     pthread_t t;
-    std::pair<Controller*,long> * arg = new std::pair<Controller*,long>(this,getServerResponseNo());
-    pthread_create(&t,nullptr,timeoutThread,arg);
+    std::pair<Controller *, long> *arg = new std::pair<Controller *, long>(this, getServerResponseNo());
+    pthread_create(&t, nullptr, timeoutThread, arg);
 }

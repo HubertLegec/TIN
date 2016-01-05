@@ -17,6 +17,7 @@
 #include "../../../networkModule/headers/MessageWrapper.h"
 
 class BasicEventStrategy;
+
 class View;
 
 class Controller {
@@ -27,8 +28,8 @@ public:
         CATEGORY_LIST = 2,
     };
 private:
-    Model* model;
-    View* view;
+    Model *model;
+    View *view;
     NetworkController *networkController;
 
     Queue<std::shared_ptr<BasicEvent>> eventsToServe;
@@ -40,26 +41,35 @@ private:
     State state;
     bool running = true;
 
-    pthread_mutex_t	serverResponseMutex	= PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_t serverResponseMutex = PTHREAD_MUTEX_INITIALIZER;
     long serverResponseNo = 0;
 
-    void* controllerWork();
+    void *controllerWork();
 
     static void *threadStartHelper(void *param);
+
     static void *timeoutThread(void *param);
 
     void moveThreadWork();
+
     long getServerResponseNo();
+
 public:
-    Controller(Model* model);
+    Controller(Model *model);
 
     ~Controller();
-    void setView(View* view);
+
+    void setView(View *view);
+
     void initStrategyMap();
+
     void start();
+
     void exit();
-    Model* getModel();
-    View* getView();
+
+    Model *getModel();
+
+    View *getView();
 
     State getState() const;
 
@@ -70,9 +80,10 @@ public:
     Queue<std::shared_ptr<MessageWrapper>> *getSendQueue();
 
     void createTimeoutThread();
-    void sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port);
-    void incrementServerResponseNo();
 
+    void sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port);
+
+    void incrementServerResponseNo();
 
 };
 

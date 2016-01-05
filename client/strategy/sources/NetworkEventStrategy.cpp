@@ -148,9 +148,6 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
     getModel()->updateLeftNeighbour(msg.getCategoryId(),
                                     ConnectionInfo(msg.getLeftNeighbourIP(), msg.getLeftNeighbourPort(),
                                                    msg.getLeftNeighbourName()));
-    getModel()->updateRightNeighbour(msg.getCategoryId(),
-                                     ConnectionInfo(msg.getRightNeighbourIP(), msg.getRightNeighbourPort(),
-                                                    msg.getRightNeighbourName()));
     stringstream ss;
     ss << "Neighbours updated: \n";
     ss << "Left neighbour: " << msg.getLeftNeighbourName() << endl;
@@ -161,7 +158,7 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
 void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processRingMessage:\n" << message.toString();
     RingMessage& msg = dynamic_cast<RingMessage&>(message);
-    if (getModel()->isMyCategory(msg.getCategoryId())) {
+    if (!getModel()->isMyCategory(msg.getCategoryId())) {
         getModel()->addMessageToInbox(msg);
         getModel()->addNotification("You have a new message!\nCheck your inbox.");
     } else {
