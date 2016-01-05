@@ -46,9 +46,7 @@ void NetworkController::createSendThread() {
             LOG(INFO) << "[SND] I get exit message. Closing sending thread";
             SimpleMessage *exitMessage = new SimpleMessage(MessageType::EXIT, -1);
             std::shared_ptr<SimpleMessage> exitMsg = std::shared_ptr<SimpleMessage>(exitMessage);
-            MessageWrapper *wrapper = new MessageWrapper(exitMsg, "", -1);
-            std::shared_ptr<MessageWrapper> p1(wrapper);
-            receiveQueue->push(p1);
+            receiveQueue->push(exitMsg);
             break;
         }
         if (!prepareConncetionWithReceiver(msg))
