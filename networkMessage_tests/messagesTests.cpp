@@ -13,6 +13,7 @@
 #include "../networkMessage/headers/CategoryManagementMessage.h"
 #include "../networkMessage/headers/NeighboursInfoMessage.h"
 #include "../networkMessage/headers/RingMessage.h"
+#include "../networkMessage/headers/UserManagementMessage.h"
 
 TEST(CategoryListMessage, creating_test){
     std::map<long, std::string> names;
@@ -139,5 +140,15 @@ TEST(RingMessage, creating_test){
     EXPECT_TRUE(msg2.getConfirmationsList()[0] == "Ann");
     EXPECT_TRUE(msg2.getConfirmationsList()[1] == "Tom");
     EXPECT_TRUE(msg2.getConfirmationsList()[2] == "Kate");
+}
 
+TEST(UserManagementMessage, creating_test) {
+    UserManagementMessage msg(MessageType::CREATE_USER_ACCOUNT, "127.0.0.1", 3333, "Tom");
+
+    ASSERT_EQ(-1, msg.getSenderID());
+    ASSERT_EQ(MessageType::CREATE_USER_ACCOUNT, msg.getMessageType());
+    ASSERT_EQ(48, msg.getMessageSize());
+    EXPECT_EQ(3333, msg.getPort());
+    EXPECT_TRUE(msg.getUserName() == "Tom");
+    EXPECT_TRUE(msg.getIp() == "127.0.0.1");
 }

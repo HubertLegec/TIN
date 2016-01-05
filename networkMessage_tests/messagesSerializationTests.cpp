@@ -13,6 +13,7 @@
 #include "../networkMessage/headers/CategoryManagementMessage.h"
 #include "../networkMessage/headers/NeighboursInfoMessage.h"
 #include "../networkMessage/headers/RingMessage.h"
+#include "../networkMessage/headers/UserManagementMessage.h"
 
 void print(int length, const char *string) {
     for (int i = 0; i < length; ++i)
@@ -268,4 +269,27 @@ TEST(RingMessage, serialization_test) {
     EXPECT_EQ(msg.getCategoryId(), testMsg.getCategoryId());
     EXPECT_EQ(msg.getConfirmationsList().size(), testMsg.getConfirmationsList().size());
     EXPECT_TRUE(msg.getConfirmationsList()[0] == testMsg.getConfirmationsList()[0]);
+}
+
+TEST(UserManagementMessage, serialization_test) {
+    UserManagementMessage msg(MessageType::CREATE_USER_ACCOUNT, "127.0.0.1", 3333, "Tom Hanks");
+
+    std::stringstream ss; // any stream can be used
+    {
+        cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
+        oarchive(msg); // Write the data to the archive
+    }
+
+    UserManagementMessage testMsg;
+    {
+        cereal::BinaryInputArchive iarchive(ss); // Create an input archive
+        iarchive(testMsg); // Read the data from the archive
+    }
+
+    ASSERT_EQ(msg.getMessageSize(), testMsg.getMessageSize());
+    ASSERT_EQ(msg.getMessageType(), testMsg.getMessageType());
+    ASSERT_EQ(msg.getSenderID(), testMsg.getSenderID());
+    EXPECT_EQ(msg.getPort(), testMsg.getPort());
+    EXPECT_TRUE(msg.getIp() == testMsg.getIp());
+    EXPECT_TRUE(msg.getUserName() == testMsg.getUserName());
 }
