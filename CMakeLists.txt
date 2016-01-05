@@ -119,9 +119,11 @@ add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp
         client/model/sources/Model.cpp
         client/model/sources/CategoryInfo.cpp
         client/model/sources/ConnectionInfo.cpp
+        client/model/sources/PendingUserInfo.cpp
         networkMessage/sources/RingMessage.cpp
         networkMessage/sources/SimpleMessage.cpp
-        )
+        cereal/archives/binary.hpp)
+
 target_link_libraries(CLIENT_BASIC_TESTS gtest_main)
 add_test(NAME clientBasicTest COMMAND clientBasicTest)
 

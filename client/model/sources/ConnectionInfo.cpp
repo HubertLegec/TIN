@@ -18,7 +18,7 @@ ConnectionInfo::ConnectionInfo(const ConnectionInfo &other) {
     this->name = other.name;
 }
 
-ConnectionInfo& ConnectionInfo::operator=(const ConnectionInfo &other) {
+ConnectionInfo &ConnectionInfo::operator=(const ConnectionInfo &other) {
     this->ip = other.ip;
     this->port = other.port;
     this->name = other.name;

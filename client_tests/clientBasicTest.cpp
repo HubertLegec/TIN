@@ -4,6 +4,9 @@
 
 #include "gtest/gtest.h"
 #include "../client/model/headers/Model.h"
+#include "../logger/easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 TEST(ModelTest, model_server_info){
     Model model;
@@ -26,27 +29,25 @@ TEST(ModelTest, model_category_manipulations){
 
     ConnectionInfo neighbour("127.0.0.0",1111,"Damian");
     model.updateLeftNeighbour(1, neighbour);
-    model.updateRightNeighbour(1, neighbour);
 
     ASSERT_EQ(model.getLeftNeighbour(1).getName(),neighbour.getName());
     ASSERT_EQ(model.getLeftNeighbour(1).getPort(),neighbour.getPort());
     ASSERT_EQ(model.getLeftNeighbour(1).getIP(),neighbour.getIP());
-    ASSERT_EQ(model.getRightNeighbour(1).getName(),neighbour.getName());
-    ASSERT_EQ(model.getRightNeighbour(1).getPort(),neighbour.getPort());
-    ASSERT_EQ(model.getRightNeighbour(1).getIP(),neighbour.getIP());
 
     model.addMyCategory(2,"mCategory");
     ASSERT_EQ(model.getCategories().size(),2);
     ASSERT_EQ(model.getMyCategories().size(),1);
     ASSERT_EQ(model.getMyCategories()[2],"mCategory");
-    ASSERT_EQ(model.getJoinedCategories().size(),1);
+    ASSERT_EQ(0, model.getJoinedCategories().size());
+    ASSERT_EQ(false, model.isCategoryActive(1));
+    model.confirmCategory(1);
+    ASSERT_EQ(1, model.getJoinedCategories().size());
+    ASSERT_EQ(true, model.isCategoryActive(1));
     ASSERT_EQ(model.getJoinedCategories()[1],"jCategory");
 
-    model.setCategoryActive(1,true);
-    ASSERT_EQ(model.isCategoryActive(1),true);
-    ASSERT_EQ(model.isCategoryActive(2),false);
-    ASSERT_EQ(model.getActiveCategories().size(),1);
-    ASSERT_EQ(model.getInactiveCategories().size(),1);
+    ASSERT_EQ(true, model.isCategoryActive(2));
+    ASSERT_EQ(2, model.getActiveCategories().size());
+    ASSERT_EQ(0, model.getInactiveCategories().size());
     ASSERT_EQ(model.getActiveCategories()[1],"jCategory");
 
     model.removeCategoryAndData(2);
@@ -74,13 +75,13 @@ TEST(ModelTest, user_data){
 
 TEST(ModelTest, model_inbox){
     Model model;
-
-    ASSERT_EQ(model.getInboxMessages().size(),0);
+    model.addMyCategory(2, "myCategory");
+    ASSERT_EQ(0, model.getInboxMessages().size());
     RingMessage msg(1,2,"hello");
     model.addMessageToInbox(msg);
-    ASSERT_EQ(model.getInboxMessages().size(),1);
+    ASSERT_EQ(1, model.getInboxMessages().size());
     model.markMessageAsRead(0);
-    ASSERT_EQ(model.getInboxMessages().size(),0);
+    ASSERT_EQ(0, model.getInboxMessages().size());
     ASSERT_EQ(*model.getCategoryMessages(2).begin(),"hello");
 }
 

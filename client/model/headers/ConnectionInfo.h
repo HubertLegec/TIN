@@ -16,8 +16,10 @@ public:
     ConnectionInfo();
 
     ConnectionInfo(const std::string &ip, int port, const std::string &name);
-    ConnectionInfo(const ConnectionInfo& other);
-    ConnectionInfo& operator=(const ConnectionInfo& other);
+
+    ConnectionInfo(const ConnectionInfo &other);
+
+    ConnectionInfo &operator=(const ConnectionInfo &other);
 
     const std::string &getIP() const;
 
@@ -26,7 +28,9 @@ public:
     const std::string &getName() const;
 
     void setName(const std::string &name);
+
     int getPort() const;
+
     void setPort(int port);
 };
 
