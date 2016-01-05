@@ -7,11 +7,15 @@
 
 #include "BasicEvent.h"
 
+/**
+ * This class is used to transfer all the events connected with choosing menu options
+ */
 class ChooseMenuOptionEvent : public BasicEvent {
 
 public:
     enum OptionChosen {
         CREATE_USER_ACCOUNT = 'a',
+        REMOVE_USER_ACCOUNT = 'r',
         CREATE_CATEGORY = 'c',
         DELETE_CATEGORY = 'd',
         SHOW_CATEGORY_LIST = 's',
@@ -27,6 +31,7 @@ public:
     };
 
     ChooseMenuOptionEvent(const OptionChosen option);
+
     OptionChosen getOptionChosen();
 
     virtual std::string toString() const;
@@ -36,6 +41,5 @@ public:
 private:
     OptionChosen optionChosen;
 };
-
 
 #endif //RING_CHOOSEMENUOPTIONEVENT_H

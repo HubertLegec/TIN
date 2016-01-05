@@ -8,6 +8,9 @@
 #include "BasicEvent.h"
 
 
+/**
+ * This class is used to transfer events generated when category owner sends new message
+ */
 class NewMessageEvent : public BasicEvent {
 private:
     long categoryID;
@@ -23,6 +26,5 @@ public:
 
     virtual std::string getName() const;
 };
-
 
 #endif //RING_NEWMESSAGEEVENT_H

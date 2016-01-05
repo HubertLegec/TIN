@@ -7,6 +7,9 @@
 
 #include "BasicEvent.h"
 
+/**
+ * This class is used to transfer events generated when category owner confirms or rejects request of admission to the category
+ */
 class PendingUserEvent : public BasicEvent {
 public:
     enum Action {

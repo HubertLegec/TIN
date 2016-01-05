@@ -7,22 +7,26 @@
 
 #include "BasicEvent.h"
 
-
+/**
+ * This class is used to transfer all the events connected with confirming messages(marking them as read)
+ */
 class ConfirmMessageEvent : public BasicEvent {
 private:
-    //index of message in inbox
+    //current index of message in inbox
     long messageIndex;
 
 public:
     ConfirmMessageEvent();
+
     ConfirmMessageEvent(long messageIndex);
+
     long getMessageIndex() const;
+
     void setMessageIndex(long messageIndex);
 
     virtual std::string toString() const;
 
     virtual std::string getName() const;
 };
-
 
 #endif //RING_CONFIRMMESSAGEEVENT_H

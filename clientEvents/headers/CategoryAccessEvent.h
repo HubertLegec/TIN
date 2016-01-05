@@ -3,6 +3,10 @@
 
 #include "BasicEvent.h"
 
+/**
+ * This class is used to transfer all events connected with category management
+ * Setting proper access type, we can create, delete, sign up, sign out, join and leave category
+ */
 class CategoryAccessEvent : public BasicEvent {
 
 public:
@@ -21,7 +25,7 @@ public:
 
     AccessType getType();
 
-    const std::string &getCategoryName() const;
+    const std::string &getCategoryName() const
 
     long getCategoryID() const;
 
@@ -31,10 +35,8 @@ public:
 
 private:
     AccessType type;
-
     std::string categoryName;
     long categoryId;
 };
-
 
 #endif //RING_CATEGORYACCESSEVENT_H

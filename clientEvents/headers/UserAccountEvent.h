@@ -8,7 +8,9 @@
 #include <string>
 #include "BasicEvent.h"
 
-
+/**
+ * This class is used to transfer events generated when user account is created or removed
+ */
 class UserAccountEvent : public BasicEvent {
 public:
     enum Type {

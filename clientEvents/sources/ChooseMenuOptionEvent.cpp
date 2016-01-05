@@ -9,8 +9,7 @@ using namespace std;
 
 ChooseMenuOptionEvent::ChooseMenuOptionEvent(const OptionChosen option) : BasicEvent(), optionChosen(option) { }
 
-ChooseMenuOptionEvent::OptionChosen ChooseMenuOptionEvent::getOptionChosen()
-{
+ChooseMenuOptionEvent::OptionChosen ChooseMenuOptionEvent::getOptionChosen() {
     return optionChosen;
 }
 
