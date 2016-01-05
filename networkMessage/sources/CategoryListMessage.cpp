@@ -12,9 +12,9 @@ CategoryListMessage::CategoryListMessage() : SimpleMessage() {
 }
 
 CategoryListMessage::CategoryListMessage(long senderID, const map<long, string> &categories)
-                                        : SimpleMessage(MessageType::CATEGORY_LIST, senderID), categories(categories) {
+        : SimpleMessage(MessageType::CATEGORY_LIST, senderID), categories(categories) {
 
-    this->size = SimpleMessage::getMessageSize() + sizeof(long) + categories.size()*sizeof(long);
+    this->size = SimpleMessage::getMessageSize() + sizeof(long) + categories.size() * sizeof(long);
     for (pair<long, string> p : categories) {
         size += (sizeof(long) + p.second.size());
     }
@@ -24,7 +24,7 @@ map<long, string> CategoryListMessage::getCategories() const {
     return categories;
 }
 
-void CategoryListMessage::addCategory(long categoryID, string categoryName) {
+void CategoryListMessage::addCategory(long categoryID, const string &categoryName) {
     categories.insert(pair<long, string>(categoryID, categoryName));
     size += (sizeof(long) + categoryName.size());
 }
@@ -44,10 +44,6 @@ string CategoryListMessage::toString() const {
             ss << "id:" << p.first << ", name:" << p.second;
         }
     }
-
     ss << "}]";
-
     return ss.str();
 }
-
-

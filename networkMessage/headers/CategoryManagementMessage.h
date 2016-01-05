@@ -13,7 +13,7 @@
 /*
  * One class used to create and destroy categories
  * Moreover thanks to it we can sign up, sign out, join and left categories
- *
+ * Client use this class to send message when user accept or reject another user request to join to category
  */
 class CategoryManagementMessage : public SimpleMessage {
 private:
@@ -35,14 +35,17 @@ public:
     CategoryManagementMessage(long senderID, MessageType type, long categoryID, long extraInfo);
 
     const std::string &getCategoryName() const;
+
     long getCategoryID() const;
 
     void setExtraInfo(long extraInfo);
+
     long getExtraInfo() const;
 
     virtual std::string toString() const;
+
     template<class Archive>
-    void serialize(Archive & archive){
+    void serialize(Archive &archive) {
         archive(this->type, this->size, this->senderID, this->categoryID, this->categoryName, this->extraInfo);
     }
 };

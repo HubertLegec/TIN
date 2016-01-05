@@ -6,19 +6,17 @@ UserManagementMessage::UserManagementMessage() : SimpleMessage() {
     this->size = SimpleMessage::getMessageSize() + sizeof(int) + 2 * sizeof(long);
 };
 
-UserManagementMessage::UserManagementMessage(MessageType type, string ip, int port, string login) : SimpleMessage(type,
-                                                                                                                  UNDEFINED_ID) {
+UserManagementMessage::UserManagementMessage(MessageType type, const string &ip, int port, const string &login)
+        : SimpleMessage(type,
+                        UNDEFINED_ID) {
     this->ip = ip;
     this->port = port;
     this->userName = login;
-
     this->size = SimpleMessage::getMessageSize() + sizeof(int) + 2 * sizeof(long) + userName.size() + ip.size();
-
 }
 
 UserManagementMessage::UserManagementMessage(long senderID, MessageType type) : SimpleMessage(type, senderID) {
     this->size = SimpleMessage::getMessageSize() + sizeof(int) + 2 * sizeof(long) + userName.size() + ip.size();
-
 }
 
 int UserManagementMessage::getPort() const {

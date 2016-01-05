@@ -30,22 +30,34 @@ protected:
      */
     int size;
 
+    /**
+     * cereal needs it to serialize object
+     */
     friend class cereal::access;
+
 public:
     static const long UNDEFINED_ID = -1;
+
     SimpleMessage();
+
     SimpleMessage(MessageType type, long senderID);
-    SimpleMessage& operator=(const SimpleMessage& other);
+
+    SimpleMessage &operator=(const SimpleMessage &other);
 
     void setType(MessageType type);
+
     MessageType getMessageType() const;
+
     void setSenderID(long id);
+
     long getSenderID() const;
+
     int getMessageSize() const;
 
     virtual std::string toString() const;
+
     template<class Archive>
-    void serialize(Archive & archive){
+    void serialize(Archive &archive) {
         archive(this->type, this->size, this->senderID);
     }
 };

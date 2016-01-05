@@ -11,14 +11,14 @@ NetworkControllerErrorMessage::NetworkControllerErrorMessage()
     this->size = SimpleMessage::getMessageSize() + sizeof(ErrorCode) + sizeof(long);
 }
 
-NetworkControllerErrorMessage::NetworkControllerErrorMessage(ErrorCode code, const std::string &info)
+NetworkControllerErrorMessage::NetworkControllerErrorMessage(ErrorCode code, const string &info)
         : SimpleMessage(MessageType::NETWORK_CONTROLLER_ERROR_MESSAGE, SimpleMessage::UNDEFINED_ID) {
     this->size = SimpleMessage::getMessageSize() + sizeof(ErrorCode) + sizeof(long) + info.size();
     this->info = info;
     this->code = code;
 }
 
-void NetworkControllerErrorMessage::setInfo(const std::string &info) {
+void NetworkControllerErrorMessage::setInfo(const string &info) {
     this->size -= this->info.size();
     this->info = info;
     this->size += info.size();

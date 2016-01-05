@@ -8,7 +8,9 @@
 #include "SimpleMessage.h"
 #include "../../cereal/archives/binary.hpp"
 
-
+/**
+ * This class is used by client to send to server some request
+ */
 class GetMessage : public SimpleMessage {
 private:
     /*
@@ -20,11 +22,13 @@ public:
     static const long UNDEFINED_ID = -1;
 
     GetMessage();
+
     GetMessage(long senderID, GetMessageType request);
 
     GetMessage(long senderID, GetMessageType request, long categoryID);
 
     GetMessageType getRequestType() const;
+
     void setRequestType(GetMessageType requestType);
 
     long getCategoryID() const;
@@ -32,8 +36,9 @@ public:
     void setCategoryID(long categoryID);
 
     virtual std::string toString() const;
+
     template<class Archive>
-    void serialize(Archive & archive){
+    void serialize(Archive &archive) {
         archive(this->type, this->size, this->senderID, this->requestType, this->categoryID);
     }
 };

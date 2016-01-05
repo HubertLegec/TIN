@@ -12,7 +12,7 @@ CategoryManagementMessage::CategoryManagementMessage() : SimpleMessage() {
 }
 
 CategoryManagementMessage::CategoryManagementMessage(long senderID, MessageType type, long categoryID)
-                                                    : SimpleMessage(type, senderID){
+        : SimpleMessage(type, senderID) {
     this->categoryID = categoryID;
     this->extraInfo = UNDEFINED_ID;
     this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long);

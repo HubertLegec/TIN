@@ -13,7 +13,7 @@ NeighboursInfoMessage::NeighboursInfoMessage() : SimpleMessage() {
 NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const string &lNeighName, const string &lNeighIP,
                                              int lNeighPort,
                                              const string &rNeighName, const string &rNeighIP, int rNeighPort)
-                                            : SimpleMessage(MessageType::NEIGHBOURS_SET, 0){
+        : SimpleMessage(MessageType::NEIGHBOURS_SET, 0) {
     this->categoryId = categoryId;
     this->lNeighbourName = lNeighName;
     this->lNeighbourIP = lNeighIP;
@@ -21,8 +21,7 @@ NeighboursInfoMessage::NeighboursInfoMessage(long categoryId, const string &lNei
     this->rNeighbourName = rNeighName;
     this->rNeighbourIP = rNeighIP;
     this->rNeighbourPort = rNeighPort;
-
-    this->size = SimpleMessage::getMessageSize() + 2*sizeof(int) + 5*sizeof(long)
+    this->size = SimpleMessage::getMessageSize() + 2 * sizeof(int) + 5 * sizeof(long)
                  + lNeighName.size() + rNeighName.size() + lNeighIP.size() + rNeighIP.size();
 }
 

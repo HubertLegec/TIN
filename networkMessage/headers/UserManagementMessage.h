@@ -9,6 +9,9 @@
 #include "../../cereal/types/string.hpp"
 #include "SimpleMessage.h"
 
+/**
+ * This class is used by client to transfer information about new user account, removed account or client app closing
+ */
 class UserManagementMessage : public SimpleMessage {
 private:
     int port;
@@ -22,7 +25,7 @@ public:
     UserManagementMessage();
 
     // To sign up user
-    UserManagementMessage(MessageType type, std::string ip, int port, std::string login);
+    UserManagementMessage(MessageType type, const std::string &ip, int port, const std::string &login);
 
     // To delete user
     UserManagementMessage(long senderID, MessageType type);

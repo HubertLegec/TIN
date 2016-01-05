@@ -15,15 +15,14 @@ RingMessage::RingMessage(long senderID, long categoryId, const string &text) : S
                                                                                              senderID) {
     this->messageText = text;
     this->categoryId = categoryId;
-
-    this->size = SimpleMessage::getMessageSize() + 3*sizeof(long) + text.size();
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long) + text.size();
 }
 
 RingMessage::RingMessage(long senderID, long categoryId, const string &text, const vector<string> &confirmations)
-                        : SimpleMessage(MessageType::RING_MESSAGE, senderID), confirmations(confirmations){
+        : SimpleMessage(MessageType::RING_MESSAGE, senderID), confirmations(confirmations) {
     this->messageText = text;
     this->categoryId = categoryId;
-    this->size = SimpleMessage::getMessageSize() + 3*sizeof(long) + text.size();
+    this->size = SimpleMessage::getMessageSize() + 3 * sizeof(long) + text.size();
     for (string s : confirmations) {
         size += (sizeof(long) + s.size());
     }
@@ -35,7 +34,7 @@ RingMessage::RingMessage(const RingMessage &other) : SimpleMessage(other) {
     this->confirmations = other.confirmations;
 }
 
-RingMessage& RingMessage::operator=(const RingMessage &other){
+RingMessage &RingMessage::operator=(const RingMessage &other) {
     SimpleMessage::operator=(other);
     this->messageText = other.messageText;
     this->categoryId = other.categoryId;
@@ -81,8 +80,6 @@ string RingMessage::toString() const {
             ss << confirmations[i];
         }
     }
-
     ss << "}]";
     return ss.str();
 }
-

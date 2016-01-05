@@ -7,6 +7,10 @@
 
 #include "SimpleMessage.h"
 
+/**
+ * This class isn't serialized and send via sockets
+ * Network controller uses it to inform client or server about some troubles
+ */
 class NetworkControllerErrorMessage : public SimpleMessage {
 
 public:
@@ -29,6 +33,7 @@ public:
     void setInfo(const std::string &info);
 
     virtual std::string toString() const;
+
 private:
     ErrorCode code;
     std::string info;
