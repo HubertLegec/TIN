@@ -166,6 +166,7 @@ add_executable(NETWORK_BASIC_TESTS networkModule_tests/networkBasicTest.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/ServerInfoMessage.cpp
+        networkMessage/sources/NetworkControllerErrorMessage.cpp
         networkModule/sources/NetworkController.cpp)
 target_link_libraries(NETWORK_BASIC_TESTS gtest_main)
 add_test(NAME networkBasicTest COMMAND networkBasicTest)

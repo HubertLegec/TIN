@@ -32,7 +32,9 @@ enum MessageType{
     NETWORK_CONTROLLER_ERROR_MESSAGE = 15,
     //CategoryManagementMessage
     NEW_MEMBER_CONFIRM = 16,
-    NEW_MEMBER_REJECT = 17
+    NEW_MEMBER_REJECT = 17,
+    //this type isn`t sent via the Net, It use to close threads in network controller and close app.
+    EXIT = 18
 };
 
 enum GetMessageType{
