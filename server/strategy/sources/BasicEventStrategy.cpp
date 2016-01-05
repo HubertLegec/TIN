@@ -14,7 +14,7 @@ void BasicEventStrategy::sendMessage(long userID, ServerInfoMessageType infoMess
     sendMessage(userID, -1, infoMessageType, "");
 }
 
-void BasicEventStrategy::sendMessage(long userID, ServerInfoMessageType infoMessageType, const string& info) const {
+void BasicEventStrategy::sendMessage(long userID, ServerInfoMessageType infoMessageType, const string &info) const {
     sendMessage(userID, -1, infoMessageType, info);
 }
 
@@ -58,7 +58,10 @@ void BasicEventStrategy::sendNeighbours(long categoryID, shared_ptr<CategoryMemb
 void BasicEventStrategy::sendNeighbours(long categoryID, long memberID) const {
     auto category = controller->getModel()->getCategory(categoryID);
     auto member = category->findMember(memberID);
-    sendNeighbours(categoryID, member);
+    if (member)
+        sendNeighbours(categoryID, member);
+    else
+        throw out_of_range("Couldn't find member " + memberID);
 }
 
 

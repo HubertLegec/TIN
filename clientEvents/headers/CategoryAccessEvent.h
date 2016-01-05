@@ -25,7 +25,7 @@ public:
 
     AccessType getType();
 
-    const std::string &getCategoryName() const
+    const std::string &getCategoryName() const;
 
     long getCategoryID() const;
 

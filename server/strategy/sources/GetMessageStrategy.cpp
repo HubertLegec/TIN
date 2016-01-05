@@ -2,7 +2,6 @@
 #include "../headers/GetMessageStrategy.h"
 #include "../../../networkMessage/headers/GetMessage.h"
 #include "../../controller/headers/Controller.h"
-#include "../../../networkMessage/headers/NeighboursInfoMessage.h"
 #include "../../../logger/easylogging++.h"
 
 using namespace std;
@@ -31,8 +30,13 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
         case GetMessageType::NEIGHBOURS: {
             long categoryID = getMessage->getCategoryID();
 
-            sendNeighbours(categoryID, senderID);
-            LOG(INFO) << "Sent neighbours set to user " << senderID;
+            try {
+                sendNeighbours(categoryID, senderID);
+                LOG(INFO) << "Sent neighbours set to user " << senderID;
+            } catch (out_of_range &e) {
+                LOG(INFO) << "Couldn't get member's neighbours " << senderID << " in cateogry " << categoryID;
+                sendMessage(senderID, FAIL, "Couldn't get neighbours");
+            }
         }
             break;
 
