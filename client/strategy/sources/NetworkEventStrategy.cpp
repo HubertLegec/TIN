@@ -39,8 +39,9 @@ void NetworkEventStrategy::serveEvent(BasicEvent *event) {
         case MessageType::NETWORK_CONTROLLER_ERROR_MESSAGE:
             processErrorMessage(*msg);
             break;
-        case MessageType::CLIENT_CLOSE_APP :
-            //nothing to do, app will be closed
+        case MessageType::EXIT :
+            //app will be closed
+            controller->setRunning(false);
             break;
     }
 }
@@ -172,8 +173,23 @@ void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
 void NetworkEventStrategy::processErrorMessage(SimpleMessage &message) const {
     LOG(INFO) << "NetworkEventStrategy::processRingMessage:\n" << message.toString();
     NetworkControllerErrorMessage &msg = dynamic_cast<NetworkControllerErrorMessage &>(message);
-    getModel()->addNotification(msg.getInfo());
-    showMainMenu();
+    switch (msg.getErrorCode()) {
+        case NetworkControllerErrorMessage::UNABLE_TO_CREATE_LISTENING_SOCKET:
+            getModel()->addNotification("ERROR!\nCan't create connection! You should try to use another settings.");
+            break;
+        case NetworkControllerErrorMessage::UNABLE_TO_SEND_MSG:
+            getModel()->addNotification("ERROR!\nCan't send message!");
+            break;
+        case NetworkControllerErrorMessage::UNABLE_TO_RESERIALIZE_MSG:
+            getModel()->addNotification("ERROR!\nCan't read received message!");
+            break;
+        case NetworkControllerErrorMessage::UNABLE_TO_SERIALIZE_MSG:
+            getModel()->addNotification("ERROR!\nProblem with sending message occured!");
+            break;
+        case NetworkControllerErrorMessage::UNDEFINED:
+            getModel()->addNotification("ERROR!\nUndefined problem with connection occured!");
+            break;
+    }
 }
 
 std::map<long, std::string> NetworkEventStrategy::filterCategories(

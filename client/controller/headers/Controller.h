@@ -67,6 +67,8 @@ public:
 
     void exit();
 
+    void setRunning(bool running);
+
     Model *getModel();
 
     View *getView();

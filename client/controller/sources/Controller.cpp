@@ -80,6 +80,7 @@ void Controller::start() {
             LOG(ERROR) << "Exception log: " << e.what();
         }
     }
+    LOG(INFO) << "Controller main loop closed";
 }
 
 void Controller::exit() {
@@ -91,9 +92,7 @@ void Controller::exit() {
         sendQueue.push(shared_ptr<MessageWrapper>(
                 new MessageWrapper(msg, model->getServerInfo().getIP(), model->getServerInfo().getPort())));
     }
-    receiveQueue.push(shared_ptr<SimpleMessage>(new SimpleMessage(MessageType::CLIENT_CLOSE_APP, model->getUserId())));
     networkController->stop();
-    running = false;
 }
 
 void Controller::sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip, int port) {
@@ -108,7 +107,11 @@ void Controller::moveThreadWork() {
         msg = receiveQueue.pop();
         shared_ptr<NetworkEvent> event(new NetworkEvent(msg));
         eventsToServe.push(event);
+        if (msg.get()->getMessageType() == MessageType::EXIT) {
+            running = false;
+        }
     }
+    LOG(INFO) << "Controller::moveThreadWork() closed";
 }
 
 void *Controller::threadStartHelper(void *param) {
@@ -148,4 +151,8 @@ void Controller::createTimeoutThread() {
     pthread_t t;
     std::pair<Controller *, long> *arg = new std::pair<Controller *, long>(this, getServerResponseNo());
     pthread_create(&t, nullptr, timeoutThread, arg);
+}
+
+void Controller::setRunning(bool running) {
+    this->running = running;
 }
