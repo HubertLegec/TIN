@@ -16,6 +16,8 @@
 #include "../../utils/Queue.hpp"
 #include "MessageWrapper.h"
 #include <unistd.h>
+#include <mutex>
+#include <condition_variable>
 
 
 class NetworkController {
@@ -32,6 +34,8 @@ private:
     const char *myIP;
     const char *myPort;
     NetworkController *pointer;
+    std::mutex mutex_;
+    bool exitFlag;
 
     void prepareReceiveThread();
 
@@ -72,6 +76,7 @@ public:
             : sendQueue(sendQueue),
               receiveQueue(receiveQueue),
               sendSockfd(0), receiveSockfd(0) {
+        exitFlag = false;
         std::string s = std::to_string(port);
         myPort = s.c_str();
         pointer = this;

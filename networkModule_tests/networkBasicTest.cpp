@@ -31,7 +31,7 @@ TEST(Queue, creating_test) {
     sQueue.push(p1);
     Queue<std::shared_ptr<SimpleMessage>> rQueue1;
     NetworkController(&sQueue1, &rQueue1, 3499);
-    NetworkController(&sQueue, &rQueue1, 3498);
+//    NetworkController(&sQueue, &rQueue1, 3498);
     sleep(9);
     NetworkController(&sQueue, &rQueue, 3491);
     sleep(3);

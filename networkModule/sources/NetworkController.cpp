@@ -42,12 +42,25 @@ void NetworkController::createSendThread() {
     while (true) {
         std::shared_ptr<MessageWrapper> msg = sendQueue->pop();
         LOG(INFO) << "[SND] I get msg to send: " << msg->getMessage()->toString();
+        if (msg->getMessage()->getMessageType() == MessageType::EXIT) {
+            LOG(INFO) << "[SND] I get exit message. Closing sending thread";
+            SimpleMessage *exitMessage = new SimpleMessage(MessageType::EXIT, -1);
+            std::shared_ptr<SimpleMessage> exitMsg = std::shared_ptr<SimpleMessage>(exitMessage);
+            MessageWrapper *wrapper = new MessageWrapper(exitMsg, "", -1);
+            std::shared_ptr<MessageWrapper> p1(wrapper);
+            receiveQueue->push(p1);
+            break;
+        }
         if (!prepareConncetionWithReceiver(msg))
             continue;
         if (!sendMsg(msg->getMessage())) {
             LOG(ERROR) << "[SND] Couldnt send msg";
-            break;
+            continue;
         }
+        std::unique_lock<std::mutex> mlock(mutex_);
+        if (exitFlag == true)
+            break;
+        mlock.unlock();
     }
     pthread_exit(NULL);
 }
@@ -77,10 +90,10 @@ bool NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWra
         return false;
     }
     if (bind(sendSockfd, (struct sockaddr *) &client, sizeof(client)) == -1) {
-        LOG(ERROR) << "[SND] Unable to create connection with receiver";
-        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_SEND_MSG,
-                                           "I couldn't create connection with receiver msg."));
-        return false;
+//        LOG(ERROR) << "[SND] Unable to bind connection with receiver";
+//        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_SEND_MSG,
+//                                           "I couldn't create connection with receiver msg."));
+//        return false;
     }
 
     if (connect(sendSockfd, (struct sockaddr *) &receiver, sizeof(receiver)) == -1) {
@@ -100,7 +113,6 @@ bool NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWra
 }
 
 bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
-    //TODO do dorobienia obsługa wysyłania niepełnej wiadomości
     int length = 0;
     const char *serializedMsg = serializeMsg(msg, length);
     if (serializedMsg == NULL)
@@ -204,7 +216,7 @@ void NetworkController::prepareReceiveThread() {
     prepareListeningSocket();
     //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
     LOG(INFO) << "[REC] Listen  with sockfd: " << receiveSockfd;
-    listen(receiveSockfd, 10000);
+    listen(receiveSockfd, 100);
     pthread_t thread;
     receiveSystemThread = &thread;
     createThread(receiveSystemThread, startReceiveThread);
@@ -267,17 +279,29 @@ void NetworkController::createReceiveThread() {
         struct sockaddr_in peer_name;
         socklen_t socklen = sizeof(peer_name);
         socklen_t *senderAddresLen;
+        std::unique_lock<std::mutex> mlock(mutex_);
+        if (exitFlag == true) {
+            LOG(INFO) << "[REC] Closing receiving thread";
+            break;
+        }
+        mlock.unlock();
         int senderSockfd = accept(receiveSockfd, (struct sockaddr *) &peer_name, &socklen);
         if (senderSockfd == -1) {
-            //TODO błąd do obsłużenia
+            //TODO błąd do obsłużeniaa
             LOG(INFO) << "[REC] Error during accept connection. I skip this connection... ";
             continue;
         }
+        std::unique_lock<std::mutex> mlock1(mutex_);
+        if (exitFlag == true) {
+            LOG(INFO) << "[REC] Closing receiving thread";
+            break;
+        }
+        mlock1.unlock();
         LOG(INFO) << "[REC] Aceepted connection from sockfd: " << senderSockfd;
         LOG(INFO) << "[REC] I get correct msg. Processing...";
         receiveMsg(senderSockfd, peer_name);
-
     }
+    pthread_exit(NULL);
 }
 
 
@@ -398,18 +422,14 @@ std::string NetworkController::getStringFromChar(int length1, const char *tab) {
 
 
 void NetworkController::stop() {
-    if (sendSockfd >= 0) {
-        LOG(INFO) << "[SND] Closing connection...";
-        close(sendSockfd);
-    }
-    if (receiveSockfd >= 0) {
-        LOG(INFO) << "[REC] Closing connection...";
-        close(receiveSockfd);
-    }
-    LOG(INFO) << "[SND] Removing sending thread...";
-    pthread_cancel(*sendSystemThread);
-    LOG(INFO) << "[SND] Removing receiving thread...";
-    pthread_cancel(*receiveSystemThread);
+    std::unique_lock<std::mutex> mlock(mutex_);
+    SimpleMessage *exitMessage = new SimpleMessage(MessageType::EXIT, -1);
+    std::shared_ptr<SimpleMessage> exitMsg = std::shared_ptr<SimpleMessage>(exitMessage);
+    MessageWrapper *wrapper = new MessageWrapper(exitMsg, "", -1);
+    std::shared_ptr<MessageWrapper> p1(wrapper);
+    sendQueue->push(p1);
+    exitFlag = true;
+    mlock.unlock();
 }
 
 std::shared_ptr<SimpleMessage> NetworkController::prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode errorCode,
