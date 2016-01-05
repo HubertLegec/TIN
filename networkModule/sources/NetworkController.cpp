@@ -42,7 +42,8 @@ void NetworkController::createSendThread() {
     while (true) {
         std::shared_ptr<MessageWrapper> msg = sendQueue->pop();
         LOG(INFO) << "[SND] I get msg to send: " << msg->getMessage()->toString();
-        prepareConncetionWithReceiver(msg);
+        if (!prepareConncetionWithReceiver(msg))
+            continue;
         if (!sendMsg(msg->getMessage())) {
             LOG(ERROR) << "[SND] Couldnt send msg";
             break;
@@ -51,7 +52,7 @@ void NetworkController::createSendThread() {
     pthread_exit(NULL);
 }
 
-struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg) {
+bool NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg) {
     LOG(INFO) << "[SND] Creating connection with receiver. Hostname: " << msg->getIP() << " Port: " << msg->getPort();
 
     hostent *hp;
@@ -69,16 +70,32 @@ struct addrinfo *NetworkController::prepareConncetionWithReceiver(std::shared_pt
     receiver.sin_port = htons(msg->getPort());
 
     sendSockfd = socket(AF_INET, SOCK_STREAM, 0);
-    bind(sendSockfd, (struct sockaddr *) &client, sizeof(client));
+    if (sendSockfd == -1) {
+        LOG(ERROR) << "[SND] Unable to create connection with receiver";
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_SEND_MSG,
+                                           "I couldn't create connection with receiver msg."));
+        return false;
+    }
+    if (bind(sendSockfd, (struct sockaddr *) &client, sizeof(client)) == -1) {
+        LOG(ERROR) << "[SND] Unable to create connection with receiver";
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_SEND_MSG,
+                                           "I couldn't create connection with receiver msg."));
+        return false;
+    }
 
-    connect(sendSockfd, (struct sockaddr *) &receiver, sizeof(receiver));
+    if (connect(sendSockfd, (struct sockaddr *) &receiver, sizeof(receiver)) == -1) {
+        LOG(ERROR) << "[SND] Unable to create connection with receiver";
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_SEND_MSG,
+                                           "I couldn't create connection with receiver msg."));
+        return false;
+    }
     sockaddr_in from;
     socklen_t fromlen = sizeof(from);
     getpeername(sendSockfd, (struct sockaddr *) &from, &fromlen);
     LOG(INFO) << "[SND] Connected to TCPServer1: " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
-    hp = gethostbyaddr((char *) &from.sin_addr.s_addr,
-                       sizeof(from.sin_addr.s_addr), AF_INET);
+    hp = gethostbyaddr((char *) &from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
     LOG(INFO) << "[SND] Name is : " << hp->h_name;
+    return true;
 
 }
 
@@ -159,6 +176,8 @@ const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, 
             break;
         default: {
             LOG(ERROR) << "[SND] Wrong type of MessageType: " << msg->getMessageType();
+            receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_SERIALIZE_MSG,
+                                               "I get msg with unknown type to send"));
             return NULL;
         }
     }
@@ -208,7 +227,7 @@ void NetworkController::prepareListeningSocket() {
     LOG(INFO) << "[REC] Trying to get listening socket";
     if ((receiveSockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         LOG(ERROR) << "[REC] Problem with creating listening socket. Closing application...";
-        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::CANT_CONNECT_TO_SERVER,
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_CREATE_LISTENING_SOCKET,
                                            "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
         stop();
         exit(1);
@@ -221,7 +240,7 @@ void NetworkController::prepareListeningSocket() {
         close(receiveSockfd);
         receiveSockfd = -1;
         LOG(ERROR) << "[REC] Not bind. Probably your port is already used.";
-        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::CANT_CONNECT_TO_SERVER,
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_CREATE_LISTENING_SOCKET,
                                            "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
         stop();
         exit(1);
@@ -353,6 +372,8 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
             break;
         default: {
             LOG(ERROR) << "[REC] Wrong type of MessageType: " << tempMsg.getMessageType();
+            receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_RESERIALIZE_MSG,
+                                               "I get msg with unknown type"));
         }
             break;
     }

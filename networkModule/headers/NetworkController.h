@@ -47,7 +47,7 @@ private:
 
     void createThread(pthread_t *thread, void *(*function)(void *));
 
-    struct addrinfo *prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
+    bool prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
 
     std::string getStringFromChar(int length, const char *tab);
 

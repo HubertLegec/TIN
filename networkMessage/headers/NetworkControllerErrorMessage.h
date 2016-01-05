@@ -16,8 +16,10 @@ class NetworkControllerErrorMessage : public SimpleMessage {
 public:
     enum ErrorCode {
         UNDEFINED = 0,
-        CANT_CONNECT_TO_SERVER = 1
-        //TODO
+        UNABLE_TO_CREATE_LISTENING_SOCKET = 1,
+        UNABLE_TO_SEND_MSG = 2,
+        UNABLE_TO_RESERIALIZE_MSG = 3,
+        UNABLE_TO_SERIALIZE_MSG = 4
     };
 
     NetworkControllerErrorMessage();
