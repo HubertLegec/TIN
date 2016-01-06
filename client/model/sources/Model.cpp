@@ -153,11 +153,7 @@ int Model::getMyPort() const {
 }
 
 bool Model::isRegistered() const {
-    if (userID != UNDEFINED_ID) {
-        return true;
-    } else {
-        return false;
-    }
+    return userID != UNDEFINED_ID ? true : false;
 }
 
 std::map<long, string> Model::getActiveCategories() const {
@@ -190,7 +186,7 @@ std::map<long, string> Model::getCategories() const {
 }
 
 bool Model::isMyCategory(long categoryID) const {
-    return categories.at(categoryID).isOwner() ? true : false;
+    return categories.at(categoryID).isOwner();
 }
 
 void Model::confirmCategory(long categoryID) {
@@ -223,6 +219,8 @@ void Model::removeUserAccount() {
     inbox.clear();
     notifications.clear();
     categories.clear();
+    userName = "";
+    userID = UNDEFINED_ID;
 }
 
 bool Model::isSomeoneInCategory(long categoryID) const {

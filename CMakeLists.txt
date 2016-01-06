@@ -60,6 +60,7 @@ set(CLIENT_NETWORK_MODULE_SOURCES networkModule/sources/NetworkController.cpp
         networkModule/sources/MessageWrapper.cpp)
 
 set(CLIENT_SOURCE_FILES client/main.cpp
+        client/Client.cpp
         ${CLIENT_NETWORK_MESSAGE_SOURCES}
         ${CLIENT_MODEL_SOURCES}
         ${CLIENT_VIEW_SOURCES}

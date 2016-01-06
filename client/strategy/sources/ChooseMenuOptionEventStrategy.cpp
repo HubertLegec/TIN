@@ -152,7 +152,12 @@ void ChooseMenuOptionEventStrategy::signOutCategory() const {
 
 void ChooseMenuOptionEventStrategy::createAccount() const {
     LOG(INFO) << "ChooseMenuOptionEventStrategy::createAccount\n";
-    getView()->showRegisterNewUserSubMenu();
+    if (!getModel()->isRegistered()) {
+        getView()->showRegisterNewUserSubMenu();
+    } else {
+        getView()->showInfo("Your account has been created.");
+        showMainMenu();
+    }
 }
 
 void ChooseMenuOptionEventStrategy::removeAccount() const {

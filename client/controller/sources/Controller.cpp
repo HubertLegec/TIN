@@ -84,7 +84,7 @@ void Controller::start() {
 }
 
 void Controller::exit() {
-    LOG(INFO) << "exit";
+    LOG(INFO) << "Controller::exit";
     //if user is registered send info about app close to server
     if (model->isRegistered()) {
         shared_ptr<UserManagementMessage> msg = shared_ptr<UserManagementMessage>(

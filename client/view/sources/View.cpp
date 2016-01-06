@@ -106,12 +106,7 @@ bool View::getUserConfirmation() {
     char decision;
     cin >> decision;
     cout << endl;
-    if (decision == 'y') {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return decision == 'y' ? true : false;
 }
 
 
@@ -219,8 +214,7 @@ void *View::showMainMenuThread(void *arg) {
             break;
     }
 
-    if (((ChooseMenuOptionEvent) event).getOptionChosen() == ChooseMenuOptionEvent::QUIT) if (getUserConfirmation() ==
-                                                                                              false) {
+    if (event == ChooseMenuOptionEvent::QUIT && !getUserConfirmation()) {
         return 0;
     }
 
