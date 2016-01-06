@@ -108,7 +108,7 @@ void Controller::moveThreadWork() {
     while (running) {
         shared_ptr<SimpleMessage> msg;
         msg = receiveQueue.pop();
-        shared_ptr<NetworkEvent> event(new NetworkEvent(msg));
+        auto event = shared_ptr<NetworkEvent>(new NetworkEvent(msg));
         eventsToServe.push(event);
         if (msg.get()->getMessageType() == MessageType::EXIT) {
             running = false;
