@@ -65,7 +65,7 @@ Queue<std::shared_ptr<MessageWrapper>> *Controller::getSendQueue() {
 
 void Controller::start() {
     pthread_create(&movingThread, NULL, threadStartHelper, this);
-    networkController = new NetworkController(&sendQueue, &receiveQueue, model->getMyPort());
+    networkController = new NetworkController(&sendQueue, &receiveQueue, model->getMyIP(), model->getMyPort());
     state = MAIN_MENU;
     view->showMainMenu(model->getNotifications());
     while (running) {

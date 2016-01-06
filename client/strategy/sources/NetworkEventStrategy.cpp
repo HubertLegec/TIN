@@ -175,7 +175,8 @@ void NetworkEventStrategy::processErrorMessage(SimpleMessage &message) const {
     NetworkControllerErrorMessage &msg = dynamic_cast<NetworkControllerErrorMessage &>(message);
     switch (msg.getErrorCode()) {
         case NetworkControllerErrorMessage::UNABLE_TO_CREATE_LISTENING_SOCKET:
-            getModel()->addNotification("ERROR!\nCan't create connection! You should try to use another settings.");
+            getView()->showInfo("ERROR!\nCan't create connection! You should try to use another settings.");
+            showMainMenu();
             break;
         case NetworkControllerErrorMessage::UNABLE_TO_SEND_MSG:
             getModel()->addNotification("ERROR!\nCan't send message!");

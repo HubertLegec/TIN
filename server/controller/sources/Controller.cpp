@@ -7,7 +7,7 @@
 
 Controller::Controller(string ip, int port) : model(new Model), myIP(ip), myPort(port) {
     initStrategyMap();
-    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myPort));
+    networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
 }
 
 Controller::~Controller() {
