@@ -8,6 +8,7 @@ using namespace std;
 
 void handler(int signal) {
     Client::getClientPtr()->cleanUp();
+    usleep(500000);
     LOG(FATAL) << "Client stopped by signal " << signal;
 }
 
