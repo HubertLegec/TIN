@@ -103,6 +103,7 @@ void ChooseMenuOptionEventStrategy::joinCategory() const {
     if (getModel()->isRegistered()) {
         if (getModel()->getInactiveCategories().size() == 0) {
             getView()->showInfo("You have no inactive categories");
+            showMainMenu();
         } else {
             getView()->showJoinCategorySubMenu(getModel()->getInactiveCategories());
         }
