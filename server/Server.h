@@ -11,6 +11,10 @@ private:
     Server(string ip, int port);
 
 public:
+    static const int DEFAULT_PORT;
+    static const string DEFAULT_IP;
+    static const string DEFAULT_LOG_PATH;
+
     static shared_ptr<Server> getServerPtr();
 
     static shared_ptr<Server> createServer(string ip, int port);

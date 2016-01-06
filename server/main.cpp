@@ -8,10 +8,9 @@ INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
-const int BAD_PARAM = -11;
-const int DEFAULT_PORT = 8888;
-const string DEFAULT_IP = "127.0.1.1";
-const string DEFAULT_LOG_PATH = "/tmp/logs/serverLog.log";
+enum {
+    BAD_INPUT_PARAM = -11
+};
 
 void handler(int signal) {
     Server::getServerPtr()->cleanUp();
@@ -29,13 +28,13 @@ void showHelp() {
 void badInputArguments() {
     cout << "Bad input arguments!" << endl;
     showHelp();
-    exit(BAD_PARAM);
+    exit(BAD_INPUT_PARAM);
 }
 
 int main(int argc, char *argv[]) {
-    string ip = DEFAULT_IP;
-    int port = DEFAULT_PORT;
-    string logFilePath = DEFAULT_LOG_PATH;
+    string ip = Server::DEFAULT_IP;
+    int port = Server::DEFAULT_PORT;
+    string logFilePath = Server::DEFAULT_LOG_PATH;
 
     if (argc > 1) {
         if (argc == 2) {
@@ -77,8 +76,7 @@ int main(int argc, char *argv[]) {
     signal(SIGTERM, handler);
 
     try {
-        Server::createServer(ip, port);
-        Server::getServerPtr()->start();
+        Server::createServer(ip, port)->start();
     } catch (exception &e) {
         LOG(FATAL) << "Server stopped working. Exception log: " << e.what();
     }
