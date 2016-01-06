@@ -100,6 +100,8 @@ private:
 
     static bool getUserConfirmation();
 
+    static bool validateChoosenID(long id, ThreadData *threadData);
+
     ThreadData threadData;
     pthread_t viewThread;
 };
