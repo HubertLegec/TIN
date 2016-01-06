@@ -61,13 +61,13 @@ int main(int argc, char *argv[]) {
     }
 
     START_EASYLOGGINGPP(argc, argv);
-    el::Configurations defaultConf;
-    defaultConf.setToDefault();
-    defaultConf.setGlobally(el::ConfigurationType::Filename, logFilePath.c_str());
-    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
-    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
-    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000");
-    el::Loggers::reconfigureLogger("default", defaultConf);
+//    el::Configurations defaultConf;
+//    defaultConf.setToDefault();
+//    defaultConf.setGlobally(el::ConfigurationType::Filename, logFilePath.c_str());
+//    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
+//    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+//    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000");
+//    el::Loggers::reconfigureLogger("default", defaultConf);
     LOG(INFO) << "Server started with parameters: " << endl
     << "Server IP: " << ip << endl
     << "Server port: " << port << endl;
@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
     try {
         Server::createServer(ip, port)->start();
     } catch (exception &e) {
+        Server::getServerPtr()->cleanUp();
         LOG(FATAL) << "Server stopped working. Exception log: " << e.what();
     }
 

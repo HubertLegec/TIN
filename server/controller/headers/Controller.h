@@ -84,7 +84,7 @@ public:
 
     void sendMessage(SimpleMessage *message, const long userID);
 
-    void sendMessage(SimpleMessage* message, shared_ptr<User> user);
+    void sendMessage(shared_ptr<SimpleMessage> message, shared_ptr<User> user);
 
     void sendMessage(SimpleMessage *message, string IP, int port);
 

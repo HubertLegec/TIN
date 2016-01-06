@@ -28,7 +28,7 @@ void BasicEventStrategy::sendMessage(shared_ptr<User> user, long extraInfo, Serv
                                      const string &info) const {
     ServerInfoMessage *message = new ServerInfoMessage(SERVER_ID, infoMessageType, info);
     message->setExtraInfo(extraInfo);
-    controller->sendMessage(message, user);
+    controller->sendMessage(shared_ptr<ServerInfoMessage>(message), user);
 }
 
 void BasicEventStrategy::sendNeighbours(shared_ptr<Category> category, shared_ptr<CategoryMember> member) const {
@@ -56,7 +56,7 @@ void BasicEventStrategy::sendNeighbours(shared_ptr<Category> category, shared_pt
     infoMessage->setType(NEIGHBOURS_SET);
     infoMessage->setSenderID(SERVER_ID);
 
-    controller->sendMessage(infoMessage, member->getUser());
+    controller->sendMessage(shared_ptr<NeighboursInfoMessage>(infoMessage), member->getUser());
 }
 
 void BasicEventStrategy::sendAllNeighbours(shared_ptr<Category> category, shared_ptr<CategoryMember> member) const {
@@ -70,7 +70,7 @@ void BasicEventStrategy::sendAllNeighbours(shared_ptr<Category> category, shared
         sendNeighbours(category, rightNeighbour);
 }
 
-void BasicEventStrategy::sendForAllMembers(shared_ptr<Category> category, SimpleMessage *message) const {
+void BasicEventStrategy::sendForAllMembers(shared_ptr<Category> category, shared_ptr<SimpleMessage> message) const {
     auto members = category->getMembers();
     auto categoryMember = members;
     do {
@@ -80,7 +80,7 @@ void BasicEventStrategy::sendForAllMembers(shared_ptr<Category> category, Simple
 
 void BasicEventStrategy::sendForAllMembers(shared_ptr<Category> category, long extraInfo,
                                            ServerInfoMessageType infoMessageType) const {
-    ServerInfoMessage *message = new ServerInfoMessage(SERVER_ID, infoMessageType, "");
+    shared_ptr<ServerInfoMessage> message(new ServerInfoMessage(SERVER_ID, infoMessageType, ""));
     message->setExtraInfo(extraInfo);
     sendForAllMembers(category, message);
 }

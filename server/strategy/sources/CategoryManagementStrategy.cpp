@@ -27,7 +27,6 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             break;
 
         case MessageType::CREATE_CATEGORY: {
-
             auto categoryName = categoryManagementMessage->getCategoryName();
             categoryID = model->createCategory(senderID, categoryName);
 
@@ -206,6 +205,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             auto member = category->findMember(memberID);
             if (!member) {
                 sendMemberNotFound(sender, categoryID, memberID);
+                break;
             }
 
             if (owner->getID() != senderID) {

@@ -28,16 +28,16 @@ void Controller::sendMessage(ServerInfoMessage *message) {
 void Controller::sendMessage(SimpleMessage *message, const long userID) {
     try {
         auto user = model->getUser(userID);
-        sendMessage(message, user);
+        sendMessage(shared_ptr<SimpleMessage>(message), user);
     } catch (out_of_range &e) {
         LOG(DEBUG) << "Couldn't send message to user " << userID <<
         ". User doesn'y exist in the system";
     }
 }
 
-void Controller::sendMessage(SimpleMessage *message, shared_ptr<User> user) {
+void Controller::sendMessage(shared_ptr<SimpleMessage> message, shared_ptr<User> user) {
     try {
-        auto wrapper = new MessageWrapper(shared_ptr<SimpleMessage>(message), user->getIP(), user->getPort());
+        auto wrapper = new MessageWrapper(message, user->getIP(), user->getPort());
         outgoingMessages.push(shared_ptr<MessageWrapper>(wrapper));
         LOG(INFO) << "Sent message to user " << user->getID();
     } catch (exception &e) {

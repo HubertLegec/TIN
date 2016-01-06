@@ -31,7 +31,7 @@ protected:
 
     void sendAllNeighbours(shared_ptr<Category> category, shared_ptr<CategoryMember> member) const;
 
-    void sendForAllMembers(shared_ptr<Category> category, SimpleMessage *message) const;
+    void sendForAllMembers(shared_ptr<Category> category, shared_ptr<SimpleMessage> message) const;
 
     void sendForAllMembers(shared_ptr<Category> category, long extraInfo, ServerInfoMessageType infoMessageType) const;
 
