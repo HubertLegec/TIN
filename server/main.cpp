@@ -9,7 +9,7 @@ INITIALIZE_EASYLOGGINGPP
 using namespace std;
 
 enum {
-    BAD_INPUT_PARAM = -11
+    BAD_INPUT_ARG = -11
 };
 
 void handler(int signal) {
@@ -27,7 +27,7 @@ void showHelp() {
 void badInputArguments() {
     cout << "Bad input arguments!" << endl;
     showHelp();
-    exit(BAD_INPUT_PARAM);
+    exit(BAD_INPUT_ARG);
 }
 
 int main(int argc, char *argv[]) {
@@ -60,13 +60,13 @@ int main(int argc, char *argv[]) {
     }
 
     START_EASYLOGGINGPP(argc, argv);
-//    el::Configurations defaultConf;
-//    defaultConf.setToDefault();
-//    defaultConf.setGlobally(el::ConfigurationType::Filename, logFilePath.c_str());
-//    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
-//    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
-//    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000");
-//    el::Loggers::reconfigureLogger("default", defaultConf);
+    el::Configurations defaultConf;
+    defaultConf.setToDefault();
+    defaultConf.setGlobally(el::ConfigurationType::Filename, logFilePath.c_str());
+    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
+    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000");
+    el::Loggers::reconfigureLogger("default", defaultConf);
     LOG(INFO) << "Server started with parameters: " << endl
     << "Server IP: " << ip << endl
     << "Server port: " << port << endl;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
         Server::createServer(ip, port)->start();
     } catch (exception &e) {
         Server::getServerPtr()->cleanUp();
-        LOG(FATAL) << "Server stopped working. Exception log: " << e.what();
+        LOG(ERROR) << "Server stopped working. Exception log: " << e.what();
     }
 
     return 0;

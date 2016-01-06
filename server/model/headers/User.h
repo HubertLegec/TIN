@@ -16,7 +16,7 @@ private:
 public:
     User(long id, int port, string IP, string name) : id(id), port(port), IP(IP), name(name) { }
 
-    int getID() const {
+    long getID() const {
         return id;
     }
 

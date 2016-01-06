@@ -73,31 +73,41 @@ target_link_libraries(RING_CLIENT ${CMAKE_THREAD_LIBS_INIT})
 
 #----------------------------------------- server ----------------------------------------------------------------------
 
-set(SERVER_SOURCE_FILES server/main.cpp
+set(SERVER_MODEL_SOURCES
         server/model/sources/Category.cpp
         server/model/headers/Category.h
         server/model/sources/Model.cpp
         server/model/headers/Model.h
         server/model/sources/User.cpp
         server/model/headers/User.h
+        server/model/sources/CategoryMember.cpp
+        server/model/headers/CategoryMember.h)
+
+set(SERVER_CONTROLLER_SOURCES
         server/controller/sources/Controller.cpp
-        server/controller/headers/Controller.h
+        server/controller/headers/Controller.h)
+
+set(SERVER_STRATEGY_SOURCES
         server/strategy/sources/BasicEventStrategy.cpp
         server/strategy/headers/BasicEventStrategy.h
         server/strategy/sources/GetMessageStrategy.cpp
         server/strategy/headers/GetMessageStrategy.h
         server/strategy/sources/CategoryManagementStrategy.cpp
         server/strategy/headers/CategoryManagementStrategy.h
-        server/model/sources/CategoryMember.cpp
-        server/model/headers/CategoryMember.h
         server/strategy/sources/UserManagementStrategy.cpp
         server/strategy/headers/UserManagementStrategy.h
         server/strategy/sources/ErrorMessageStrategy.cpp
-        server/strategy/headers/ErrorMessageStrategy.h
+        server/strategy/headers/ErrorMessageStrategy.h)
+
+set(SERVER_SOURCE_SOURCES
+        ${SERVER_MODEL_SOURCES}
+        ${SERVER_CONTROLLER_SOURCES}
+        ${SERVER_STRATEGY_SOURCES}
         server/Server.cpp
         server/Server.h)
 
-set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
+set(SERVER_NETWORK_MESSAGE_SOURCES
+        networkMessage/sources/SimpleMessage.cpp
         networkMessage/sources/CategoryListMessage.cpp
         networkMessage/sources/CategoryManagementMessage.cpp
         networkMessage/sources/NeighboursInfoMessage.cpp
@@ -110,7 +120,7 @@ set(SERVER_NETWORK_MESSAGE_SOURCES networkMessage/sources/SimpleMessage.cpp
         networkModule/sources/MessageWrapper.cpp
         networkModule/sources/NetworkController.cpp)
 
-add_executable(RING_SERVER ${SERVER_SOURCE_FILES} ${SERVER_NETWORK_MESSAGE_SOURCES})
+add_executable(RING_SERVER server/main.cpp ${SERVER_SOURCE_SOURCES} ${SERVER_NETWORK_MESSAGE_SOURCES})
 target_link_libraries(RING_SERVER ${CMAKE_THREAD_LIBS_INIT})
 
 #------------------------------------ Tests configuration --------------------------------------------------------------
@@ -128,6 +138,21 @@ add_executable(CLIENT_BASIC_TESTS client_tests/clientBasicTest.cpp
 target_link_libraries(CLIENT_BASIC_TESTS gtest_main)
 add_test(NAME clientBasicTest COMMAND clientBasicTest)
 
+#*************************** server tests **********************************************
+set(SERVER_TEST_SOURCES
+        server_tests/serverBasicTest.cpp
+        server_tests/modelCategoryTest.cpp
+        server_tests/modelTest.cpp)
+
+add_executable(SERVER_UNIT_TESTS
+        ${SERVER_TEST_SOURCES}
+        ${SERVER_SOURCE_SOURCES}
+        ${SERVER_NETWORK_MESSAGE_SOURCES})
+
+target_link_libraries(SERVER_UNIT_TESTS gtest_main)
+add_test(NAME serverBasicTest COMMAND serverBasicTest)
+add_test(NAME modelTest COMMAND modelTest)
+add_test(NAME modelCategoryTest COMMAND modelCategoryTest)
 
 #************************** network messages tests *************************************
 add_executable(NETWORK_MESSAGES_TESTS networkMessage_tests/messagesTests.cpp

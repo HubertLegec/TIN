@@ -28,7 +28,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
 
         case MessageType::CREATE_CATEGORY: {
             auto categoryName = categoryManagementMessage->getCategoryName();
-            categoryID = model->createCategory(senderID, categoryName);
+            categoryID = model->createCategory(sender, categoryName);
 
             if (categoryID == FAILED_CODE) {
                 sendMessage(sender, FAILED_CODE, FAIL, "Failed to create category " + categoryName);
@@ -60,7 +60,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 sendMessage(sender, categoryID, FAIL, "User not allowed to destroy category.");
             } else {
                 sendForAllMembers(category, categoryID, CATEGORY_REMOVED);
-                model->destroyCategory(category);
+                model->deleteCategory(category);
                 LOG(INFO) << "Destroyed category " << categoryID;
             }
         }
@@ -80,7 +80,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             }
             auto owner = category->getOwner();
             category->addNewMember(userToAdd);
-            LOG(INFO) << "Added user " << sender << " to category " << categoryID;
+            LOG(INFO) << "Added user " << sender->getName() << " to category " << categoryID;
             sendMessage(sender, categoryID, CATEGORY_JOINED, category->getName());
 
             //client needs userID, so it is send as sendrer id instead of SERVER_ID
@@ -88,7 +88,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                                                                         userToAdd->getName() + " " +
                                                                         userToAdd->getIP());
             newMemberMessage->setExtraInfo(categoryID);
-            controller->sendMessage(newMemberMessage, owner->getID());
+            controller->sendMessage(shared_ptr<ServerInfoMessage>(newMemberMessage), owner);
         }
             break;
 
@@ -180,7 +180,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
                 sendMessage(sender, categoryID, FAIL, "User is not an owner of category " + categoryID);
             } else {
                 if (category->isUnconfirmed(memberID)) {
-                    sendMessage(sender, categoryID, OK, "Activated user " + categoryID);
+                    sendMessage(sender, categoryID, OK, "Activated user in category" + categoryID);
                     category->acceptNewUser(memberID);
                     auto member = category->findMember(memberID);
                     sendMessage(member->getUser(), categoryID, MEMBER_CONFIRMED);

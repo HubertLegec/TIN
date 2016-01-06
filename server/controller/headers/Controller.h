@@ -55,38 +55,6 @@ public:
         return model;
     }
 
-    int getMyPort() const {
-        return myPort;
-    }
-
-    const string &getMyIP() const {
-        return myIP;
-    }
-
-    void putOutgoingMessage(MessageWrapper &message) {
-        outgoingMessages.push(shared_ptr<MessageWrapper>(&message));
-    }
-
-    void putOutgoingMessage(MessageWrapper *message) {
-        outgoingMessages.push(shared_ptr<MessageWrapper>(message));
-    }
-
-    void putOutgoingMessage(shared_ptr<MessageWrapper> message) {
-        outgoingMessages.push(message);
-    }
-
-    void putIncomingMessage(SimpleMessage &message) {
-        incomingMessages.push(shared_ptr<SimpleMessage>(&message));
-    }
-
-    void putIncomingMessage(SimpleMessage *message) {
-        incomingMessages.push(shared_ptr<SimpleMessage>(message));
-    }
-
-    void putIncomingMessage(shared_ptr<SimpleMessage> message) {
-        incomingMessages.push(message);
-    }
-
     void sendMessage(ServerInfoMessage *message);
 
     void sendMessage(SimpleMessage *message, const long userID);
@@ -95,29 +63,9 @@ public:
 
     void sendMessage(SimpleMessage *message, string IP, int port);
 
-    const Queue<shared_ptr<SimpleMessage> > &getIncomingMessages() const {
-        return incomingMessages;
-    }
-
-    const Queue<shared_ptr<MessageWrapper> > &getOutgoingMessages() const {
-        return outgoingMessages;
-    }
-
-    const map<IncomingMessageType, BasicEventStrategy *> &getStrategyMap() const {
-        return strategyMap;
-    }
-
     void run();
 
     void cleanUp();
-
-    void setWorkingStatus(const WorkingStatus &workingStatus) {
-        Controller::workingStatus = workingStatus;
-    }
-
-    const WorkingStatus &getWorkingStatus() const {
-        return workingStatus;
-    }
 };
 
 

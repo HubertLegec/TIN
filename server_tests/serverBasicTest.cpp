@@ -1,8 +1,7 @@
 #include <string>
-#include <iostream>
 #include "gtest/gtest.h"
-#include "../server/model/headers/Category.h"
+#include "../logger/easylogging++.h"
 
-TEST(Category__Test, Category__Test_Creating) {
-    Category a;
+INITIALIZE_EASYLOGGINGPP
+TEST(serverTest, serverTest_simple) {
 }
