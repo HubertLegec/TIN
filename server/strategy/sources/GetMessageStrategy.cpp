@@ -10,8 +10,13 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
     GetMessage *getMessage = dynamic_cast<GetMessage *> (message);
 
     auto senderID = getMessage->getSenderID();
-    auto requestType = getMessage->getRequestType();
+    auto sender = controller->getModel()->getUser(senderID);
+    if (!sender) {
+        LOG(INFO) << "Couldn't find user who sent message. SenderID: " << senderID;
+        return;
+    }
 
+    auto requestType = getMessage->getRequestType();
     switch (requestType) {
         case GetMessageType::CAT_LIST: {
             CategoryListMessage *returnMessage = new CategoryListMessage();
@@ -28,19 +33,24 @@ void GetMessageStrategy::serveEvent(SimpleMessage *message) const {
 
         case GetMessageType::NEIGHBOURS: {
             long categoryID = getMessage->getCategoryID();
-
-            try {
-                sendNeighbours(categoryID, senderID);
-                LOG(INFO) << "Sent neighbours set to user " << senderID;
-            } catch (out_of_range &e) {
-                LOG(INFO) << "Couldn't get member's neighbours " << senderID << " in cateogry " << categoryID;
-                sendMessage(senderID, FAIL, "Couldn't get neighbours");
+            auto category = controller->getModel()->getCategory(categoryID);
+            if (!category) {
+                sendCategoryNotFound(sender, categoryID);
+                return;
             }
+            auto member = category->findMember(senderID);
+            if(!member) {
+                sendMemberNotFound(sender, categoryID, senderID);
+                return;
+            }
+
+            sendNeighbours(category, member);
+            LOG(INFO) << "Sent neighbours set to user " << senderID;
         }
             break;
 
         default: {
-            sendMessage(senderID, FAIL, "Bad message type received");
+            sendMessage(sender, FAIL, "Bad message type received");
         }
             break;
     }

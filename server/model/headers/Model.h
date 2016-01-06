@@ -4,6 +4,11 @@
 #include <unordered_map>
 #include "Category.h"
 
+enum {
+    FAILED_CODE = -3,
+    UNKNOWN_CODE = -4
+};
+
 class Model {
 private:
     long categoriesCounter;
@@ -26,7 +31,7 @@ public:
 
     long addCategory(shared_ptr<User> owner, const string &category_name);
 
-    void deleteUser(const long userID);
+    void deleteUser(shared_ptr<User> user);
 
     shared_ptr<User> getUser(const long userID);
 
@@ -34,7 +39,7 @@ public:
 
     long createCategory(long ownerID, const string &category_name);
 
-    void destroyCategory(const long id);
+    void destroyCategory(shared_ptr<Category> category);
 
     void addMemberToCategory(shared_ptr<User> member, const long categoryID);
 };

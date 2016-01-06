@@ -10,26 +10,28 @@ void BasicEventStrategy::setController(Controller *controller) {
     this->controller = controller;
 }
 
-void BasicEventStrategy::sendMessage(long userID, ServerInfoMessageType infoMessageType) const {
-    sendMessage(userID, -1, infoMessageType, "");
+void BasicEventStrategy::sendMessage(shared_ptr<User> user, ServerInfoMessageType infoMessageType) const {
+    sendMessage(user, UNKNOWN_CODE, infoMessageType, "");
 }
 
-void BasicEventStrategy::sendMessage(long userID, ServerInfoMessageType infoMessageType, const string &info) const {
-    sendMessage(userID, -1, infoMessageType, info);
+void BasicEventStrategy::sendMessage(shared_ptr<User> user, ServerInfoMessageType infoMessageType,
+                                     const string &info) const {
+    sendMessage(user, UNKNOWN_CODE, infoMessageType, info);
 }
 
-void BasicEventStrategy::sendMessage(long userID, long extraInfo, ServerInfoMessageType infoMessageType) const {
-    sendMessage(userID, extraInfo, infoMessageType, "");
+void BasicEventStrategy::sendMessage(shared_ptr<User> user, long extraInfo,
+                                     ServerInfoMessageType infoMessageType) const {
+    sendMessage(user, extraInfo, infoMessageType, "");
 }
 
-void BasicEventStrategy::sendMessage(long userID, long extraInfo, ServerInfoMessageType infoMessageType,
+void BasicEventStrategy::sendMessage(shared_ptr<User> user, long extraInfo, ServerInfoMessageType infoMessageType,
                                      const string &info) const {
     ServerInfoMessage *message = new ServerInfoMessage(SERVER_ID, infoMessageType, info);
     message->setExtraInfo(extraInfo);
-    controller->sendMessage(message, userID);
+    controller->sendMessage(message, user);
 }
 
-void BasicEventStrategy::sendNeighbours(long categoryID, shared_ptr<CategoryMember> member) const {
+void BasicEventStrategy::sendNeighbours(shared_ptr<Category> category, shared_ptr<CategoryMember> member) const {
     auto leftMember = member->getLeftNeighbour();
     auto rightMember = member->getRightNeighbour();
 
@@ -44,7 +46,7 @@ void BasicEventStrategy::sendNeighbours(long categoryID, shared_ptr<CategoryMemb
     auto leftNeighbour = leftMember->getUser();
     auto rightNeighbour = rightMember->getUser();
 
-    NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(categoryID,
+    NeighboursInfoMessage *infoMessage = new NeighboursInfoMessage(category->getID(),
                                                                    leftNeighbour->getName(),
                                                                    leftNeighbour->getIP(),
                                                                    leftNeighbour->getPort(),
@@ -57,33 +59,40 @@ void BasicEventStrategy::sendNeighbours(long categoryID, shared_ptr<CategoryMemb
     controller->sendMessage(infoMessage, member->getUser());
 }
 
-void BasicEventStrategy::sendNeighbours(long categoryID, long memberID) const {
-    auto category = controller->getModel()->getCategory(categoryID);
-    auto member = category->findMember(memberID);
-    if (member)
-        sendNeighbours(categoryID, member);
-    else
-        throw out_of_range("Couldn't find member " + memberID);
-}
-
-
-void BasicEventStrategy::sendAllNeighbours(long categoryID, long memberID) const {
-    auto category = controller->getModel()->getCategory(categoryID);
-    auto member = category->findMember(memberID);
+void BasicEventStrategy::sendAllNeighbours(shared_ptr<Category> category, shared_ptr<CategoryMember> member) const {
     auto leftNeighbour = member->getLeftNeighbour();
     auto rightNeighbour = member->getRightNeighbour();
 
-    sendNeighbours(categoryID, member);
+    sendNeighbours(category, member);
     if (leftNeighbour != member)
-        sendNeighbours(categoryID, leftNeighbour);
+        sendNeighbours(category, leftNeighbour);
     if (rightNeighbour != member && rightNeighbour != leftNeighbour)
-        sendNeighbours(categoryID, rightNeighbour);
+        sendNeighbours(category, rightNeighbour);
 }
 
-void BasicEventStrategy::sendForAllMembers(long categoryID, SimpleMessage *message) const {
-    auto members = controller->getModel()->getCategory(categoryID)->getMembers();
+void BasicEventStrategy::sendForAllMembers(shared_ptr<Category> category, SimpleMessage *message) const {
+    auto members = category->getMembers();
     auto categoryMember = members;
     do {
         controller->sendMessage(message, categoryMember->getUser());
     } while ((categoryMember = categoryMember->getLeftNeighbour()) != members);
+}
+
+void BasicEventStrategy::sendForAllMembers(shared_ptr<Category> category, long extraInfo,
+                                           ServerInfoMessageType infoMessageType) const {
+    ServerInfoMessage *message = new ServerInfoMessage(SERVER_ID, infoMessageType, "");
+    message->setExtraInfo(extraInfo);
+    sendForAllMembers(category, message);
+}
+
+void BasicEventStrategy::sendCategoryNotFound(shared_ptr<User> sender, long categoryID) const {
+    sendMessage(sender, categoryID, FAIL, "Couldn't find category" + categoryID);
+}
+
+void BasicEventStrategy::sendMemberNotFound(shared_ptr<User> sender, long categoryID, long userID) const {
+    sendMessage(sender, categoryID, FAIL, "Couldn't find member" + userID);
+}
+
+void BasicEventStrategy::sendUserNotFound(shared_ptr<User> sender, long userID) const {
+    sendMessage(sender, userID, FAIL, "Couldn't find user" + userID);
 }

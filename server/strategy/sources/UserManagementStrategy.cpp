@@ -16,7 +16,7 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
                 auto newUser = model->createNewUser(managementMessage->getUserName(), managementMessage->getPort(),
                                                     managementMessage->getIp());
 
-                sendMessage(newUser->getID(), newUser->getID(), USER_CREATED);
+                sendMessage(newUser, newUser->getID(), USER_CREATED);
             } catch (exception &e) {
                 LOG(DEBUG) << "Failed to create user named " << managementMessage->getUserName();
                 ServerInfoMessage *returnMessage = new ServerInfoMessage(SERVER_ID, FAIL, "Couldn't create user!");
@@ -28,14 +28,15 @@ void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
         case MessageType::DELETE_USER_ACCOUNT:
         case MessageType::CLIENT_CLOSE_APP: {
             // TODO usuwanie z kategorii itd...
-            auto userID = managementMessage->getSenderID();
-            try {
-
-                LOG(INFO) << "Deleted user named " << userID;
-            } catch (exception &e) {
-                LOG(DEBUG) << "Failed to delete user " << userID;
-                sendMessage(userID, FAIL, "Failed to delete user!");
+            auto senderID = managementMessage->getSenderID();
+            auto sender = controller->getModel()->getUser(senderID);
+            if (!sender) {
+                LOG(INFO) << "Couldn't find user who sent message. SenderID: " << senderID;
+                return;
             }
+
+            controller->getModel()->deleteUser(sender);
+            LOG(INFO) << "Deleted user named " << senderID;
         }
             break;
 

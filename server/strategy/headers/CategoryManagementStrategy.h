@@ -9,8 +9,6 @@
 using namespace std;
 
 class CategoryManagementStrategy : public BasicEventStrategy {
-private:
-
 public:
     CategoryManagementStrategy() : BasicEventStrategy() { }
 
