@@ -8,19 +8,76 @@ INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
+const int BAD_PARAM = -11;
+const int DEFAULT_PORT = 8888;
+const string DEFAULT_IP = "127.0.1.1";
+const string DEFAULT_LOG_PATH = "/tmp/logs/serverLog.log";
+
 void handler(int signal) {
     Server::getServerPtr()->cleanUp();
     LOG(FATAL) << "Server stopped by signal " << signal;
 }
 
-int main(int argv, char *argc[]) {
-    START_EASYLOGGINGPP(argv, argc);
-    LOG(INFO) << "Server started";
+void showHelp() {
+    cout << "******* RING help *******" << endl;
+    cout << "Server program arguments:" << endl;
+    cout << "-ip [param]  -  set server ip" << endl;
+    cout << "-port [param]  -  set server port" << endl;
+    cout << "'-logPath [param]' - absolute path to log file" << endl;
+}
+
+void badInputArguments() {
+    cout << "Bad input arguments!" << endl;
+    showHelp();
+    exit(BAD_PARAM);
+}
+
+int main(int argc, char *argv[]) {
+    string ip = DEFAULT_IP;
+    int port = DEFAULT_PORT;
+    string logFilePath = DEFAULT_LOG_PATH;
+
+    if (argc > 1) {
+        if (argc == 2) {
+            if (strcmp("-h", argv[1]) != 0 || strcmp("-help", argv[1]) != 0)
+                badInputArguments();
+
+            showHelp();
+            return 0;
+        } else if (argc % 2 != 0) {
+            for (int i = 1; i < argc; i += 2) {
+                if (strcmp("-ip", argv[i]) == 0)
+                    ip = argv[i + 1];
+                else if (strcmp("-port", argv[i]) == 0)
+                    port = stoi(argv[i + 1]);
+                else if (strcmp("-logPath", argv[i]) == 0)
+                    logFilePath = argv[i + 1];
+                else {
+                    badInputArguments();
+                }
+            }
+        } else {
+            badInputArguments();
+        }
+    }
+
+    START_EASYLOGGINGPP(argc, argv);
+    el::Configurations defaultConf;
+    defaultConf.setToDefault();
+    defaultConf.setGlobally(el::ConfigurationType::Filename, logFilePath.c_str());
+    defaultConf.setGlobally(el::ConfigurationType::ToFile, "true");
+    defaultConf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+    defaultConf.setGlobally(el::ConfigurationType::MaxLogFileSize, "20000000");
+    el::Loggers::reconfigureLogger("default", defaultConf);
+    LOG(INFO) << "Server started with parameters: " << endl
+    << "Server IP: " << ip << endl
+    << "Server port: " << port << endl;
 
     signal(SIGINT, handler);
     signal(SIGTERM, handler);
 
     try {
+        Server::createServer(ip, port);
         Server::getServerPtr()->start();
     } catch (exception &e) {
         LOG(FATAL) << "Server stopped working. Exception log: " << e.what();

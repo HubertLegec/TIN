@@ -5,8 +5,6 @@
 
 class Server {
 private:
-    const static int DEFAULT_PORT;
-    const static string DEFAULT_IP;
     static shared_ptr<Server> serverPtr;
     shared_ptr<Controller> controller;
 
@@ -15,9 +13,7 @@ private:
 public:
     static shared_ptr<Server> getServerPtr();
 
-    static shared_ptr<Server> getServerPtr(int port);
-
-    static shared_ptr<Server> getServerPtr(string ip, int port);
+    static shared_ptr<Server> createServer(string ip, int port);
 
     void cleanUp();
 
