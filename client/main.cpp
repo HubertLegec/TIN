@@ -11,6 +11,15 @@ void handler(int signal) {
     LOG(FATAL) << "Client stopped by signal " << signal;
 }
 
+bool isValidIPAddress(const string &address) {
+    struct sockaddr_in sa;
+    bool isIPv4 = inet_pton(AF_INET, address.c_str(), &(sa.sin_addr)) != 0;
+    struct sockaddr_in6 sav6;
+    bool isIPv6 = inet_pton(AF_INET6, address.c_str(), &(sav6.sin6_addr)) != 0;
+    return isIPv4 || isIPv6;
+}
+
+
 INITIALIZE_EASYLOGGINGPP
 
 
@@ -40,10 +49,18 @@ int main(int argv, char* argc[]) {
         while (i < argv) {
             if (strcmp(argc[i], "-ip") == 0) {
                 myIP = string(argc[i + 1]);
+                if (!isValidIPAddress(myIP)) {
+                    cout << "Client IP address is not valid IP address!\n";
+                    return -1;
+                }
             } else if (strcmp(argc[i], "-port") == 0) {
                 myPort = atoi(argc[i + 1]);
             } else if (strcmp(argc[i], "-sip") == 0) {
                 serverIP = string(argc[i + 1]);
+                if (!isValidIPAddress(serverIP)) {
+                    cout << "Server IP address is not valid IP address!\n";
+                    return -1;
+                }
             } else if (strcmp(argc[i], "-sport") == 0) {
                 serverPort = atoi(argc[i + 1]);
             } else if (strcmp(argc[i], "-logFile") == 0) {
