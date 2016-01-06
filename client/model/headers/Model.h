@@ -37,9 +37,9 @@ private:
     std::map<long, CategoryInfo> categories;
 
 public:
-    static constexpr const char *SERVER_DEFAULT_IP = "127.0.0.1";
+    static constexpr const char *SERVER_DEFAULT_IP = "127.0.1.1";
     static const int SERVER_DEFAULT_PORT = 8888;
-    static constexpr const char *CLIENT_DEFAULT_IP = "127.0.0.1";
+    static constexpr const char *CLIENT_DEFAULT_IP = "127.0.1.1";
     static const int CLIENT_DEFAULT_PORT = 7777;
     static const long UNDEFINED_ID = -1;
 
