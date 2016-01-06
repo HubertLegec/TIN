@@ -82,7 +82,7 @@ void CategoryManagementStrategy::serveEvent(SimpleMessage *message) const {
             auto owner = category->getOwner();
             category->addNewMember(userToAdd);
             LOG(INFO) << "Added user " << sender << " to category " << categoryID;
-            sendMessage(sender, categoryID, CATEGORY_JOINED);
+            sendMessage(sender, categoryID, CATEGORY_JOINED, category->getName());
 
             //client needs userID, so it is send as sendrer id instead of SERVER_ID
             ServerInfoMessage *newMemberMessage = new ServerInfoMessage(userToAdd->getID(), NEW_CATEGORY_MEMBER,
