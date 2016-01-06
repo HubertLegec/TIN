@@ -12,7 +12,6 @@
 #include "../../networkMessage/headers/ServerInfoMessage.h"
 #include "../../networkMessage/headers/UserManagementMessage.h"
 #include "../../networkMessage/headers/CategoryListMessage.h"
-#include "../../networkMessage/headers/NetworkControllerErrorMessage.h"
 
 
 void NetworkController::prepareSendThread() {
@@ -21,14 +20,7 @@ void NetworkController::prepareSendThread() {
 }
 
 void NetworkController::createThread(pthread_t *thread, void *(*function)(void *)) {
-//    int rc;
     pthread_create(thread, NULL, function, ((void *) pointer));
-//    LOG(INFO) << "Joining thread";
-//    rc = pthread_join(*thread, NULL);
-//    if (rc) {
-//        LOG(ERROR) << "Unable to join thread" << rc;
-//        exit(-1);
-//    }
 }
 
 void *NetworkController::startSendThread(void *param) {
@@ -107,11 +99,10 @@ bool NetworkController::prepareConncetionWithReceiver(std::shared_ptr<MessageWra
 }
 
 bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
-    int length = 0;
+    unsigned long length = 0;
     const char *serializedMsg = serializeMsg(msg, length);
     if (serializedMsg == NULL)
         return false;
-    int len = strlen(serializedMsg);
     int sentBytes = 0;
     LOG(INFO) << "[SND] Sending msg: " << serializedMsg << " with length: " << length << std::endl;
     LOG(INFO) << "[SND] msg: " << msg->toString();
@@ -132,7 +123,7 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     return true;
 }
 
-const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, int &length) {
+const char *NetworkController::serializeMsg(std::shared_ptr<SimpleMessage> msg, unsigned long &length) {
     std::stringstream ss;
     cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
     switch (msg->getMessageType()) {
@@ -207,7 +198,10 @@ const char *NetworkController::getcharFromString(std::string string) {
 
 void NetworkController::prepareReceiveThread() {
     LOG(INFO) << "[REC] Starting preparing receive thread";
-    prepareListeningSocket();
+    if (!prepareListeningSocket()) {
+        stop();
+        pthread_exit(NULL);
+    }
     //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
     LOG(INFO) << "[REC] Listen  with sockfd: " << receiveSockfd;
     listen(receiveSockfd, 100);
@@ -216,17 +210,25 @@ void NetworkController::prepareReceiveThread() {
     createThread(receiveSystemThread, startReceiveThread);
 }
 
-void NetworkController::prepareListeningSocket() {
+bool NetworkController::prepareListeningSocket() {
     struct addrinfo hints;
 
     memset(&hints, 0, sizeof(struct addrinfo));
     LOG(INFO) << "[REC] Getting my own address";
     struct sockaddr_in server;
     hostent *hp;
-    char hostname[128];
-    gethostname(hostname, sizeof(hostname));
-//    LOG(INFO) << "[REC] TCP/Server running at host NAME: " << hostname;
-    hp = gethostbyname(hostname);
+    struct in_addr ipv4addr;
+//    char hostname[128];
+//    gethostname(hostname, sizeof(hostname));
+    inet_pton(AF_INET, myIP, &ipv4addr);
+    hp = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
+    if (hp == NULL) {
+        LOG(ERROR) << "[REC] Problem with creating listening socket. Closing application...";
+        receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_CREATE_LISTENING_SOCKET,
+                                           "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
+        return false;
+    }
+//    hp = gethostbyname(hostname);
     bcopy(hp->h_addr, &(server.sin_addr), hp->h_length);
     LOG(INFO) << "[REC] TCP/Server INET ADDRESS is: " << inet_ntoa(server.sin_addr);
 
@@ -235,12 +237,11 @@ void NetworkController::prepareListeningSocket() {
         LOG(ERROR) << "[REC] Problem with creating listening socket. Closing application...";
         receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_CREATE_LISTENING_SOCKET,
                                            "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
-        stop();
-        exit(1);
+        return false;
     }
     server.sin_family = AF_INET;
     server.sin_port = htons(atoi(myPort));
-    server.sin_addr.s_addr = htonl(INADDR_ANY);
+//    server.sin_addr.s_addr = htonl(INADDR_ANY);
     int length = sizeof(server);
     if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
         close(receiveSockfd);
@@ -248,13 +249,12 @@ void NetworkController::prepareListeningSocket() {
         LOG(ERROR) << "[REC] Not bind. Probably your port is already used.";
         receiveQueue->push(prepareErrorMsg(NetworkControllerErrorMessage::ErrorCode::UNABLE_TO_CREATE_LISTENING_SOCKET,
                                            "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
-        stop();
-        exit(1);
+        return false;
     }
     socklen_t length1 = sizeof(server);
     getsockname(receiveSockfd, (struct sockaddr *) &server, &length1);
     LOG(INFO) << "[REC] Server Port is: " << ntohs(server.sin_port);
-
+    return true;
 
 }
 
@@ -272,9 +272,8 @@ void NetworkController::createReceiveThread() {
 
         struct sockaddr_in peer_name;
         socklen_t socklen = sizeof(peer_name);
-        socklen_t *senderAddresLen;
         std::unique_lock<std::mutex> mlock(mutex_);
-        if (exitFlag == true) {
+        if (exitFlag) {
             LOG(INFO) << "[REC] Closing receiving thread";
             mlock.unlock();
             break;
@@ -287,7 +286,7 @@ void NetworkController::createReceiveThread() {
             continue;
         }
         std::unique_lock<std::mutex> mlock1(mutex_);
-        if (exitFlag == true) {
+        if (exitFlag) {
             LOG(INFO) << "[REC] Closing receiving thread";
             mlock1.unlock();
             break;
@@ -302,13 +301,12 @@ void NetworkController::createReceiveThread() {
 
 
 void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
-//    LOG(INFO) << "Serving " << inet_ntoa(from.sin_addr) << ":" << ntohs(from.sin_port);
     hostent *hp;
     hp = gethostbyaddr((char *) &from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
     LOG(INFO) << "[REC] Name is : " << hp->h_name;
     char *buffer = new char[1000];
     int msgLength = 0;
-    int i = 0;
+    unsigned long i = 0;
     while ((msgLength = recv(senderSockfd, buffer + i, sizeof(buffer), 0)) > 0) {
         i += msgLength;
     }
@@ -399,7 +397,7 @@ void NetworkController::receiveMsg(int senderSockfd, struct sockaddr_in from) {
     }
 }
 
-std::string NetworkController::getStringFromChar(int length1, const char *tab) {
+std::string NetworkController::getStringFromChar(unsigned long length1, const char *tab) {
     if (length1 < 16)
         length1 = ((length1 / 16) + 1) * 16;
     std::string result;

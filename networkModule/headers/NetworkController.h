@@ -53,13 +53,13 @@ private:
 
     bool prepareConncetionWithReceiver(std::shared_ptr<MessageWrapper> msg);
 
-    std::string getStringFromChar(int length, const char *tab);
+    std::string getStringFromChar(unsigned long length1, const char *tab);
 
     const char *getcharFromString(std::string string);
 
-    void prepareListeningSocket();
+    bool prepareListeningSocket();
 
-    const char *serializeMsg(std::shared_ptr<SimpleMessage> msg, int &length);
+    const char *serializeMsg(std::shared_ptr<SimpleMessage> msg, unsigned long &length);
 
     static void *startReceiveThread(void *param);
 
@@ -72,11 +72,12 @@ public:
     NetworkController() { };
 
     NetworkController(Queue<std::shared_ptr<MessageWrapper>> *sendQueue,
-                      Queue<std::shared_ptr<SimpleMessage>> *receiveQueue, int port)
+                      Queue<std::shared_ptr<SimpleMessage>> *receiveQueue, std::string ip, int port)
             : sendQueue(sendQueue),
               receiveQueue(receiveQueue),
               sendSockfd(0), receiveSockfd(0) {
         exitFlag = false;
+        myIP = ip.c_str();
         std::string s = std::to_string(port);
         myPort = s.c_str();
         pointer = this;
