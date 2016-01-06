@@ -31,18 +31,18 @@ void PendingUserEventStrategy::serveEvent(BasicEvent *event) {
 
 void PendingUserEventStrategy::acceptUser(long categoryID, long userID) {
     LOG(INFO) << "PendingUserEventStrategy::acceptUser:\ncategoryID:" << categoryID << " ; userID:" << userID;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::NEW_MEMBER_CONFIRM,
-                                                                                       categoryID, userID);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::NEW_MEMBER_CONFIRM,
+                                                                                   categoryID, userID));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
     getModel()->removePendingUser(categoryID, userID);
 }
 
 void PendingUserEventStrategy::rejectUser(long categoryID, long userID) {
     LOG(INFO) << "PendingUserEventStrategy::rejectUser:\ncategoryID:" << categoryID << " ; userID:" << userID;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::NEW_MEMBER_REJECT,
-                                                                                       categoryID, userID);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::NEW_MEMBER_REJECT,
+                                                                                   categoryID, userID));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
     getModel()->removePendingUser(categoryID, userID);
 }

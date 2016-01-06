@@ -16,11 +16,11 @@ void NewMessageEventStrategy::serveEvent(BasicEvent *event) {
     LOG(INFO) << "NewMessageEventStrategy::serveEvent:\n" << event->toString();
 
     NewMessageEvent *newMessageEvent = dynamic_cast<NewMessageEvent *>(event);
-    shared_ptr<RingMessage> ringMsg = make_shared<RingMessage>(getModel()->getUserId(),
-                                                               newMessageEvent->getCategoryID(),
-                                                               newMessageEvent->getMessage());
+    auto ringMsg = shared_ptr<RingMessage>(new RingMessage(getModel()->getUserId(),
+                                                           newMessageEvent->getCategoryID(),
+                                                           newMessageEvent->getMessage()));
     ConnectionInfo neighbour = getModel()->getLeftNeighbour(newMessageEvent->getCategoryID());
-    shared_ptr<MessageWrapper> msg = shared_ptr<MessageWrapper>(
+    auto msg = shared_ptr<MessageWrapper>(
             new MessageWrapper(ringMsg, neighbour.getIP(), neighbour.getPort()));
     sendMessage(msg);
     showMainMenu();

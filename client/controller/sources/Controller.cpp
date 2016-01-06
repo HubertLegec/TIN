@@ -23,6 +23,9 @@ Controller::Controller(Model *model) : model(model) {
 
 Controller::~Controller() {
     delete networkController;
+    for (auto strategy : strategyMap) {
+        delete strategy.second;
+    }
 }
 
 void Controller::setView(View *view) {

@@ -47,46 +47,46 @@ void CategoryAccessEventStrategy::serveEvent(BasicEvent *event) {
 void CategoryAccessEventStrategy::createCategory(const std::string &name) const {
     LOG(INFO) << "CategoryAccessEventStrategy::createCategory:\n" << "categoryName: " << name;
 
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::CREATE_CATEGORY,
-                                                                                       name);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::CREATE_CATEGORY,
+                                                                                   name));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
 }
 
 void CategoryAccessEventStrategy::deleteCategory(long id) const {
     LOG(INFO) << "CategoryAccessEventStrategy::deleteCategory:\n" << "categoryID: " << id;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::DESTROY_CATEGORY,
-                                                                                       id);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::DESTROY_CATEGORY,
+                                                                                   id));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
 }
 
 void CategoryAccessEventStrategy::signUpCategory(long id) const {
     LOG(INFO) << "CategoryAccessEventStrategy::signUpCategory:\n" << "categoryID: " << id;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::JOIN_CATEGORY, id);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::JOIN_CATEGORY, id));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
 }
 
 void CategoryAccessEventStrategy::signOutCategory(long id) const {
     LOG(INFO) << "CategoryAccessEventStrategy::signOutCategory:\n" << "categoryID: " << id;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::LEFT_CATEGORY, id);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::LEFT_CATEGORY, id));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
 }
 
 void CategoryAccessEventStrategy::joinCategory(long id) const {
     LOG(INFO) << "CategoryAccessEventStrategy::joinCategory:\n" << "categoryID: " << id;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::ACTIVATE_CATEGORY,
-                                                                                       id);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::ACTIVATE_CATEGORY,
+                                                                                   id));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
 }
 
 void CategoryAccessEventStrategy::leaveCategory(long id) const {
     LOG(INFO) << "CategoryAccessEventStrategy::leaveCategory:\n" << "categoryID: " << id;
-    shared_ptr<CategoryManagementMessage> msg = make_shared<CategoryManagementMessage>(getModel()->getUserId(),
-                                                                                       MessageType::DEACTIVATE_CATEGORY,
-                                                                                       id);
-    sendMessage(shared_ptr<MessageWrapper>(new MessageWrapper(msg, getServerIP(), getServerPort())));
+    auto msg = shared_ptr<CategoryManagementMessage>(new CategoryManagementMessage(getModel()->getUserId(),
+                                                                                   MessageType::DEACTIVATE_CATEGORY,
+                                                                                   id));
+    controller->sendMessage(msg, getServerIP(), getServerPort());
 }

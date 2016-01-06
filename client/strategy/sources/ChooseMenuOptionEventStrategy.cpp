@@ -68,7 +68,7 @@ void ChooseMenuOptionEventStrategy::showCategoryList() const {
     if (!getModel()->isRegistered()) {
         createAccount();
     } else {
-        shared_ptr<GetMessage> toSend = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
+        auto toSend = shared_ptr<GetMessage>(new GetMessage(getModel()->getUserId(), GetMessageType::CAT_LIST));
         controller->setState(Controller::CATEGORY_LIST);
         controller->createTimeoutThread();
         controller->sendMessage(toSend, getServerIP(), getServerPort());
@@ -129,9 +129,8 @@ void ChooseMenuOptionEventStrategy::signUpCategory() const {
     if (getModel()->isRegistered()) {
         controller->setState(Controller::SIGN_UP);
         controller->createTimeoutThread();
-        shared_ptr<GetMessage> ptr = make_shared<GetMessage>(getModel()->getUserId(), GetMessageType::CAT_LIST);
-        controller->getSendQueue()->push(
-                shared_ptr<MessageWrapper>(new MessageWrapper(ptr, getServerIP(), getServerPort())));
+        auto ptr = shared_ptr<GetMessage>(new GetMessage(getModel()->getUserId(), GetMessageType::CAT_LIST));
+        controller->sendMessage(ptr, getServerIP(), getServerPort());
     } else {
         createAccount();
     }

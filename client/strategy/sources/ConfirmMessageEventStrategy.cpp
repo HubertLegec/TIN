@@ -5,6 +5,8 @@
 #include "../headers/ConfirmMessageEventStrategy.h"
 #include "../../../clientEvents/headers/ConfirmMessageEvent.h"
 
+using namespace std;
+
 ConfirmMessageEventStrategy::ConfirmMessageEventStrategy() : BasicEventStrategy() { }
 
 ConfirmMessageEventStrategy::ConfirmMessageEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
@@ -17,6 +19,6 @@ void ConfirmMessageEventStrategy::serveEvent(BasicEvent *event) {
 
     m.addConfirmation(getModel()->getUserName());
     ConnectionInfo neighbour = getModel()->getLeftNeighbour(m.getCategoryId());
-    auto toSend = std::shared_ptr<RingMessage>(new RingMessage(m));
+    auto toSend = shared_ptr<RingMessage>(new RingMessage(m));
     controller->sendMessage(toSend, neighbour.getIP(), neighbour.getPort());
 }
