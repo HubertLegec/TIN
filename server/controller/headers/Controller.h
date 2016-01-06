@@ -22,13 +22,20 @@ enum IncomingMessageType {
     GET_MESSAGE,
     USER_MANAGEMENT,
     ERROR_MESSAGE,
+    EXIT_MESSAGE,
     UNKNOWN
+};
+
+enum WorkingStatus {
+    NORMAL,
+    WAITING_TO_EXIT
 };
 
 class Controller {
 private:
     int myPort;
     string myIP;
+    WorkingStatus workingStatus;
     map<IncomingMessageType, BasicEventStrategy *> strategyMap;
     Queue<shared_ptr<SimpleMessage> > incomingMessages;
     Queue<shared_ptr<MessageWrapper> > outgoingMessages;
@@ -103,6 +110,14 @@ public:
     void run();
 
     void cleanUp();
+
+    void setWorkingStatus(const WorkingStatus &workingStatus) {
+        Controller::workingStatus = workingStatus;
+    }
+
+    const WorkingStatus &getWorkingStatus() const {
+        return workingStatus;
+    }
 };
 
 

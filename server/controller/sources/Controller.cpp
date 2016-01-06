@@ -5,7 +5,7 @@
 #include "../../strategy/headers/UserManagementStrategy.h"
 #include "../../strategy/headers/ErrorMessageStrategy.h"
 
-Controller::Controller(string ip, int port) : model(new Model), myIP(ip), myPort(port) {
+Controller::Controller(string ip, int port) : model(new Model), myIP(ip), myPort(port), workingStatus(NORMAL) {
     initStrategyMap();
     networkController.reset(new NetworkController(&outgoingMessages, &incomingMessages, myIP, myPort));
 }
@@ -69,8 +69,10 @@ void Controller::run() {
         incomingMessage = incomingMessages.pop();
         type = getMessageType(incomingMessage);
         if (type == IncomingMessageType::UNKNOWN) {
-            LOG(ERROR) << "Bad type of incomming message";
-        } else {
+            LOG(INFO) << "Bad type of incomming message";
+        } else if (type == EXIT_MESSAGE) {
+            LOG(FATAL) << "Get EXIT_MESSAGE. Closing server app!";
+        } else if (workingStatus == WorkingStatus::NORMAL) {
             try {
                 strategyMap.at(type)->serveEvent(incomingMessage.get());
             } catch (exception &e) {
@@ -105,7 +107,10 @@ IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message
             return IncomingMessageType::USER_MANAGEMENT;
 
         case NETWORK_CONTROLLER_ERROR_MESSAGE:
-            return ERROR_MESSAGE;
+            return IncomingMessageType::ERROR_MESSAGE;
+
+        case EXIT:
+            return IncomingMessageType::EXIT_MESSAGE;
 
         default:
             return IncomingMessageType::UNKNOWN;
@@ -113,5 +118,6 @@ IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message
 }
 
 void Controller::cleanUp() {
+    workingStatus = WorkingStatus::WAITING_TO_EXIT;
     networkController->stop();
 }

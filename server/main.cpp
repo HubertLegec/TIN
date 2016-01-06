@@ -14,7 +14,6 @@ enum {
 
 void handler(int signal) {
     Server::getServerPtr()->cleanUp();
-    LOG(FATAL) << "Server stopped by signal " << signal;
 }
 
 void showHelp() {
