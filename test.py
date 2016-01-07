@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os
 import signal
-import time
 import subprocess
+import time
 
 
 def scrollOutPut(clientProc):
@@ -150,6 +150,28 @@ def sendMsgTest(clientProc, categoryId, msg):
     run1(clientProc, commands)
 
 
+def userSignOutCategoryTest(clientProc, userName, categoryID):
+    commands = ["o", categoryID, "y"]
+    run1(clientProc, commands)
+    time.sleep(1)
+    expectResult = "successfully"
+    if assertContains(clientProc, expectResult):
+        print "V User " + userName + " successfully left category " + str(categoryID)
+    else:
+        print "X User " + userName + " was unable to leave category " + str(categoryID)
+
+
+def deleteCategoryTest(clientProc, categoryID):
+    commands = ["d", categoryID, "y"]
+    run1(clientProc, commands)
+    time.sleep(1)
+    expectResult = "removed!"
+    if assertContains(clientProc, expectResult):
+        print "V category " + str(categoryID) + " was successfully deleted"
+    else:
+        print "X category " + str(categoryID) + " wasn't deleted"
+
+
 def main():
     # subprocess.Popen("cmake CMakeLists.txt")
     # subprocess.Popen("make RING_SERVER")
@@ -158,14 +180,14 @@ def main():
     serverProc = subprocess.Popen("./RING_SERVER", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   preexec_fn=os.setsid)
 
-    clientProc1 = subprocess.Popen("./RING_CLIENT -port 5555", shell=True,
+    clientProc1 = subprocess.Popen("./RING_CLIENT -port 5557", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
 
-    clientProc2 = subprocess.Popen("./RING_CLIENT -port 6666", shell=True,
+    clientProc2 = subprocess.Popen("./RING_CLIENT -port 6667", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
-    clientProc3 = subprocess.Popen("./RING_CLIENT -port 4444", shell=True,
+    clientProc3 = subprocess.Popen("./RING_CLIENT -port 4447", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
     print "========CREATION USER TEST======"
@@ -185,11 +207,20 @@ def main():
     confirmRegistrationTest(clientProc1, "Wojtek", "Hubert", "Damian")
     checkAcceptInboxTest(clientProc2, "pierscien", "Hubert", "Wojtek", "Wojtek")
     registrationInRingTest(clientProc3, "Damian", 0, "pierscien")
-    #confirmRegistration1Test(clientProc1, "Wojtek", "Damian") jeszcze nie przechodi work in progress
+    # confirmRegistration1Test(clientProc1, "Wojtek", "Damian") jeszcze nie przechodi work in progress
     time.sleep(1)
     print "========SENDING MSG IN RING TEST======"
     time.sleep(1)
     # sendMsgTest(clientProc1, 0, ) nad tym pracuje
+
+    print "========USER SIGN OUT FROM CATEGORY TEST======"
+    userSignOutCategoryTest(clientProc2, "Hubert", 0);
+
+    print "========DELETING CATEGORY TEST======="
+    deleteCategoryTest(clientProc1, 0)
+    categories = ["pierscien1"]
+    displayCategoryTest(clientProc1, categories)
+    displayCategoryTest(clientProc2, categories)
 
     os.killpg(os.getpgid(serverProc.pid), signal.SIGTERM)
     os.killpg(os.getpgid(clientProc1.pid), signal.SIGTERM)
@@ -198,4 +229,3 @@ def main():
 
 
 main()
-
