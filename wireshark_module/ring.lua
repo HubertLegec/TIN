@@ -3,12 +3,9 @@
 --[[ 
 	RUNNING SCRIPT 
 	1. Get into directory containing this script.
-	2. type: wireshark -X lua_script:ring.lua
+	2. type: wireshark -X lua_script:ring.lua -X lua_script1:[port1] -X lua_script1:[port2] ... - where [port1],[port2]...[portN] are ports
+		on which you want to register RING messages dissector.
 	3. Capture packets.
-	4. Right-click on one of captured packets.
-	5. Select "Decode as..."
-	6. Find "RING" protocol.
-	7. Click apply.
 --]]
 local debug = false
 
@@ -41,7 +38,18 @@ local get_message_type_names = {
 local server_info_message_type_names = {
 	[0] = "OK",
 	[1] = "FAIL",
-	[2] = "PERMISSION_DENIED"
+	[2] = "PERMISSION_DENIED",
+	[3] = "CATEGORY_CREATED",
+	[4] = "CATEGORY_REMOVED",
+	[5] = "CATEGORY_JOINED",
+	[6] = "CATEGORY_LEFT",
+	[7] = "CATEGORY_ACTIVATED",
+	[8] = "CATEGORY_DEACTIVATED",
+	[9] = "USER_CREATED",
+	[10]= "USER_DELETED",
+	[11]= "NEW_CATEGORY_MEMBER",
+	[12]= "MEMBER_CONFIRMED",
+	[13]= "MEMBER_REJECTED",
 }
 
 
@@ -329,8 +337,13 @@ checkLength = function (tvbuf, offset)
 	return length_val, length_tvbr
 end
 
---Registering protocol
-DissectorTable.get("tcp.port"):add(8888, ring_proto)
+--Registering protocol at custom  ports.
+--Get ports from dissector table
+local args = {...}
+for i,v in ipairs(args) do
+    	if debug == true then print("argument no " .. i .. " is:" .. v) end
+	DissectorTable.get("tcp.port"):add(v, ring_proto)
+end
 
 --Function that helps in parsing strings from buffer contents.
 getString = function (tvbuf, offset)
