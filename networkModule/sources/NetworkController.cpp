@@ -107,7 +107,6 @@ bool NetworkController::sendMsg(std::shared_ptr<SimpleMessage> msg) {
     LOG(INFO) << "[SND] Sending msg: " << serializedMsg << " with length: " << length << std::endl;
     LOG(INFO) << "[SND] msg: " << msg->toString();
     sentBytes = send(sendSockfd, serializedMsg, length, 0);
-//    sentBytes = write(sendSockfd, serializedMsg, len);
     LOG(INFO) << "[SND] Sent: " << sentBytes << " bytes";
     int trialCounter = 1;
     if (sentBytes == length) {
@@ -202,7 +201,6 @@ void NetworkController::prepareReceiveThread() {
         stop();
         pthread_exit(NULL);
     }
-    //TODO drugi parametr - liczba połączeń oczekujących, do ogarnięcia
     LOG(INFO) << "[REC] Listen  with sockfd: " << receiveSockfd;
     listen(receiveSockfd, 100);
     pthread_t thread;
@@ -218,8 +216,6 @@ bool NetworkController::prepareListeningSocket() {
     struct sockaddr_in server;
     hostent *hp;
     struct in_addr ipv4addr;
-//    char hostname[128];
-//    gethostname(hostname, sizeof(hostname));
     inet_pton(AF_INET, myIP, &ipv4addr);
     hp = gethostbyaddr(&ipv4addr, sizeof ipv4addr, AF_INET);
     if (hp == NULL) {
@@ -228,7 +224,6 @@ bool NetworkController::prepareListeningSocket() {
                                            "I couldn't create listening socket for receive thread. Probably your port is already used. Closing application..."));
         return false;
     }
-//    hp = gethostbyname(hostname);
     bcopy(hp->h_addr, &(server.sin_addr), hp->h_length);
     LOG(INFO) << "[REC] TCP/Server INET ADDRESS is: " << inet_ntoa(server.sin_addr);
 
@@ -241,7 +236,6 @@ bool NetworkController::prepareListeningSocket() {
     }
     server.sin_family = AF_INET;
     server.sin_port = htons(atoi(myPort));
-//    server.sin_addr.s_addr = htonl(INADDR_ANY);
     int length = sizeof(server);
     if (bind(receiveSockfd, (struct sockaddr *) &server, length) == -1) {
         close(receiveSockfd);
@@ -267,7 +261,6 @@ void *NetworkController::startReceiveThread(void *param) {
 
 void NetworkController::createReceiveThread() {
     LOG(INFO) << "[REC] Receiving connection with sockfd: " << receiveSockfd;
-    //TODO do obsłużenia mechanizm zamykania wątków
     while (true) {
 
         struct sockaddr_in peer_name;
@@ -281,7 +274,6 @@ void NetworkController::createReceiveThread() {
         mlock.unlock();
         int senderSockfd = accept(receiveSockfd, (struct sockaddr *) &peer_name, &socklen);
         if (senderSockfd == -1) {
-            //TODO błąd do obsłużeniaa
             LOG(INFO) << "[REC] Error during accept connection. I skip this connection... ";
             continue;
         }

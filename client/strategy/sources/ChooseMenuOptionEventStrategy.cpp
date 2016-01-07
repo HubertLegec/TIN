@@ -13,7 +13,7 @@ ChooseMenuOptionEventStrategy::ChooseMenuOptionEventStrategy() : BasicEventStrat
 ChooseMenuOptionEventStrategy::ChooseMenuOptionEventStrategy(Controller* controller) : BasicEventStrategy(controller) { }
 
 void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::serveEvent:\n" << event->toString();
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::serveEvent:" << event->toString();
 
     ChooseMenuOptionEvent *chooseMenuOptionEvent = dynamic_cast<ChooseMenuOptionEvent *>(event);
     switch (chooseMenuOptionEvent->getOptionChosen()) {
@@ -64,7 +64,7 @@ void ChooseMenuOptionEventStrategy::serveEvent(BasicEvent *event) {
 
 
 void ChooseMenuOptionEventStrategy::showCategoryList() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::showCategoryList";
     if (!getModel()->isRegistered()) {
         createAccount();
     } else {
@@ -76,7 +76,7 @@ void ChooseMenuOptionEventStrategy::showCategoryList() const {
 }
 
 void ChooseMenuOptionEventStrategy::createCategory() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::createCategory\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::createCategory";
     if (getModel()->isRegistered()) {
         getView()->showCreateCategorySubMenu();
     } else {
@@ -85,7 +85,7 @@ void ChooseMenuOptionEventStrategy::createCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::deleteCategory() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::deleteCategory\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::deleteCategory";
     if (getModel()->isRegistered()) {
         if (getModel()->getMyCategories().size() == 0) {
             getView()->showInfo("You have no categories to delete!");
@@ -99,7 +99,7 @@ void ChooseMenuOptionEventStrategy::deleteCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::joinCategory() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::joinCategory\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::joinCategory";
     if (getModel()->isRegistered()) {
         if (getModel()->getInactiveCategories().size() == 0) {
             getView()->showInfo("You have no inactive categories");
@@ -113,7 +113,7 @@ void ChooseMenuOptionEventStrategy::joinCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::leaveCategory() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::leaveCategory\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::leaveCategory";
     if (getModel()->isRegistered()) {
         if (getModel()->getActiveCategories().size() == 0) {
             getView()->showInfo("You have no categories to leave!");
@@ -125,7 +125,7 @@ void ChooseMenuOptionEventStrategy::leaveCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::signUpCategory() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::signUpCategory\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::signUpCategory";
     if (getModel()->isRegistered()) {
         controller->setState(Controller::SIGN_UP);
         controller->createTimeoutThread();
@@ -137,10 +137,13 @@ void ChooseMenuOptionEventStrategy::signUpCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::signOutCategory() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::signOutCategory\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::signOutCategory";
     if (getModel()->isRegistered()) {
         if (getModel()->getJoinedCategories().size() == 0) {
             getView()->showInfo("You have no categories to sign out!");
+            showMainMenu();
+        } else if (getModel()->getInboxMessages().size() > 0) {
+            getView()->showInfo("Your inbox is not empty! Read all the messages and then come back here.");
             showMainMenu();
         } else {
             getView()->showSignOutCategorySubMenu(getModel()->getJoinedCategories());
@@ -151,7 +154,7 @@ void ChooseMenuOptionEventStrategy::signOutCategory() const {
 }
 
 void ChooseMenuOptionEventStrategy::createAccount() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::createAccount\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::createAccount";
     if (!getModel()->isRegistered()) {
         getView()->showRegisterNewUserSubMenu();
     } else {
@@ -161,7 +164,7 @@ void ChooseMenuOptionEventStrategy::createAccount() const {
 }
 
 void ChooseMenuOptionEventStrategy::removeAccount() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::removeAccount\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::removeAccount";
     if (getModel()->isRegistered()) {
         getView()->showRemoveUserSubMenu();
     } else {
@@ -171,12 +174,12 @@ void ChooseMenuOptionEventStrategy::removeAccount() const {
 }
 
 void ChooseMenuOptionEventStrategy::refresh() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::refresh\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::refresh";
     showMainMenu();
 };
 
 void ChooseMenuOptionEventStrategy::sendRingMessage() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::sendRingMessage\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::sendRingMessage";
     if (getModel()->isRegistered()) {
         if (getModel()->getMyCategories().size() == 0) {
             getView()->showInfo("You have no categories to send message!");
@@ -203,7 +206,7 @@ void ChooseMenuOptionEventStrategy::sendRingMessage() const {
 }
 
 void ChooseMenuOptionEventStrategy::openInbox() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::openInbox\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::openInbox";
     if (getModel()->isRegistered()) {
         if (getModel()->getInboxMessages().size() == 0) {
             getView()->showInfo("Your inbox is empty. Check it later.");
@@ -222,7 +225,7 @@ void ChooseMenuOptionEventStrategy::openInbox() const {
 }
 
 void ChooseMenuOptionEventStrategy::pendingUsers() const {
-    LOG(INFO) << "ChooseMenuOptionEventStrategy::pendingUsers\n";
+    LOG(INFO) << "ChooseMenuOptionEventStrategy::pendingUsers";
     if (getModel()->isRegistered()) {
         if (getModel()->getPendingUsers().size() == 0) {
             getView()->showInfo("Nobody wants to join to your category.");

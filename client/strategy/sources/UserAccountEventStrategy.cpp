@@ -34,7 +34,8 @@ void UserAccountEventStrategy::serveEvent(BasicEvent *event) {
 }
 
 void UserAccountEventStrategy::createAccount(const std::string &name) const {
-    LOG(INFO) << "CUserAccountEventStrategy::createAccount:\n" << "userName: " << name;
+    LOG(INFO) << "UserAccountEventStrategy::createAccount:\n" << "userName: " << name;
+    getModel()->setUserName(name);
     auto msg = shared_ptr<UserManagementMessage>(
             new UserManagementMessage(MessageType::CREATE_USER_ACCOUNT, getMyIP(), getMyPort(), name));
     controller->getSendQueue()->push(
@@ -42,7 +43,7 @@ void UserAccountEventStrategy::createAccount(const std::string &name) const {
 }
 
 void UserAccountEventStrategy::deleteAccount() const {
-    LOG(INFO) << "CUserAccountEventStrategy::DeleteAccount";
+    LOG(INFO) << "UserAccountEventStrategy::DeleteAccount";
     long id = getModel()->getUserId();
     auto msg = shared_ptr<UserManagementMessage>(
             new UserManagementMessage(id, MessageType::DELETE_USER_ACCOUNT));

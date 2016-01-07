@@ -72,13 +72,9 @@ string RingMessage::toString() const {
     ss << "senderID:" << senderID << ";\n";
     ss << "categoryID:" << categoryId << "; ";
     ss << "messageText:" << messageText << "; ";
-    ss << "confirmations:{\n";
-    for (int i = 0; i < confirmations.size(); i++) {
-        if (i < confirmations.size() - 1) {
-            ss << confirmations[i] << "\n";
-        } else {
-            ss << confirmations[i];
-        }
+    ss << "confirmations:{";
+    for (string confirmation : confirmations) {
+        ss << endl << confirmation;
     }
     ss << "}]";
     return ss.str();

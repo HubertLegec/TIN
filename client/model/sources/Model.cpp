@@ -80,6 +80,14 @@ void Model::setUserName(const string &userName) {
 void Model::removeCategoryAndData(long id) {
     categoryNameIdMapping.erase(categories.at(id).getName());
     categories.erase(id);
+    if (!inbox.empty()) {
+        for (int i = inbox.size() - 1; i >= 0; i--) {
+            if (inbox.at(i).getCategoryId() == id) {
+                inbox.erase(inbox.begin() + i);
+            }
+        }
+    }
+
 }
 
 map<long, string> Model::getMyCategories() const {

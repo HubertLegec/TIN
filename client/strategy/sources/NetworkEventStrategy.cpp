@@ -66,7 +66,6 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
 
         case ServerInfoMessageType::USER_CREATED :
             controller->incrementServerResponseNo();
-            getModel()->setUserName(msg.getInfo());
             getModel()->setUserId(msg.getExtraInfo());
             getModel()->addNotification("User account created!");
             showMainMenu();
@@ -153,7 +152,7 @@ void NetworkEventStrategy::processNeighbourSet(SimpleMessage &message) const {
     stringstream ss;
     ss << "Neighbours updated: \n";
     ss << "Left neighbour: " << msg.getLeftNeighbourName() << endl;
-    ss << "Right neighbour: " << msg.getRightNeighbourName() << endl;
+    ss << "Right neighbour: " << msg.getRightNeighbourName();
     getModel()->addNotification(ss.str());
 }
 
@@ -165,8 +164,10 @@ void NetworkEventStrategy::processRingMessage(SimpleMessage &message) const {
         getModel()->addNotification("You have a new message!\nCheck your inbox.");
     } else {
         stringstream ss;
-        ss << "Your message from " << getModel()->getCategoryName(msg.getCategoryId()) << " category has been read ";
-        ss << "by all your followers!";
+        ss << "Your message in " << getModel()->getCategoryName(msg.getCategoryId()) << " category has been read by:";
+        for (string name : msg.getConfirmationsList()) {
+            ss << endl << name;
+        }
         getModel()->addNotification(ss.str());
     }
 }

@@ -88,12 +88,18 @@ void Controller::start() {
 
 void Controller::exit() {
     LOG(INFO) << "Controller::exit";
-    //if user is registered send info about app close to server
+    //if user is registered empty inbox and send info about app close to server
     if (model->isRegistered()) {
-        shared_ptr<UserManagementMessage> msg = shared_ptr<UserManagementMessage>(
+        //empty inbox
+        for (RingMessage m : model->getInboxMessages()) {
+            ConnectionInfo neighbour = getModel()->getLeftNeighbour(m.getCategoryId());
+            auto toSend = shared_ptr<RingMessage>(new RingMessage(m));
+            sendMessage(toSend, neighbour.getIP(), neighbour.getPort());
+        }
+        //notify server about closing app
+        auto msg = shared_ptr<UserManagementMessage>(
                 new UserManagementMessage(model->getUserId(), MessageType::CLIENT_CLOSE_APP));
-        sendQueue.push(shared_ptr<MessageWrapper>(
-                new MessageWrapper(msg, model->getServerInfo().getIP(), model->getServerInfo().getPort())));
+        sendMessage(msg, model->getServerInfo().getIP(), model->getServerInfo().getPort());
     }
     networkController->stop();
 }

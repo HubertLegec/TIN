@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../server/model/headers/Model.h"
+#include "../server/utils/ServerGlobalConstants.h"
 
 TEST(modelTest, modelTest_user_management) {
     Model model;
@@ -65,10 +66,10 @@ TEST(modelTest, modelTest_category_management) {
     ASSERT_EQ(model.createCategory(user_3, "category_2"), 2);
     ASSERT_EQ(model.createCategory(user_4, "category_3"), 3);
 
-    ASSERT_EQ(model.createCategory(user_1, "category_0"), FAILED_CODE);
-    ASSERT_EQ(model.createCategory(user_2, "category_1"), FAILED_CODE);
-    ASSERT_EQ(model.createCategory(user_3, "category_2"), FAILED_CODE);
-    ASSERT_EQ(model.createCategory(user_4, "category_3"), FAILED_CODE);
+    ASSERT_EQ(model.createCategory(user_1, "category_0"), ServerGlobalConstant::FAILED_CODE);
+    ASSERT_EQ(model.createCategory(user_2, "category_1"), ServerGlobalConstant::FAILED_CODE);
+    ASSERT_EQ(model.createCategory(user_3, "category_2"), ServerGlobalConstant::FAILED_CODE);
+    ASSERT_EQ(model.createCategory(user_4, "category_3"), ServerGlobalConstant::FAILED_CODE);
 
     auto category_1 = model.getCategory(1);
     ASSERT_EQ(category_1->getName(), "category_1");
