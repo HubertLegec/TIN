@@ -163,61 +163,8 @@ def checkMsgReceivedToSender(clientProc, username, users):
     run1(clientProc, commands)
     if assertContainsElements(clientProc, users):
         print "V owner: " + username + " saw correct information that all users read his msg. users name: " + str(users)
-        # print categoryNames
     else:
         print "X test failed"
-
-
-def userLeaveCategory(clientProc, userName, categoryID):
-    commands = ["l", categoryID, "y"]
-    run1(clientProc, commands)
-    time.sleep(1)
-    expectResult = "deactivated!"
-    if assertContains(clientProc, expectResult):
-        print "V user " + userName + " successfully left category " + str(categoryID)
-    else:
-        print "X user " + userName + " was unable to leave category " + str(categoryID)
-
-
-def userJoinCategory(clientProc, userName, categoryID, leftN, rightN):
-    commands = ["j", categoryID, "y"]
-    run1(clientProc, commands)
-    time.sleep(1)
-    expectResult = "again!"
-    expectResults = [categoryName, "Left neighbour: " + leftN, "Right neighbour: " + rightN]
-    if assertContains(clientProc, expectResult) and assertContainsElements(clientProc, expectResults):
-        print "V user " + userName + " successfully joined category " + str(categoryID)
-    else:
-        print "X user " + userName + " was unable to join category " + str(categoryID)
-
-
-def userSignOutCategoryTest(clientProc, userName, categoryID):
-    commands = ["o", categoryID, "y"]
-    run1(clientProc, commands)
-    time.sleep(1)
-    expectResult = "successfully"
-    if assertContains(clientProc, expectResult):
-        print "V User " + userName + " successfully signed out from category " + str(categoryID)
-    else:
-        print "X User " + userName + " was unable to sign out from category " + str(categoryID)
-
-
-def deleteCategoryTest(clientProc, categoryID):
-    commands = ["d", categoryID, "y"]
-    run1(clientProc, commands)
-    time.sleep(1)
-    expectResult = "removed!"
-    if assertContains(clientProc, expectResult):
-        print "V category " + str(categoryID) + " was successfully deleted"
-    else:
-        print "X category " + str(categoryID) + " wasn't deleted"
-
-
-def checkNeighbours(clientProc1, userName, expectResults):
-    if assertContainsElements(clientProc, expectResults):
-        print "V User " + userName + " has correct neighbours"
-    else:
-        print "X User " + userName + " has incorrect neighbours"
 
 
 def main():
@@ -267,24 +214,6 @@ def main():
     users = ["Hubert", "Damian"]
     checkMsgReceivedToSender(clientProc1, "Wojtek", users)
     time.sleep(1)
-    # sendMsgTest(clientProc1, 0, ) nad tym pracuje
-
-    #print "========LEAVE AND JOIN CATEGORY TEST======="
-    #userLeaveCategory(clientProc2, "Hubert", 0)
-    #expectResults = ["pierscien", "Left neighbour: " + "Damian", "Right neighbour: " + "Damian"]
-    #checkNeighbours(clientProc1, "Wojtek", expectResults)
-    #expectResults = ["pierscien", "Left neighbour: " + "Wojtek", "Right neighbour: " + "Wojtek"]
-    #checkNeighbours(clientProc3, "Damian", expectResults)
-    #userJoinCategory(clientProc2, "Hubert", 0, "Wojtek", "Damian")
-
-    print "========USER SIGN OUT FROM CATEGORY TEST======"
-    userSignOutCategoryTest(clientProc2, "Hubert", 0)
-
-    #print "========DELETING CATEGORY TEST======="
-    #deleteCategoryTest(clientProc1, 0)
-    #categories = ["pierscien1"]
-    #displayCategoryTest(clientProc1, categories)
-    #displayCategoryTest(clientProc2, categories)
 
     os.killpg(os.getpgid(serverProc.pid), signal.SIGTERM)
     os.killpg(os.getpgid(clientProc1.pid), signal.SIGTERM)
