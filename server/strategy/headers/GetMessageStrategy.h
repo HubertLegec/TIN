@@ -6,6 +6,9 @@
 
 class GetMessageStrategy : public BasicEventStrategy {
 private:
+    void sendCategoriesList() const;
+
+    void sendNeighbours(long categoryID) const;
 
 public:
     GetMessageStrategy() : BasicEventStrategy() { }

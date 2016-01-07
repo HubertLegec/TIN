@@ -5,6 +5,9 @@
 
 class UserManagementStrategy : public BasicEventStrategy {
 private:
+    void createUserAccount(const string &userName, const string &userIP, int userPort) const;
+
+    void deleteUser() const;
 
 public:
     UserManagementStrategy() : BasicEventStrategy() { }

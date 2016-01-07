@@ -51,7 +51,7 @@ public:
 
     bool isUnconfirmed(long userID);
 
-    void addMember(shared_ptr<User> user);
+    long addMember(shared_ptr<User> user);
 
     void removeMember(long id);
 

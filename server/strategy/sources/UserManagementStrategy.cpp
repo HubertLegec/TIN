@@ -3,48 +3,70 @@
 #include "../../model/headers/Model.h"
 #include "../../controller/headers/Controller.h"
 #include "../../../logger/easylogging++.h"
+#include "../../utils/ServerGlobalConstants.h"
 
 void UserManagementStrategy::serveEvent(SimpleMessage *message) const {
     UserManagementMessage *managementMessage = dynamic_cast<UserManagementMessage *>(message);
 
     auto messageType = managementMessage->getMessageType();
-    shared_ptr<Model> model = controller->getModel();
-
     switch (messageType) {
         case MessageType::CREATE_USER_ACCOUNT: {
-            try {
-                auto newUser = model->createNewUser(managementMessage->getUserName(), managementMessage->getPort(),
-                                                    managementMessage->getIp());
-
-                sendMessage(newUser, newUser->getID(), USER_CREATED);
-            } catch (exception &e) {
-                LOG(DEBUG) << "Failed to create user named " << managementMessage->getUserName();
-                ServerInfoMessage *returnMessage = new ServerInfoMessage(SERVER_ID, FAIL, "Couldn't create user!");
-                controller->sendMessage(returnMessage, managementMessage->getIp(), managementMessage->getPort());
-            }
+            createUserAccount(managementMessage->getUserName(), managementMessage->getIp(),
+                              managementMessage->getPort());
         }
             break;
 
         case MessageType::DELETE_USER_ACCOUNT:
         case MessageType::CLIENT_CLOSE_APP: {
-            // TODO usuwanie z kategorii itd...
-            auto senderID = managementMessage->getSenderID();
-            auto sender = controller->getModel()->getUser(senderID);
-            if (!sender) {
-                LOG(INFO) << "Couldn't find user who sent message. SenderID: " << senderID;
+            if (checkSender(managementMessage) == ServerGlobalConstant::FAILED_CODE)
                 return;
-            }
 
-            controller->getModel()->deleteUser(sender);
-            LOG(INFO) << "Deleted user named " << senderID;
+            deleteUser();
         }
             break;
 
         default: {
-            LOG(DEBUG) << "Received bad message type from user " << managementMessage->getIp();
-            ServerInfoMessage *returnMessage = new ServerInfoMessage(SERVER_ID, FAIL, "Bad message type received!");
-            controller->sendMessage(returnMessage, managementMessage->getIp(), managementMessage->getPort());
+            badMessageTypeReceived(managementMessage->getIp(), managementMessage->getPort());
         }
             break;
     }
+}
+
+void UserManagementStrategy::createUserAccount(const string &userName, const string &userIP, int userPort) const {
+    if (auto newUser = getModel()->createNewUser(userName, userPort, userIP)) {
+        sendMessage(newUser, newUser->getID(), ServerInfoMessageType::USER_CREATED);
+    } else {
+        LOG(INFO) << "Failed to create user named " << userName;
+        ServerInfoMessage *returnMessage = new ServerInfoMessage(ServerGlobalConstant::SERVER_ID,
+                                                                 ServerInfoMessageType::FAIL, "Couldn't create user!");
+        controller->sendMessage(returnMessage, userIP, userPort);
+    }
+}
+
+void UserManagementStrategy::deleteUser() const {
+    list<shared_ptr<Category> > categoriesToRemove;
+    for (auto pair : controller->getModel()->getCategories()) {
+        if (pair.second->getOwner() == getSender()) {
+            sendForAllMembers(pair.second, pair.first, ServerInfoMessageType::CATEGORY_REMOVED);
+            categoriesToRemove.push_back(pair.second);
+        } else if (auto member = pair.second->findMember(getSender()->getID())) {
+            auto leftNeighbour = member->getLeftNeighbour();
+            auto rightNeighbour = member->getRightNeighbour();
+
+            pair.second->removeMember(getSender()->getID());
+            LOG(INFO) << "User " << getSender()->getID() << " left category " << pair.first;
+
+            sendNeighbours(pair.second, leftNeighbour);
+            sendNeighbours(pair.second, rightNeighbour);
+            sendMessage(getSender(), pair.first, ServerInfoMessageType::CATEGORY_LEFT);
+        }
+    }
+
+    for (auto categoryToRemove : categoriesToRemove) {
+        getModel()->deleteCategory(categoryToRemove);
+        LOG(INFO) << "Deleted category " << categoryToRemove->getName();
+    }
+
+    controller->getModel()->deleteUser(getSender());
+    LOG(INFO) << "Deleted user named " << getSender()->getID();
 }

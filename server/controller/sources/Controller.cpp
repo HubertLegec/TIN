@@ -4,6 +4,7 @@
 #include "../../../logger/easylogging++.h"
 #include "../../strategy/headers/UserManagementStrategy.h"
 #include "../../strategy/headers/ErrorMessageStrategy.h"
+#include "../../utils/ServerGlobalConstants.h"
 
 Controller::Controller(string ip, int port) : model(new Model), myIP(ip), myPort(port), workingStatus(NORMAL) {
     initStrategyMap();
@@ -70,9 +71,9 @@ void Controller::run() {
         type = getMessageType(incomingMessage);
         if (type == IncomingMessageType::UNKNOWN) {
             LOG(INFO) << "Bad type of incomming message";
-        } else if (type == EXIT_MESSAGE) {
+        } else if (type == IncomingMessageType::EXIT_MESSAGE) {
             LOG(INFO) << "Get EXIT_MESSAGE. Closing server app!";
-            exit(EXIT_MESSAGE_CODE);
+            exit(ServerGlobalConstant::EXIT_MESSAGE_CODE);
         } else if (workingStatus == WorkingStatus::NORMAL) {
             try {
                 strategyMap.at(type)->serveEvent(incomingMessage.get());
@@ -88,29 +89,29 @@ void Controller::run() {
 IncomingMessageType Controller::getMessageType(shared_ptr<SimpleMessage> message) {
     auto messageType = message->getMessageType();
     switch (messageType) {
-        case GET:
+        case MessageType::GET:
             return IncomingMessageType::GET_MESSAGE;
 
-        case CREATE_CATEGORY:
-        case DESTROY_CATEGORY:
-        case CATEGORY_LIST:
-        case JOIN_CATEGORY:
-        case LEFT_CATEGORY:
-        case ACTIVATE_CATEGORY:
-        case DEACTIVATE_CATEGORY:
-        case NEW_MEMBER_CONFIRM:
-        case NEW_MEMBER_REJECT:
+        case MessageType::CREATE_CATEGORY:
+        case MessageType::DESTROY_CATEGORY:
+        case MessageType::CATEGORY_LIST:
+        case MessageType::JOIN_CATEGORY:
+        case MessageType::LEFT_CATEGORY:
+        case MessageType::ACTIVATE_CATEGORY:
+        case MessageType::DEACTIVATE_CATEGORY:
+        case MessageType::NEW_MEMBER_CONFIRM:
+        case MessageType::NEW_MEMBER_REJECT:
             return IncomingMessageType::CATEGORY_MANAGEMENT;
 
-        case CREATE_USER_ACCOUNT:
-        case DELETE_USER_ACCOUNT:
-        case CLIENT_CLOSE_APP:;
+        case MessageType::CREATE_USER_ACCOUNT:
+        case MessageType::DELETE_USER_ACCOUNT:
+        case MessageType::CLIENT_CLOSE_APP:;
             return IncomingMessageType::USER_MANAGEMENT;
 
-        case NETWORK_CONTROLLER_ERROR_MESSAGE:
+        case MessageType::NETWORK_CONTROLLER_ERROR_MESSAGE:
             return IncomingMessageType::ERROR_MESSAGE;
 
-        case EXIT:
+        case MessageType::EXIT:
             return IncomingMessageType::EXIT_MESSAGE;
 
         default:

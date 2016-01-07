@@ -12,11 +12,24 @@ class Controller;
 
 class CategoryMember;
 
+class Model;
+
 class User;
 
 class BasicEventStrategy {
 protected:
     Controller *controller;
+    mutable shared_ptr<User> sender;
+
+    shared_ptr<Model> getModel() const;
+
+    shared_ptr<User> getSender() const;
+
+    long checkSender(SimpleMessage *message) const;
+
+    void badMessageTypeReceived() const;
+
+    void badMessageTypeReceived(const string &senderIP, int senderPort) const;
 
     void sendMessage(shared_ptr<User> user, ServerInfoMessageType infoMessageType) const;
 

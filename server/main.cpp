@@ -3,14 +3,11 @@
 #include "../networkMessage/headers/SimpleMessage.h"
 #include "controller/headers/Controller.h"
 #include "Server.h"
+#include "utils/ServerGlobalConstants.h"
 
 INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
-
-enum {
-    BAD_INPUT_ARG = -11
-};
 
 void handler(int signal) {
     LOG(INFO) << "Server program interrupted by signal " << signal;
@@ -28,7 +25,7 @@ void showHelp() {
 void badInputArguments() {
     cout << "Bad input arguments!" << endl;
     showHelp();
-    exit(BAD_INPUT_ARG);
+    exit(ServerGlobalConstant::BAD_INPUT_ARG);
 }
 
 int main(int argc, char *argv[]) {
@@ -38,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     if (argc > 1) {
         if (argc == 2) {
-            if (strcmp("-h", argv[1]) != 0 || strcmp("-help", argv[1]) != 0)
+            if (strcmp("-h", argv[1]) != 0 && strcmp("-help", argv[1]) != 0)
                 badInputArguments();
 
             showHelp();

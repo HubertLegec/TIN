@@ -4,11 +4,6 @@
 #include <unordered_map>
 #include "Category.h"
 
-enum {
-    FAILED_CODE = -3,
-    UNKNOWN_CODE = -4
-};
-
 class Model {
 private:
     long categoriesCounter;

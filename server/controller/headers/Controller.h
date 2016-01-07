@@ -13,11 +13,6 @@
 
 using namespace std;
 
-enum {
-    SERVER_ID = 0,
-    EXIT_MESSAGE_CODE = 12
-};
-
 enum IncomingMessageType {
     CATEGORY_MANAGEMENT,
     GET_MESSAGE,

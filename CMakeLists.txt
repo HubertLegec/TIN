@@ -99,10 +99,14 @@ set(SERVER_STRATEGY_SOURCES
         server/strategy/sources/ErrorMessageStrategy.cpp
         server/strategy/headers/ErrorMessageStrategy.h)
 
+set(SERVER_UTILS_SOURCES
+        server/utils/ServerGlobalConstants.h)
+
 set(SERVER_SOURCE_SOURCES
         ${SERVER_MODEL_SOURCES}
         ${SERVER_CONTROLLER_SOURCES}
         ${SERVER_STRATEGY_SOURCES}
+        ${SERVER_UTILS_SOURCES}
         server/Server.cpp
         server/Server.h)
 
@@ -140,7 +144,6 @@ add_test(NAME clientBasicTest COMMAND clientBasicTest)
 
 #*************************** server tests **********************************************
 set(SERVER_TEST_SOURCES
-        server_tests/serverBasicTest.cpp
         server_tests/modelCategoryTest.cpp
         server_tests/modelTest.cpp)
 
@@ -150,7 +153,6 @@ add_executable(SERVER_UNIT_TESTS
         ${SERVER_NETWORK_MESSAGE_SOURCES})
 
 target_link_libraries(SERVER_UNIT_TESTS gtest_main)
-add_test(NAME serverBasicTest COMMAND serverBasicTest)
 add_test(NAME modelTest COMMAND modelTest)
 add_test(NAME modelCategoryTest COMMAND modelCategoryTest)
 

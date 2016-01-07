@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "../server/model/headers/Category.h"
+#include "../logger/easylogging++.h"
 
+INITIALIZE_EASYLOGGINGPP
 TEST(modelCategoryTest, categoryTest_creating_category) {
     shared_ptr<User> creator(new User(1, 9999, "1.1.1.1", "radek"));
     Category category(0, creator, "test_category");
@@ -20,6 +22,11 @@ TEST(modelCategoryTest, categoryTest_members_management) {
     category.addMember(user_1);
     category.addMember(user_2);
     category.addMember(user_3);
+
+    ASSERT_EQ(category.findMember(2)->getUser()->getID(), 2);
+    ASSERT_EQ(category.findMember(2)->getUser()->getName(), "hubert");
+    ASSERT_EQ(category.findMember(2)->getUser()->getIP(), "1.1.1.1");
+    ASSERT_EQ(category.findMember(2)->getUser()->getPort(), 8888);
 
     ASSERT_EQ(category.findMember(1)->getUser(), creator);
     ASSERT_EQ(category.findMember(2)->getUser(), user_1);

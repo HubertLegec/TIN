@@ -1,4 +1,5 @@
 #include "../headers/Model.h"
+#include "../../utils/ServerGlobalConstants.h"
 
 shared_ptr<User> Model::createNewUser(const string &userName, int port, string IP) {
     shared_ptr<User> newUser(new User(usersCounter++, port, IP, userName));
@@ -10,7 +11,7 @@ shared_ptr<User> Model::createNewUser(const string &userName, int port, string I
 long Model::createCategory(shared_ptr<User> owner, const string &category_name) {
     for (auto pair : categories) {
         if (pair.second->getName() == category_name)
-            return FAILED_CODE;
+            return ServerGlobalConstant::FAILED_CODE;
     }
 
     auto map_value = shared_ptr<Category>(new Category(categoriesCounter++, owner, category_name));

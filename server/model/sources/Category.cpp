@@ -1,19 +1,18 @@
 #include "../headers/Category.h"
+#include "../headers/Model.h"
+#include "../../utils/ServerGlobalConstants.h"
 
-void Category::addMember(shared_ptr<User> user) {
+long Category::addMember(shared_ptr<User> user) {
     shared_ptr<CategoryMember> newMember(new CategoryMember(user));
-    if (members) {
+    if (!members) {
         members = newMember;
         newMember->setLeftNeighbour(members);
         newMember->setRightNeighbour(members);
-        return;
+        return user->getID();
     }
 
-    auto categoryMember = members;
-    do {
-        if (categoryMember->getUser()->getID() == user->getID())
-            throw runtime_error("Member, you wanted to add, already exists in the category!");
-    } while ((categoryMember = categoryMember->getLeftNeighbour()) != members);
+    if (findMember(user->getID()))
+        return ServerGlobalConstant::FAILED_CODE;
 
     auto first = members;
     auto last = members->getLeftNeighbour();
@@ -59,7 +58,7 @@ void Category::removeMember(long id) {
 
 void Category::addNewMember(shared_ptr<User> user) {
     if (isUnconfirmed(user->getID()) || findMember(user->getID()))
-        throw runtime_error("Member, you wanted to add, already exists in the category!");
+        return;
 
     unconfirmedUsers[user->getID()] = user;
 }
