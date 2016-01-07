@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os
 import signal
-import time
 import subprocess
+import time
 
 
 def scrollOutPut(clientProc):
@@ -168,6 +168,58 @@ def checkMsgReceivedToSender(clientProc, username, users):
         print "X test failed"
 
 
+def userLeaveCategory(clientProc, userName, categoryID):
+    commands = ["l", categoryID, "y"]
+    run1(clientProc, commands)
+    time.sleep(1)
+    expectResult = "deactivated!"
+    if assertContains(clientProc, expectResult):
+        print "V user " + userName + " successfully left category " + str(categoryID)
+    else:
+        print "X user " + userName + " was unable to leave category " + str(categoryID)
+
+
+def userJoinCategory(clientProc, userName, categoryID, leftN, rightN):
+    commands = ["j", categoryID, "y"]
+    run1(clientProc, commands)
+    time.sleep(1)
+    expectResult = "again!"
+    expectResults = [categoryName, "Left neighbour: " + leftN, "Right neighbour: " + rightN]
+    if assertContains(clientProc, expectResult) and assertContainsElements(clientProc, expectResults):
+        print "V user " + userName + " successfully joined category " + str(categoryID)
+    else:
+        print "X user " + userName + " was unable to join category " + str(categoryID)
+
+
+def userSignOutCategoryTest(clientProc, userName, categoryID):
+    commands = ["o", categoryID, "y"]
+    run1(clientProc, commands)
+    time.sleep(1)
+    expectResult = "successfully"
+    if assertContains(clientProc, expectResult):
+        print "V User " + userName + " successfully signed out from category " + str(categoryID)
+    else:
+        print "X User " + userName + " was unable to sign out from category " + str(categoryID)
+
+
+def deleteCategoryTest(clientProc, categoryID):
+    commands = ["d", categoryID, "y"]
+    run1(clientProc, commands)
+    time.sleep(1)
+    expectResult = "removed!"
+    if assertContains(clientProc, expectResult):
+        print "V category " + str(categoryID) + " was successfully deleted"
+    else:
+        print "X category " + str(categoryID) + " wasn't deleted"
+
+
+def checkNeighbours(clientProc1, userName, expectResults):
+    if assertContainsElements(clientProc, expectResults):
+        print "V User " + userName + " has correct neighbours"
+    else:
+        print "X User " + userName + " has incorrect neighbours"
+
+
 def main():
     compileCmake = subprocess.Popen("cmake CMakeLists.txt", shell=True)
     compileCmake.wait()
@@ -178,14 +230,14 @@ def main():
     serverProc = subprocess.Popen("./RING_SERVER", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   preexec_fn=os.setsid)
 
-    clientProc1 = subprocess.Popen("./RING_CLIENT -port 5555", shell=True,
+    clientProc1 = subprocess.Popen("./RING_CLIENT -port 5544", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
 
-    clientProc2 = subprocess.Popen("./RING_CLIENT -port 6666", shell=True,
+    clientProc2 = subprocess.Popen("./RING_CLIENT -port 6644", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
-    clientProc3 = subprocess.Popen("./RING_CLIENT -port 4444", shell=True,
+    clientProc3 = subprocess.Popen("./RING_CLIENT -port 4411", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
     print "========CREATION USER TEST======"
@@ -217,6 +269,23 @@ def main():
     time.sleep(1)
     # sendMsgTest(clientProc1, 0, ) nad tym pracuje
 
+    #print "========LEAVE AND JOIN CATEGORY TEST======="
+    #userLeaveCategory(clientProc2, "Hubert", 0)
+    #expectResults = ["pierscien", "Left neighbour: " + "Damian", "Right neighbour: " + "Damian"]
+    #checkNeighbours(clientProc1, "Wojtek", expectResults)
+    #expectResults = ["pierscien", "Left neighbour: " + "Wojtek", "Right neighbour: " + "Wojtek"]
+    #checkNeighbours(clientProc3, "Damian", expectResults)
+    #userJoinCategory(clientProc2, "Hubert", 0, "Wojtek", "Damian")
+
+    print "========USER SIGN OUT FROM CATEGORY TEST======"
+    userSignOutCategoryTest(clientProc2, "Hubert", 0)
+
+    #print "========DELETING CATEGORY TEST======="
+    #deleteCategoryTest(clientProc1, 0)
+    #categories = ["pierscien1"]
+    #displayCategoryTest(clientProc1, categories)
+    #displayCategoryTest(clientProc2, categories)
+
     os.killpg(os.getpgid(serverProc.pid), signal.SIGTERM)
     os.killpg(os.getpgid(clientProc1.pid), signal.SIGTERM)
     os.killpg(os.getpgid(clientProc2.pid), signal.SIGTERM)
@@ -224,4 +293,3 @@ def main():
 
 
 main()
-
