@@ -9,7 +9,6 @@ def scrollOutPut(clientProc):
     time.sleep(1)
     while True:
         line = clientProc.stdout.readline()
-        # print line.rstrip()
         if line == '>\n':
             break
 
@@ -19,7 +18,6 @@ def run(clientProc, commands):
     for command in commands:
         # if flag and licznik < 1:
         scrollOutPut(clientProc)
-        # print str(command)
         clientProc.stdin.write(str(command) + "\n")
         licznik += 1
 
@@ -29,7 +27,6 @@ def run1(clientProc, commands):
     for command in commands:
         if licznik != 0:
             scrollOutPut(clientProc)
-        # print str(command)
         clientProc.stdin.write(str(command) + "\n")
         licznik += 1
 
@@ -39,7 +36,6 @@ def assertContains(clientProc, string):
     result = False
     while True:
         line = clientProc.stdout.readline()
-        # print line.rstrip()
         if line.find(string) != -1:
             result = True
         if line == '>\n':
@@ -69,11 +65,8 @@ def assertContainsElements(clientProc, elements):
 def displayCategoryTest(clientProc, categoryNames):
     commands = ["s"]
     run1(clientProc, commands)
-    # scrollOutPut(clientProc)
-    # clientProc.stdin.write("s" + "\n")
     if assertContainsElements(clientProc, categoryNames):
         print "V user saw correct categories. Categories name: " + str(categoryNames)
-        # print categoryNames
     else:
         print "X test failed"
 
@@ -107,8 +100,6 @@ def registrationInRingTest(clientProc, userName, ringId, ringName):
 
 def confirmRegistrationTest(clientProc, userName, user1, user2):
     clientProc.stdin.write("p" + "\n")
-    # scrollOutPut(clientProc)
-    # print str(command)
     if assertContains(clientProc, "name: " + user1):
         print "V user: " + user1 + " was registered by: " + userName
     else:
@@ -117,10 +108,12 @@ def confirmRegistrationTest(clientProc, userName, user1, user2):
     clientProc.stdin.write("y" + "\n")
     time.sleep(1)
     if assertContains(clientProc, "name: " + user2):
-        print "V user: " + user2 + " was not registered by: " + userName
+        print "V user: " + user2 + " was registered by: " + userName
     else:
         print "X test failed. User: " + user2 + " didnt join to category"
-    clientProc.stdin.write("n" + "\n")
+    clientProc.stdin.write("y" + "\n")
+    scrollOutPut(clientProc)
+    clientProc.stdin.write("p" + "\n")
 
 
 def confirmRegistration1Test(clientProc, userName, user1):
@@ -145,16 +138,43 @@ def checkAcceptInboxTest(clientProc, categoryName, userName, leftNeigh, rightNei
                 expectResults)
 
 
-def sendMsgTest(clientProc, categoryId, msg):
-    commands = ["m", categoryId, msg]
+def sendMsg(clientProc, categoryId, msg):
+    commands = ["m", categoryId]
+    run(clientProc, commands)
+    time.sleep(1)
+    # scrollOutPut(clientProc)
+    time.sleep(1)
+    clientProc.stdin.write(str(msg) + "\n")
+    scrollOutPut(clientProc)
+
+
+def receiveMsgTest(clientProc, userName, msg):
+    commands = ["i"]
     run1(clientProc, commands)
+    if assertContains(clientProc, msg):
+        print "V user: " + userName + " received msg: " + msg
+    else:
+        print "X test failed. User: " + userName + " didnt received msg: " + msg
+    clientProc.stdin.write("y" + "\n")
+
+
+def checkMsgReceivedToSender(clientProc, username, users):
+    commands = ["i", "i"]
+    run1(clientProc, commands)
+    if assertContainsElements(clientProc, users):
+        print "V owner: " + username + " saw correct information that all users read his msg. users name: " + str(users)
+        # print categoryNames
+    else:
+        print "X test failed"
 
 
 def main():
-    # subprocess.Popen("cmake CMakeLists.txt")
-    # subprocess.Popen("make RING_SERVER")
-    # subprocess.Popen("make RING_CLIENT")
-    # subprocess.Popen("./RING_SERVER", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    compileCmake = subprocess.Popen("cmake CMakeLists.txt", shell=True)
+    compileCmake.wait()
+    compileServer = subprocess.Popen("make RING_SERVER", shell=True)
+    compileServer.wait()
+    compileClient = subprocess.Popen("make RING_CLIENT", shell=True)
+    compileClient.wait()
     serverProc = subprocess.Popen("./RING_SERVER", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   preexec_fn=os.setsid)
 
@@ -183,11 +203,17 @@ def main():
     registrationInRingTest(clientProc2, "Hubert", 0, "pierscien")
     registrationInRingTest(clientProc3, "Damian", 0, "pierscien")
     confirmRegistrationTest(clientProc1, "Wojtek", "Hubert", "Damian")
-    checkAcceptInboxTest(clientProc2, "pierscien", "Hubert", "Wojtek", "Wojtek")
-    registrationInRingTest(clientProc3, "Damian", 0, "pierscien")
-    #confirmRegistration1Test(clientProc1, "Wojtek", "Damian") jeszcze nie przechodi work in progress
+    checkAcceptInboxTest(clientProc2, "pierscien", "Hubert", "Wojtek", "Damian")
+    checkAcceptInboxTest(clientProc3, "pierscien", "Damian", "Hubert", "Wojtek")
     time.sleep(1)
     print "========SENDING MSG IN RING TEST======"
+    sendMsg(clientProc1, 0, "wiadomosc")
+    time.sleep(1)
+    receiveMsgTest(clientProc3, "Damian", "wiadomosc")
+    time.sleep(2)
+    receiveMsgTest(clientProc2, "Hubert", "wiadomosc")
+    users = ["Hubert", "Damian"]
+    checkMsgReceivedToSender(clientProc1, "Wojtek", users)
     time.sleep(1)
     # sendMsgTest(clientProc1, 0, ) nad tym pracuje
 
