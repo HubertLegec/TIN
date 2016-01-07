@@ -1,5 +1,7 @@
 --Wireshark script that is adding handling of #RING protocol.
-
+--author: Damian Mazurkiewicz
+--date: 6 December 2015
+--script is based on example from: https://wiki.wireshark.org/Lua/Dissectors
 --[[ 
 	RUNNING SCRIPT 
 	1. Get into directory containing this script.
