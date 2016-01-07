@@ -106,9 +106,9 @@ void Controller::sendMessage(std::shared_ptr<SimpleMessage> msg, std::string ip,
 void Controller::moveThreadWork() {
     LOG(INFO) << "Controller::moveThreadWork()";
     while (running) {
-        shared_ptr<SimpleMessage> msg;
-        msg = receiveQueue.pop();
+        shared_ptr<SimpleMessage> msg = receiveQueue.pop();
         auto event = shared_ptr<NetworkEvent>(new NetworkEvent(msg));
+        LOG(INFO) << "moveThread: new NetworkEvent pushed into event queue";
         eventsToServe.push(event);
         if (msg.get()->getMessageType() == MessageType::EXIT) {
             running = false;

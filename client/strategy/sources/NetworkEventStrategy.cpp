@@ -124,6 +124,7 @@ void NetworkEventStrategy::processServerInfo(SimpleMessage &message) const {
             getModel()->addNotification("Your account has been removed successfully.");
             showMainMenu();
         case ServerInfoMessageType::FAIL :
+            controller->incrementServerResponseNo();
             getModel()->addNotification(msg.getInfo());
             showMainMenu();
             break;

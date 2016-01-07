@@ -7,7 +7,7 @@
 
 using namespace std;
 
-NetworkEvent::NetworkEvent(std::shared_ptr<SimpleMessage> message) : BasicEvent(), message(message) {
+NetworkEvent::NetworkEvent(shared_ptr<SimpleMessage> message) : BasicEvent(), message(message) {
 
 }
 

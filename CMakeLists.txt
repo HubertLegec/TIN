@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2.2)
 project(RING)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D _ELPP_THREAD_SAFE")
 find_package(Threads)
 
 
