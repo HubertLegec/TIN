@@ -183,20 +183,3 @@ add_executable(MESSAGES_SERIALIZATION_TESTS networkMessage_tests/messagesSeriali
         cereal/archives/binary.hpp)
 target_link_libraries(MESSAGES_SERIALIZATION_TESTS gtest_main)
 add_test(NAME networkMessageSerializationTest COMMAND networkMessageSerializationTest)
-
-
-#*************************** newtwork module tests ******************************************
-add_executable(NETWORK_BASIC_TESTS networkModule_tests/networkBasicTest.cpp
-        networkModule/sources/MessageWrapper.cpp
-        networkMessage/sources/SimpleMessage.cpp
-        networkMessage/sources/UserManagementMessage.cpp
-        networkMessage/sources/GetMessage.cpp
-        networkMessage/sources/CategoryManagementMessage.cpp
-        networkMessage/sources/RingMessage.cpp
-        networkMessage/sources/NeighboursInfoMessage.cpp
-        networkMessage/sources/CategoryListMessage.cpp
-        networkMessage/sources/ServerInfoMessage.cpp
-        networkMessage/sources/NetworkControllerErrorMessage.cpp
-        networkModule/sources/NetworkController.cpp)
-target_link_libraries(NETWORK_BASIC_TESTS gtest_main)
-add_test(NAME networkBasicTest COMMAND networkBasicTest)
