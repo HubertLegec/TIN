@@ -8,6 +8,7 @@
 CMakeCache.txt
 Makefile
 RING_SERVER
+RING_CLIENT
 cmake_install.cmake
 gtest-build
 gtest-download
@@ -43,3 +44,4 @@ CMakeFiles
 
 #other
 .gitignore~
+test.py~
