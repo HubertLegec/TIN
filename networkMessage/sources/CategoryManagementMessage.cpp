@@ -55,6 +55,7 @@ string CategoryManagementMessage::toString() const {
     ss << "size:" << size << "; ";
     ss << "senderID:" << senderID << ";\n";
     ss << "categoryName:" << categoryName << "; ";
+    ss << "extraInfo:" << extraInfo << ";";
     ss << "categoryID:" << categoryID << "]";
     return ss.str();
 }
