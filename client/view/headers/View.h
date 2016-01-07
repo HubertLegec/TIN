@@ -100,7 +100,13 @@ private:
 
     static bool getUserConfirmation();
 
-    static bool validateChoosenID(long id, ThreadData *threadData);
+    static bool validateChosenID(long id, ThreadData *threadData);
+
+    static void printCategoryList(std::map<long, std::string> categories);
+
+    static char getCharFromUser();
+
+    static long getLongFromUser();
 
     ThreadData threadData;
     pthread_t viewThread;
