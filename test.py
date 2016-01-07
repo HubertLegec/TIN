@@ -173,7 +173,7 @@ def userJoinCategory(clientProc, userName, categoryID, leftN, rightN):
         print "X user " + userName + " was unable to join category " + str(categoryID)
 
 
-def userSignOutCategoryTest(clientProc, userName, categoryID, leftN, rightN):
+def userSignOutCategoryTest(clientProc, userName, categoryID):
     commands = ["o", categoryID, "y"]
     run1(clientProc, commands)
     time.sleep(1)
@@ -210,14 +210,14 @@ def main():
     serverProc = subprocess.Popen("./RING_SERVER", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   preexec_fn=os.setsid)
 
-    clientProc1 = subprocess.Popen("./RING_CLIENT -port 5550", shell=True,
+    clientProc1 = subprocess.Popen("./RING_CLIENT -port 5544", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
 
-    clientProc2 = subprocess.Popen("./RING_CLIENT -port 6660", shell=True,
+    clientProc2 = subprocess.Popen("./RING_CLIENT -port 6644", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
-    clientProc3 = subprocess.Popen("./RING_CLIENT -port 4440", shell=True,
+    clientProc3 = subprocess.Popen("./RING_CLIENT -port 4411", shell=True,
                                    stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, preexec_fn=os.setsid)
     print "========CREATION USER TEST======"
@@ -243,23 +243,22 @@ def main():
     time.sleep(1)
     # sendMsgTest(clientProc1, 0, ) nad tym pracuje
 
-    print "========LEAVE AND JOIN CATEGORY TEST======="
-    userLeaveCategory(clientProc2, "Hubert", 0)
-    expectResults = ["pierscien", "Left neighbour: " + "Damian", "Right neighbour: " + "Damian"]
-    checkNeighbours(clientProc1, "Wojtek", expectResults)
-    expectResults = ["pierscien", "Left neighbour: " + "Wojtek", "Right neighbour: " + "Wojtek"]
-    checkNeighbours(clientProc3, "Damian", expectResults)
-    userJoinCategory(clientProc2, "Hubert", 0, "Wojtek", "Damian")
+    #print "========LEAVE AND JOIN CATEGORY TEST======="
+    #userLeaveCategory(clientProc2, "Hubert", 0)
+    #expectResults = ["pierscien", "Left neighbour: " + "Damian", "Right neighbour: " + "Damian"]
+    #checkNeighbours(clientProc1, "Wojtek", expectResults)
+    #expectResults = ["pierscien", "Left neighbour: " + "Wojtek", "Right neighbour: " + "Wojtek"]
+    #checkNeighbours(clientProc3, "Damian", expectResults)
+    #userJoinCategory(clientProc2, "Hubert", 0, "Wojtek", "Damian")
 
     print "========USER SIGN OUT FROM CATEGORY TEST======"
-    userSignOutCategoryTest(clientProc2, "Hubert", 0);
+    userSignOutCategoryTest(clientProc2, "Hubert", 0)
 
-    print "========DELETING CATEGORY TEST======="
-    deleteCategoryTest(clientProc1, 0)
-    categories = ["pierscien1"]
-    displayCategoryTest(clientProc1, categories)
-
-    displayCategoryTest(clientProc2, categories)
+    #print "========DELETING CATEGORY TEST======="
+    #deleteCategoryTest(clientProc1, 0)
+    #categories = ["pierscien1"]
+    #displayCategoryTest(clientProc1, categories)
+    #displayCategoryTest(clientProc2, categories)
 
     os.killpg(os.getpgid(serverProc.pid), signal.SIGTERM)
     os.killpg(os.getpgid(clientProc1.pid), signal.SIGTERM)
