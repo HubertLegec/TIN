@@ -102,7 +102,7 @@ void View::showRemoveUserSubMenu() {
 }
 
 bool View::getUserConfirmation() {
-    cout << endl << "Are you sure (y/n)?" << endl;
+    cout << endl << "Are you sure (y/n)?" << endl << ">";
     char decision;
     cin >> decision;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -167,7 +167,6 @@ void *View::showMainMenuThread(void *arg) {
 
     ChooseMenuOptionEvent::OptionChosen event = ChooseMenuOptionEvent::REFRESH;
 
-
     cout << ">";
     cin >> typed;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -229,10 +228,10 @@ void *View::showCreateCategorySubMenuThread(void *arg) {
 
     string categoryName;
 
-    cout << "Creating category:" << endl;
-    cout << "Category name: ";
+    cout << "--- Creating category ---" << endl;
+    cout << "Category name: " << endl << ">";
     getline(cin, categoryName);
-    cout << endl << "Create category? [y/n] " << endl;
+    cout << endl << "Create category? [y/n] " << endl << ">";
 
     char decision;
     cin >> decision;
@@ -250,7 +249,7 @@ void *View::showDeleteCategorySubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
 
-    cout << "Deleting category:" << endl;
+    cout << "--- Deleting category ---" << endl;
     cout << "Your categories:" << endl;
 
     cout << setiosflags(ios::left);
@@ -266,11 +265,11 @@ void *View::showDeleteCategorySubMenuThread(void *arg) {
     resetiosflags(ios::left);
 
     long id;
-    cout << "Category to delete ID: ";
+    cout << "Category to delete ID: " << endl << ">";
     cin >> id;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (validateChoosenID(id, threadData)) {
-        cout << endl << "Delete category " << (*threadData->categories)[id] << "  [y/n]?" << endl;
+        cout << endl << "Delete category " << (*threadData->categories)[id] << "  [y/n]?" << endl << ">";
 
         char decision;
         cin >> decision;
@@ -293,7 +292,7 @@ void *View::showSignUpCategorySubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
-    cout << "Singing up category:" << endl;
+    cout << "--- Singing up category ---" << endl;
 
     cout << setiosflags(ios::left);
 
@@ -307,12 +306,12 @@ void *View::showSignUpCategorySubMenuThread(void *arg) {
 
     resetiosflags(ios::left);
 
-    cout << "Type category id:";
+    cout << "Type category id:" << endl << ">";
     cin >> categoryID;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (validateChoosenID(categoryID, threadData)) {
         cout << "Category name: " << (*threadData->categories)[categoryID] << endl;
-        cout << "Register in category? [y/n] " << endl;
+        cout << "Register in category? [y/n]" << endl << ">";
 
         char decision;
         cin >> decision;
@@ -335,9 +334,9 @@ void *View::showJoinCategorySubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
-    cout << "Joining category:" << endl;
+    cout << "--- Joining category ---" << endl;
 
-    cout << "Your categories: " << endl;
+    cout << "Your categories:" << endl;
 
     cout << setiosflags(ios::left);
 
@@ -351,11 +350,11 @@ void *View::showJoinCategorySubMenuThread(void *arg) {
 
     resetiosflags(ios::left);
 
-    cout << "Type category id:";
+    cout << "Type category id:" << endl << ">";
     cin >> categoryID;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (validateChoosenID(categoryID, threadData)) {
-        cout << "Join category " << (*threadData->categories)[categoryID] << "  [y/n]?" << endl;
+        cout << "Join category " << (*threadData->categories)[categoryID] << "  [y/n]?" << endl << ">";
 
         char decision;
         cin >> decision;
@@ -378,9 +377,9 @@ void *View::showLeaveCategorySubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
-    cout << "Leaving category:" << endl;
+    cout << "--- Leaving category ---" << endl;
 
-    cout << "Your categories: " << endl;
+    cout << "Your categories:" << endl;
 
     cout << setiosflags(ios::left);
 
@@ -394,11 +393,11 @@ void *View::showLeaveCategorySubMenuThread(void *arg) {
 
     resetiosflags(ios::left);
 
-    cout << "Type category id:";
+    cout << "Type category id:" << endl << ">";
     cin >> categoryID;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (validateChoosenID(categoryID, threadData)) {
-        cout << "Leave category " << (*threadData->categories)[categoryID] << "  [y/n]?" << endl;
+        cout << "Leave category " << (*threadData->categories)[categoryID] << "  [y/n]?" << endl << ">";
 
         char decision;
         cin >> decision;
@@ -422,8 +421,8 @@ void *View::showSignOutCategorySubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
-    cout << "Sign out category:" << endl;
-    cout << "Your categories: " << endl;
+    cout << "--- Signing out category ---" << endl;
+    cout << "Your categories:" << endl;
 
     cout << setiosflags(ios::left);
 
@@ -437,11 +436,11 @@ void *View::showSignOutCategorySubMenuThread(void *arg) {
 
     resetiosflags(ios::left);
 
-    cout << "Type category id:";
+    cout << "Type category id:" << endl << ">";
     cin >> categoryID;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (validateChoosenID(categoryID, threadData)) {
-        cout << "Sign out category " << (*threadData->categories)[categoryID] << "  [y/n]?" << endl;
+        cout << "Sign out category " << (*threadData->categories)[categoryID] << "  [y/n]?" << endl << ">";
 
         char decision;
         cin >> decision;
@@ -465,8 +464,8 @@ void *View::showRegisterNewUserSubMenuThread(void *arg) {
 
     string userName;
     cout << "You are not registered yet!" << endl;
-    cout << "Create your personal account:" << endl;
-    cout << "Login: ";
+    cout << "Create your personal account." << endl;
+    cout << "Login:" << endl << ">";
     getline(cin, userName);
     if (getUserConfirmation()) {
         threadData->controller->getEventsToServe()->push(
@@ -488,8 +487,8 @@ void *View::sendMessageInCategorySubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
     long categoryID;
-    cout << "Send message in one of your categories:" << endl;
-    cout << "Your categories: " << endl;
+    cout << "--- Send message in one of your categories ---" << endl;
+    cout << "Your categories:" << endl;
 
     cout << setiosflags(ios::left);
 
@@ -503,13 +502,13 @@ void *View::sendMessageInCategorySubMenuThread(void *arg) {
 
     resetiosflags(ios::left);
 
-    cout << "Type category id:";
+    cout << "Type category id:" << endl << ">";
     cin >> categoryID;
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (validateChoosenID(categoryID, threadData)) {
         string message;
 
-        cout << endl << "Type message:\n";
+        cout << endl << "Type message:" << endl << ">";
         getline(cin, message);
 
         threadData->controller->getEventsToServe()->push(
@@ -524,7 +523,7 @@ void *View::sendMessageInCategorySubMenuThread(void *arg) {
 void *View::showReadIncomingMessagesSubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
 
-    cout << "Inbox:" << endl;
+    cout << "--- Inbox ---" << endl;
     cout << "Here you can mark some messages as read." << endl;
     cout << "[y] - yes" << endl << "[n] - no" << endl << "[other] - quit" << endl << endl;
     int position = 0;
@@ -533,8 +532,8 @@ void *View::showReadIncomingMessagesSubMenuThread(void *arg) {
         cout << "-------------" << endl;
         cout << "Category: " << message.first << endl;
         cout << "---" << endl;
-        cout << message.second << endl << endl;
-        cout << "\tMark as read [y/n/other]? ";
+        cout << message.second << endl;
+        cout << "Mark as read [y/n/other]?" << endl << ">";
         char decision;
         cin >> decision;
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -564,7 +563,7 @@ void *View::showReadIncomingMessagesSubMenuThread(void *arg) {
 
 void *View::showPendingUsersSubMenuThread(void *arg) {
     ThreadData *threadData = (ThreadData *) arg;
-    cout << "Users who want to join to your categories:" << endl;
+    cout << "--- Users who want to join to your categories ---" << endl;
     cout << "You can agree or reject them." << endl;
     cout << "[y] - yes" << endl << "[n] - no" << endl << "[other] - quit" << endl << endl;
 
@@ -572,7 +571,7 @@ void *View::showPendingUsersSubMenuThread(void *arg) {
         cout << "-------------" << endl;
         cout << "Category: " << pendingUser.getCategoryName() << endl;
         cout << "User name: " << pendingUser.getUserName() << endl;
-        cout << "\tAccept user [y/n/other]? ";
+        cout << "Accept user [y/n/other]?" << endl << ">";
         char decision;
         cin >> decision;
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
