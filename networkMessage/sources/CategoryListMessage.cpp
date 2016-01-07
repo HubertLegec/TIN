@@ -34,15 +34,9 @@ string CategoryListMessage::toString() const {
     ss << "CategoryListMessage[type:" << type << "; ";
     ss << "size:" << size << "; ";
     ss << "senderID:" << senderID << "; ";
-    ss << "categories:{\n";
-    int i = 0;
-    for (pair<long, string> p : categories) {
-        i++;
-        if (i < categories.size()) {
-            ss << "id:" << p.first << ", name:" << p.second << endl;
-        } else {
-            ss << "id:" << p.first << ", name:" << p.second;
-        }
+    ss << "categories:{";
+    for (auto p : categories) {
+        ss << endl << "id:" << p.first << ", name:" << p.second;
     }
     ss << "}]";
     return ss.str();
