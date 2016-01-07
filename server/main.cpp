@@ -13,6 +13,7 @@ enum {
 };
 
 void handler(int signal) {
+    LOG(INFO) << "Server program interrupted by signal " << signal;
     Server::getServerPtr()->cleanUp();
 }
 

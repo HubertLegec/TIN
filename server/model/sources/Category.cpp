@@ -2,7 +2,7 @@
 
 void Category::addMember(shared_ptr<User> user) {
     shared_ptr<CategoryMember> newMember(new CategoryMember(user));
-    if (!members) {
+    if (members) {
         members = newMember;
         newMember->setLeftNeighbour(members);
         newMember->setRightNeighbour(members);

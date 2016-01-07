@@ -71,7 +71,8 @@ void Controller::run() {
         if (type == IncomingMessageType::UNKNOWN) {
             LOG(INFO) << "Bad type of incomming message";
         } else if (type == EXIT_MESSAGE) {
-            LOG(FATAL) << "Get EXIT_MESSAGE. Closing server app!";
+            LOG(INFO) << "Get EXIT_MESSAGE. Closing server app!";
+            exit(EXIT_MESSAGE_CODE);
         } else if (workingStatus == WorkingStatus::NORMAL) {
             try {
                 strategyMap.at(type)->serveEvent(incomingMessage.get());

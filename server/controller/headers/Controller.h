@@ -14,7 +14,8 @@
 using namespace std;
 
 enum {
-    SERVER_ID = 0
+    SERVER_ID = 0,
+    EXIT_MESSAGE_CODE = 12
 };
 
 enum IncomingMessageType {
