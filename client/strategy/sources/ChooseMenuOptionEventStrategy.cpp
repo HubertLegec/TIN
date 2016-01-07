@@ -142,6 +142,9 @@ void ChooseMenuOptionEventStrategy::signOutCategory() const {
         if (getModel()->getJoinedCategories().size() == 0) {
             getView()->showInfo("You have no categories to sign out!");
             showMainMenu();
+        } else if (getModel()->getInboxMessages().size() > 0) {
+            getView()->showInfo("Your inbox is not empty! Read all the messages and then come back here.");
+            showMainMenu();
         } else {
             getView()->showSignOutCategorySubMenu(getModel()->getJoinedCategories());
         }
